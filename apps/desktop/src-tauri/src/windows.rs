@@ -1,4 +1,4 @@
-#![allow(unused_mut)]
+﻿#![allow(unused_mut)]
 #![allow(unused_imports)]
 
 use anyhow::anyhow;
@@ -40,7 +40,7 @@ use crate::{
     target_select_overlay::WindowFocusManager,
     window_exclusion::WindowExclusion,
 };
-use cap_recording::{feeds, sources::screen_capture::ScreenCaptureTarget};
+use zensloom_recording::{feeds, sources::screen_capture::ScreenCaptureTarget};
 
 #[cfg(target_os = "macos")]
 const DEFAULT_TRAFFIC_LIGHTS_INSET: LogicalPosition<f64> = LogicalPosition::new(12.0, 12.0);
@@ -806,18 +806,18 @@ impl CapWindowId {
 
     pub fn title(&self) -> String {
         match self {
-            Self::Settings => "Cap Settings".to_string(),
+            Self::Settings => "Zensloom Settings".to_string(),
             Self::WindowCaptureOccluder { .. } => "Cap Window Capture Occluder".to_string(),
             Self::CaptureArea => "Cap Capture Area".to_string(),
-            Self::RecordingControls => "Cap Recording Controls".to_string(),
-            Self::Editor { .. } => "Cap Editor".to_string(),
-            Self::ScreenshotEditor { .. } => "Cap Screenshot Editor".to_string(),
-            Self::ModeSelect => "Cap Mode Selection".to_string(),
+            Self::RecordingControls => "Zensloom Recording Controls".to_string(),
+            Self::Editor { .. } => "Zensloom Editor".to_string(),
+            Self::ScreenshotEditor { .. } => "Zensloom Screenshot Editor".to_string(),
+            Self::ModeSelect => "Zensloom Mode Selection".to_string(),
             Self::Onboarding => "Welcome to Cap".to_string(),
-            Self::Camera => "Cap Camera".to_string(),
-            Self::RecordingsOverlay => "Cap Recordings Overlay".to_string(),
-            Self::TargetSelectOverlay { .. } => "Cap Target Select".to_string(),
-            _ => "Cap".to_string(),
+            Self::Camera => "Zensloom Camera".to_string(),
+            Self::RecordingsOverlay => "Zensloom Recordings Overlay".to_string(),
+            Self::TargetSelectOverlay { .. } => "Zensloom Target Select".to_string(),
+            _ => "Zensloom".to_string(),
         }
     }
 

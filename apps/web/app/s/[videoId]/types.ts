@@ -1,6 +1,6 @@
-import type { videos } from "@cap/database/schema";
-import type { SpaceRuleSource, ViewerSettingKey } from "@cap/web-backend";
-import type { ImageUpload, Organisation, User } from "@cap/web-domain";
+import type { videos } from "@zensloom/database/schema";
+import type { SpaceRuleSource, ViewerSettingKey } from "@zensloom/web-backend";
+import type { ImageUpload, Organisation, User } from "@zensloom/web-domain";
 import type { OrganizationSettings } from "@/app/(org)/dashboard/dashboard-data";
 
 export type VideoData = Omit<typeof videos.$inferSelect, "ownerId"> & {

@@ -1,6 +1,6 @@
-import { db } from "@cap/database";
-import { organizationMembers, organizations } from "@cap/database/schema";
-import type { Organisation, User } from "@cap/web-domain";
+﻿import { db } from "@zensloom/database";
+import { organizationMembers, organizations } from "@zensloom/database/schema";
+import type { Organisation, User } from "@zensloom/web-domain";
 import { and, eq, isNull, or } from "drizzle-orm";
 import {
 	canManageOrganizationBilling,

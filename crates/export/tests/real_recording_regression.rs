@@ -1,12 +1,12 @@
-use std::{
+﻿use std::{
     collections::{BTreeMap, BTreeSet},
     path::PathBuf,
     sync::Arc,
 };
 
-use cap_editor::create_segments;
-use cap_project::{ProjectConfiguration, RecordingMeta, XY};
-use cap_rendering::{
+use zensloom_editor::create_segments;
+use zensloom_project::{ProjectConfiguration, RecordingMeta, XY};
+use zensloom_rendering::{
     FrameRenderer, PrecomputedCursorTimeline, ProjectRecordingsMeta, ProjectUniforms,
     RenderSegment, RenderVideoConstants, RenderedFrame, RendererLayers, ZoomFocusInterpolator,
     render_video_to_channel, spring_mass_damper::SpringMassDamperSimulationConfig,
@@ -48,7 +48,7 @@ struct RenderSampledSequenceFramesParams<'a> {
     render_constants: &'a Arc<RenderVideoConstants>,
     project_config: &'a ProjectConfiguration,
     recording_meta: &'a RecordingMeta,
-    studio_meta: &'a cap_project::StudioRecordingMeta,
+    studio_meta: &'a zensloom_project::StudioRecordingMeta,
     recordings: &'a Arc<ProjectRecordingsMeta>,
     resolution_base: XY<u32>,
     force_ffmpeg_decoder: bool,

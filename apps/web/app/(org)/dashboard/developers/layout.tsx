@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@cap/database/auth/session";
+﻿import { getCurrentUser } from "@zensloom/database/auth/session";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { DeveloperSidebarRegistrar } from "./_components/DeveloperSidebarRegistrar";

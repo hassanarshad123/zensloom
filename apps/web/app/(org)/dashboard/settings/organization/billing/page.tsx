@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
-import { buildEnv } from "@cap/env";
-import { Card, CardDescription, CardHeader, CardTitle } from "@cap/ui";
+import { buildEnv } from "@zensloom/env";
+import { Card, CardDescription, CardHeader, CardTitle } from "@zensloom/ui";
 import { useDashboardContext } from "@/app/(org)/dashboard/Contexts";
 import {
 	canManageOrganizationBilling,

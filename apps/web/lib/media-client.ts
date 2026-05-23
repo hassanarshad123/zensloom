@@ -1,4 +1,4 @@
-import { serverEnv } from "@cap/env";
+﻿import { serverEnv } from "@zensloom/env";
 
 interface MediaServerError {
 	error: string;

@@ -1,7 +1,7 @@
-"use server";
+﻿"use server";
 
-import { sendEmail } from "@cap/database/emails/config";
-import { DownloadLink } from "@cap/database/emails/download-link";
+import { sendEmail } from "@zensloom/database/emails/config";
+import { DownloadLink } from "@zensloom/database/emails/download-link";
 import { checkRateLimit } from "@vercel/firewall";
 import { headers } from "next/headers";
 

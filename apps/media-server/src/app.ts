@@ -1,4 +1,4 @@
-import { Hono } from "hono";
+﻿import { Hono } from "hono";
 import { logger } from "hono/logger";
 import audio from "./routes/audio";
 import health from "./routes/health";
@@ -14,7 +14,7 @@ app.route("/video", video);
 
 app.get("/", (c) => {
 	return c.json({
-		name: "@cap/media-server",
+		name: "@zensloom/media-server",
 		version: "1.0.0",
 		endpoints: [
 			"/health",

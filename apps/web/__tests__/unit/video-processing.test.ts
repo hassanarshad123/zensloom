@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+﻿import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const updateWhereMock = vi.fn();
 const selectWhereMock = vi.fn();
@@ -17,7 +17,7 @@ const dbMock = vi.fn(() => ({
 	})),
 }));
 
-vi.mock("@cap/database", () => ({
+vi.mock("@zensloom/database", () => ({
 	db: dbMock,
 }));
 

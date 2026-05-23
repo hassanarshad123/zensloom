@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
-import { buildEnv } from "@cap/env";
-import { Button, Switch } from "@cap/ui";
-import type { Organisation } from "@cap/web-domain";
+import { buildEnv } from "@zensloom/env";
+import { Button, Switch } from "@zensloom/ui";
+import type { Organisation } from "@zensloom/web-domain";
 import NumberFlow from "@number-flow/react";
 import { Fit, Layout, useRive } from "@rive-app/react-canvas";
 import { useMutation } from "@tanstack/react-query";

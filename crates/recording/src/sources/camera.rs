@@ -1,10 +1,10 @@
-use crate::{
+﻿use crate::{
     feeds::camera::{self, CameraFeedLock},
     ffmpeg::FFmpegVideoFrame,
     output_pipeline::{SetupCtx, StallSendOutcome, VideoSource, send_with_stall_budget_futures},
 };
 use anyhow::anyhow;
-use cap_media_info::VideoInfo;
+use zensloom_media_info::VideoInfo;
 use futures::{FutureExt, channel::mpsc, future::BoxFuture};
 use std::sync::{
     Arc,

@@ -1,4 +1,4 @@
-use cap_project::{MaskKind, MaskScalarKeyframe, MaskSegment, MaskVectorKeyframe, XY};
+﻿use zensloom_project::{MaskKind, MaskScalarKeyframe, MaskSegment, MaskVectorKeyframe, XY};
 
 use crate::{MaskRenderMode, PreparedMask};
 

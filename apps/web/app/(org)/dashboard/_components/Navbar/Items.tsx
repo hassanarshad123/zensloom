@@ -1,5 +1,5 @@
-"use client";
-import { buildEnv } from "@cap/env";
+﻿"use client";
+import { buildEnv } from "@zensloom/env";
 import {
 	Button,
 	Command,
@@ -16,8 +16,8 @@ import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
-} from "@cap/ui";
-import { classNames } from "@cap/utils";
+} from "@zensloom/ui";
+import { classNames } from "@zensloom/utils";
 import {
 	faBuilding,
 	faCircleInfo,

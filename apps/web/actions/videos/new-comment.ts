@@ -1,11 +1,11 @@
-"use server";
+﻿"use server";
 
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
-import { nanoId } from "@cap/database/helpers";
-import { comments } from "@cap/database/schema";
-import type { ImageUpload } from "@cap/web-domain";
-import { Comment, type Video } from "@cap/web-domain";
+import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
+import { nanoId } from "@zensloom/database/helpers";
+import { comments } from "@zensloom/database/schema";
+import type { ImageUpload } from "@zensloom/web-domain";
+import { Comment, type Video } from "@zensloom/web-domain";
 import { revalidatePath } from "next/cache";
 import { createNotification } from "@/lib/Notification";
 

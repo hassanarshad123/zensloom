@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { Button, LogoBadge } from "@cap/ui";
+import { Button, LogoBadge } from "@zensloom/ui";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMutation } from "@tanstack/react-query";

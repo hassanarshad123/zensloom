@@ -1,18 +1,18 @@
-"use server";
+﻿"use server";
 
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
-import { nanoId } from "@cap/database/helpers";
-import { videos, videoUploads } from "@cap/database/schema";
-import { buildEnv, NODE_ENV, serverEnv } from "@cap/env";
-import { dub, userIsPro } from "@cap/utils";
-import { Storage as StorageService } from "@cap/web-backend";
+import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
+import { nanoId } from "@zensloom/database/helpers";
+import { videos, videoUploads } from "@zensloom/database/schema";
+import { buildEnv, NODE_ENV, serverEnv } from "@zensloom/env";
+import { dub, userIsPro } from "@zensloom/utils";
+import { Storage as StorageService } from "@zensloom/web-backend";
 import {
 	type Folder,
 	type Organisation,
 	type User,
 	Video,
-} from "@cap/web-domain";
+} from "@zensloom/web-domain";
 import { eq } from "drizzle-orm";
 import { Effect, Option } from "effect";
 import { revalidatePath } from "next/cache";

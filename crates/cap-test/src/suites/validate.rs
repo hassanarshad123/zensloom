@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+﻿use anyhow::{Context, Result};
 use serde::Deserialize;
 use std::path::Path;
 use std::process::Command;
@@ -228,7 +228,7 @@ pub async fn validate_recording(path: &Path) -> Result<ValidationResult> {
     let mut sync_info = None;
 
     if path.is_dir() {
-        let (v, a, s, e, w) = validate_cap_project(path).await?;
+        let (v, a, s, e, w) = validate_zensloom_project(path).await?;
         video_info = v;
         audio_info = a;
         sync_info = s;
@@ -261,7 +261,7 @@ pub async fn validate_recording(path: &Path) -> Result<ValidationResult> {
     })
 }
 
-async fn validate_cap_project(
+async fn validate_zensloom_project(
     path: &Path,
 ) -> Result<(
     Option<VideoValidation>,

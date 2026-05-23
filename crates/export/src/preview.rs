@@ -1,8 +1,8 @@
-use std::path::PathBuf;
+﻿use std::path::PathBuf;
 
 use base64::{Engine, engine::general_purpose::STANDARD};
-use cap_project::{RecordingMeta, XY};
-use cap_rendering::{
+use zensloom_project::{RecordingMeta, XY};
+use zensloom_rendering::{
     FrameRenderer, ProjectUniforms, RendererLayers, ZoomFocusInterpolator,
     spring_mass_damper::SpringMassDamperSimulationConfig,
 };
@@ -90,7 +90,7 @@ async fn render_preview_with_base(
         .ok_or_else(|| ExportError::Other("Failed to decode frame".to_string()))?;
 
     let frame_number = (frame_time * settings.fps as f64).floor() as u32;
-    let total_duration = cap_rendering::get_duration(
+    let total_duration = zensloom_rendering::get_duration(
         &exporter_base.recordings,
         &exporter_base.recording_meta,
         &exporter_base.studio_meta,

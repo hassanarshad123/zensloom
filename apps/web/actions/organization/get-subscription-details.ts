@@ -1,10 +1,10 @@
-"use server";
+﻿"use server";
 
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
-import { organizations, users } from "@cap/database/schema";
-import { stripe } from "@cap/utils";
-import type { Organisation } from "@cap/web-domain";
+import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
+import { organizations, users } from "@zensloom/database/schema";
+import { stripe } from "@zensloom/utils";
+import type { Organisation } from "@zensloom/web-domain";
 import { eq } from "drizzle-orm";
 
 export type SubscriptionDetails = {

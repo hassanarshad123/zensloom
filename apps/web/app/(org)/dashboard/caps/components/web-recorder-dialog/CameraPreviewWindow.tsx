@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { LoadingSpinner } from "@cap/ui";
+import { LoadingSpinner } from "@zensloom/ui";
 import clsx from "clsx";
 import {
 	Circle,

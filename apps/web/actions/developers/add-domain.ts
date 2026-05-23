@@ -1,9 +1,9 @@
-"use server";
+﻿"use server";
 
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
-import { nanoId } from "@cap/database/helpers";
-import { developerAppDomains, developerApps } from "@cap/database/schema";
+import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
+import { nanoId } from "@zensloom/database/helpers";
+import { developerAppDomains, developerApps } from "@zensloom/database/schema";
 import { and, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 

@@ -1,4 +1,4 @@
-use crate::{
+﻿use crate::{
     output_pipeline::{
         AudioFrame, AudioMuxer, BlockingThreadFinish, HealthSender, Muxer, PipelineHealthEvent,
         TaskPool, VideoFrame, VideoMuxer, emit_health, wait_for_blocking_thread_finish,
@@ -6,10 +6,10 @@ use crate::{
     sources::screen_capture,
 };
 use anyhow::anyhow;
-use cap_enc_avfoundation::QueueFrameError;
-use cap_media_info::{AudioInfo, VideoInfo};
-use cap_timestamp::Timestamp;
-use cap_utils::macos_qos::{MacOsQosClass, set_current_thread_qos};
+use zensloom_enc_avfoundation::QueueFrameError;
+use zensloom_media_info::{AudioInfo, VideoInfo};
+use zensloom_timestamp::Timestamp;
+use zensloom_utils::macos_qos::{MacOsQosClass, set_current_thread_qos};
 use cidre::arc;
 use std::{
     path::PathBuf,
@@ -244,7 +244,7 @@ enum AudioFrameMessage {
 struct Mp4EncoderState {
     video_tx: SyncSender<Option<VideoFrameMessage>>,
     audio_tx: Option<SyncSender<Option<AudioFrameMessage>>>,
-    encoder: Arc<Mutex<cap_enc_avfoundation::MP4Encoder>>,
+    encoder: Arc<Mutex<zensloom_enc_avfoundation::MP4Encoder>>,
     encoder_handle: Option<JoinHandle<anyhow::Result<()>>>,
     audio_handle: Option<JoinHandle<anyhow::Result<()>>>,
     video_frame_count: Arc<AtomicU64>,
@@ -309,28 +309,28 @@ impl Muxer for AVFoundationMp4Muxer {
         let (ready_tx, ready_rx) = sync_channel::<anyhow::Result<()>>(1);
 
         let encoder = if config.instant_mode {
-            cap_enc_avfoundation::MP4Encoder::init_instant_mode(
+            zensloom_enc_avfoundation::MP4Encoder::init_instant_mode(
                 output_path.clone(),
                 video_config,
                 audio_config,
                 config.output_height,
             )
         } else if config.ultra_quality {
-            cap_enc_avfoundation::MP4Encoder::init_ultra(
+            zensloom_enc_avfoundation::MP4Encoder::init_ultra(
                 output_path.clone(),
                 video_config,
                 audio_config,
                 config.output_height,
             )
         } else if config.compatibility_quality {
-            cap_enc_avfoundation::MP4Encoder::init_compatibility(
+            zensloom_enc_avfoundation::MP4Encoder::init_compatibility(
                 output_path.clone(),
                 video_config,
                 audio_config,
                 config.output_height,
             )
         } else {
-            cap_enc_avfoundation::MP4Encoder::init(
+            zensloom_enc_avfoundation::MP4Encoder::init(
                 output_path.clone(),
                 video_config,
                 audio_config,
@@ -879,7 +879,7 @@ enum CameraFrameMessage {
 
 struct CameraEncoderState {
     video_tx: SyncSender<Option<CameraFrameMessage>>,
-    encoder: Arc<Mutex<cap_enc_avfoundation::MP4Encoder>>,
+    encoder: Arc<Mutex<zensloom_enc_avfoundation::MP4Encoder>>,
     encoder_handle: Option<JoinHandle<anyhow::Result<()>>>,
 }
 
@@ -918,14 +918,14 @@ impl Muxer for AVFoundationCameraMuxer {
         let (ready_tx, ready_rx) = sync_channel::<anyhow::Result<()>>(1);
 
         let encoder = if config.compatibility_quality {
-            cap_enc_avfoundation::MP4Encoder::init_compatibility(
+            zensloom_enc_avfoundation::MP4Encoder::init_compatibility(
                 output_path.clone(),
                 video_config,
                 None,
                 config.output_height,
             )
         } else {
-            cap_enc_avfoundation::MP4Encoder::init(
+            zensloom_enc_avfoundation::MP4Encoder::init(
                 output_path.clone(),
                 video_config,
                 None,

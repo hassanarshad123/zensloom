@@ -1,9 +1,9 @@
-use crate::{
+﻿use crate::{
     feeds::camera::{self, CameraFeedLock},
     output_pipeline::{NativeCameraFrame, SetupCtx, VideoSource},
 };
 use anyhow::anyhow;
-use cap_media_info::VideoInfo;
+use zensloom_media_info::VideoInfo;
 use futures::{FutureExt, channel::mpsc, future::BoxFuture};
 use std::sync::{
     Arc,

@@ -1,5 +1,5 @@
-use cap_editor::EditorInstance;
-use cap_project::XY;
+﻿use zensloom_editor::EditorInstance;
+use zensloom_project::XY;
 use std::path::PathBuf;
 
 #[tokio::main]

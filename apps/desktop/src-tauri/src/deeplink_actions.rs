@@ -1,4 +1,4 @@
-use cap_recording::{
+﻿use zensloom_recording::{
     RecordingMode, feeds::camera::DeviceOrModelID, sources::screen_capture::ScreenCaptureTarget,
 };
 use serde::{Deserialize, Serialize};
@@ -121,12 +121,12 @@ impl DeepLinkAction {
                 crate::set_mic_input(state.clone(), mic_label).await?;
 
                 let capture_target: ScreenCaptureTarget = match capture_mode {
-                    CaptureMode::Screen(name) => cap_recording::screen_capture::list_displays()
+                    CaptureMode::Screen(name) => zensloom_recording::screen_capture::list_displays()
                         .into_iter()
                         .find(|(s, _)| s.name == name)
                         .map(|(s, _)| ScreenCaptureTarget::Display { id: s.id })
                         .ok_or(format!("No screen with name \"{}\"", &name))?,
-                    CaptureMode::Window(name) => cap_recording::screen_capture::list_windows()
+                    CaptureMode::Window(name) => zensloom_recording::screen_capture::list_windows()
                         .into_iter()
                         .find(|(w, _)| w.name == name)
                         .map(|(w, _)| ScreenCaptureTarget::Window { id: w.id })

@@ -1,4 +1,4 @@
-use crate::{
+﻿use crate::{
     AudioFrame, SetupCtx, output_pipeline,
     screen_capture::{ScreenCaptureConfig, ScreenCaptureFormat},
 };
@@ -8,8 +8,8 @@ use ::windows::Win32::Graphics::Direct3D11::{
 };
 use ::windows::Win32::Graphics::Dxgi::Common::DXGI_SAMPLE_DESC;
 use anyhow::anyhow;
-use cap_media_info::{AudioInfo, VideoInfo};
-use cap_timestamp::{PerformanceCounterTimestamp, Timestamp};
+use zensloom_media_info::{AudioInfo, VideoInfo};
+use zensloom_timestamp::{PerformanceCounterTimestamp, Timestamp};
 use cpal::traits::{DeviceTrait, HostTrait};
 use futures::{
     FutureExt, StreamExt,
@@ -635,7 +635,7 @@ impl output_pipeline::VideoSource for VideoSource {
             let scaled_frame_count = scaled_frame_count.clone();
             let stats_health_tx = stats_health_tx.clone();
             move || {
-                cap_mediafoundation_utils::thread_init();
+                zensloom_mediafoundation_utils::thread_init();
 
                 let video_frame_counter: Arc<AtomicU32> = Arc::new(AtomicU32::new(0));
                 let video_drop_counter: Arc<AtomicU32> = Arc::new(AtomicU32::new(0));
@@ -1087,13 +1087,13 @@ fn create_system_audio_capturer(
 
                 thread_local! {
                     static MMCSS_HANDLE: std::cell::RefCell<
-                        Option<cap_mediafoundation_utils::MmcssAudioHandle>,
+                        Option<zensloom_mediafoundation_utils::MmcssAudioHandle>,
                     > = const { std::cell::RefCell::new(None) };
                 }
                 MMCSS_HANDLE.with(|cell| {
                     let mut h = cell.borrow_mut();
                     if h.is_none() {
-                        *h = cap_mediafoundation_utils::MmcssAudioHandle::register_audio();
+                        *h = zensloom_mediafoundation_utils::MmcssAudioHandle::register_audio();
                     }
                 });
 
@@ -1380,7 +1380,7 @@ impl output_pipeline::AudioSource for SystemAudioSource {
         }
     }
 
-    fn audio_info(&self) -> cap_media_info::AudioInfo {
+    fn audio_info(&self) -> zensloom_media_info::AudioInfo {
         self.audio_info
     }
 

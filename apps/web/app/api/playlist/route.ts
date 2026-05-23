@@ -1,11 +1,11 @@
-import * as Db from "@cap/database/schema";
+﻿import * as Db from "@zensloom/database/schema";
 import {
 	Database,
 	provideOptionalAuth,
 	Storage,
 	Videos,
-} from "@cap/web-backend";
-import { Video } from "@cap/web-domain";
+} from "@zensloom/web-backend";
+import { Video } from "@zensloom/web-domain";
 import {
 	HttpApi,
 	HttpApiBuilder,

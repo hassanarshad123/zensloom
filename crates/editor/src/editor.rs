@@ -1,8 +1,8 @@
-use std::sync::Arc;
+﻿use std::sync::Arc;
 use std::time::Instant;
 
-use cap_project::{CursorEvents, RecordingMeta, StudioRecordingMeta};
-use cap_rendering::{
+use zensloom_project::{CursorEvents, RecordingMeta, StudioRecordingMeta};
+use zensloom_rendering::{
     DecodedSegmentFrames, FrameRenderer, Nv12RenderedFrame, ProjectRecordingsMeta, ProjectUniforms,
     RenderVideoConstants, RenderedFrame, RendererLayers,
 };

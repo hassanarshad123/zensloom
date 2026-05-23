@@ -1,10 +1,10 @@
-"use server";
+﻿"use server";
 
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
-import { encrypt } from "@cap/database/crypto";
-import { nanoId, nanoIdLong } from "@cap/database/helpers";
-import { developerApiKeys, developerApps } from "@cap/database/schema";
+import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
+import { encrypt } from "@zensloom/database/crypto";
+import { nanoId, nanoIdLong } from "@zensloom/database/helpers";
+import { developerApiKeys, developerApps } from "@zensloom/database/schema";
 import { and, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { hashKey } from "@/lib/developer-key-hash";

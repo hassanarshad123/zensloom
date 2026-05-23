@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+﻿import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockDbChain = {
 	select: vi.fn(),
@@ -26,15 +26,15 @@ function resetDbChain() {
 	mockDbChain.values.mockReturnValue(Promise.resolve());
 }
 
-vi.mock("@cap/database", () => ({
+vi.mock("@zensloom/database", () => ({
 	db: () => mockDbChain,
 }));
 
-vi.mock("@cap/database/helpers", () => ({
+vi.mock("@zensloom/database/helpers", () => ({
 	nanoId: vi.fn(() => "test-nano-id"),
 }));
 
-vi.mock("@cap/database/schema", () => ({
+vi.mock("@zensloom/database/schema", () => ({
 	developerCreditTransactions: {
 		id: "id",
 		accountId: "accountId",
@@ -44,7 +44,7 @@ vi.mock("@cap/database/schema", () => ({
 	users: { id: "id", email: "email" },
 }));
 
-vi.mock("@cap/env", () => ({
+vi.mock("@zensloom/env", () => ({
 	buildEnv: {
 		NEXT_PUBLIC_POSTHOG_KEY: "",
 		NEXT_PUBLIC_POSTHOG_HOST: "",
@@ -59,7 +59,7 @@ vi.mock("@/lib/developer-credits", () => ({
 	addCreditsToAccount: (...args: unknown[]) => mockAddCredits(...args),
 }));
 
-vi.mock("@cap/web-domain", () => ({
+vi.mock("@zensloom/web-domain", () => ({
 	Organisation: { OrganisationId: { make: (v: string) => v } },
 	User: { UserId: { make: (v: string) => v } },
 }));
@@ -77,7 +77,7 @@ const mockStripe = {
 	},
 };
 
-vi.mock("@cap/utils", () => ({
+vi.mock("@zensloom/utils", () => ({
 	stripe: () => mockStripe,
 }));
 

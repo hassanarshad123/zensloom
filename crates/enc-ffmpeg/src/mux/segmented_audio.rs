@@ -1,5 +1,5 @@
-use crate::audio::aac::{AACEncoder, AACEncoderError};
-use cap_media_info::AudioInfo;
+﻿use crate::audio::aac::{AACEncoder, AACEncoderError};
+use zensloom_media_info::AudioInfo;
 use ffmpeg::{format, frame};
 use serde::Serialize;
 use std::{

@@ -1,10 +1,10 @@
-use anyhow::{Context, Result, bail};
-use cap_export::{
+﻿use anyhow::{Context, Result, bail};
+use zensloom_export::{
     ExporterBase,
     mp4::{ExportCompression, Mp4ExportSettings},
 };
-use cap_project::{ProjectConfiguration, RecordingMeta, RecordingMetaInner, XY};
-use cap_rendering::{
+use zensloom_project::{ProjectConfiguration, RecordingMeta, RecordingMetaInner, XY};
+use zensloom_rendering::{
     FrameRenderer, ProjectRecordingsMeta, ProjectUniforms, RenderVideoConstants, RendererLayers,
     ZoomFocusInterpolator, spring_mass_damper::SpringMassDamperSimulationConfig,
 };
@@ -92,7 +92,7 @@ async fn probe_windows_ci_software_adapter(recording_path: &Path) -> Option<Vec<
         return None;
     }
 
-    let (is_software, adapter_name) = cap_rendering::probe_software_adapter().await?;
+    let (is_software, adapter_name) = zensloom_rendering::probe_software_adapter().await?;
 
     if !is_software {
         return None;
@@ -150,7 +150,7 @@ fn skipped_result(
 struct FixtureContext {
     project: ProjectConfiguration,
     render_constants: Arc<RenderVideoConstants>,
-    segments: Vec<cap_editor::SegmentMedia>,
+    segments: Vec<zensloom_editor::SegmentMedia>,
 }
 
 #[derive(Default)]
@@ -637,7 +637,7 @@ async fn load_fixture(recording_path: &Path) -> Result<FixtureContext> {
         .await
         .map_err(anyhow::Error::msg)?,
     );
-    let segments = cap_editor::create_segments(&recording_meta, &studio_meta, false)
+    let segments = zensloom_editor::create_segments(&recording_meta, &studio_meta, false)
         .await
         .map_err(anyhow::Error::msg)?;
 

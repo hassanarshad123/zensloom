@@ -1,13 +1,13 @@
-use cap_enc_ffmpeg::{
+﻿use zensloom_enc_ffmpeg::{
     remux::{concatenate_m4s_segments_with_init, probe_video_can_decode, probe_video_seek_points},
     segmented_stream::{SegmentedVideoEncoder, SegmentedVideoEncoderConfig},
 };
-use cap_media_info::VideoInfo;
-use cap_project::{
+use zensloom_media_info::VideoInfo;
+use zensloom_project::{
     Cursors, MultipleSegment, MultipleSegments, RecordingMeta, RecordingMetaInner,
     StudioRecordingMeta, StudioRecordingStatus, VideoMeta,
 };
-use cap_recording::recovery::{RecoveryError, RecoveryManager};
+use zensloom_recording::recovery::{RecoveryError, RecoveryManager};
 use ffmpeg::{Rational, codec as avcodec, format as avformat, media, rescale};
 use relative_path::RelativePathBuf;
 use std::{
@@ -1187,9 +1187,9 @@ fn make_synthetic_video_frame(width: u32, height: u32) -> ffmpeg::frame::Video {
     frame
 }
 
-fn synthetic_video_info() -> cap_media_info::VideoInfo {
-    cap_media_info::VideoInfo {
-        pixel_format: cap_media_info::Pixel::NV12,
+fn synthetic_video_info() -> zensloom_media_info::VideoInfo {
+    zensloom_media_info::VideoInfo {
+        pixel_format: zensloom_media_info::Pixel::NV12,
         width: 320,
         height: 240,
         time_base: ffmpeg::Rational(1, 1_000_000),
@@ -1266,7 +1266,7 @@ fn recover_after_simulated_crash_produces_playable_mp4_with_preserved_duration()
         "recovered display.mp4 must be decodable"
     );
 
-    let duration = cap_enc_ffmpeg::remux::get_media_duration(&display_mp4)
+    let duration = zensloom_enc_ffmpeg::remux::get_media_duration(&display_mp4)
         .expect("recovered display.mp4 must expose a duration");
     assert!(
         duration >= Duration::from_secs(4),
@@ -1375,7 +1375,7 @@ fn finalize_to_progressive_mp4_includes_respawn_fragments() {
     RecoveryManager::finalize_to_progressive_mp4(&display_dir, &output)
         .expect("finalize_to_progressive_mp4 should succeed with respawn fragments");
 
-    let duration = cap_enc_ffmpeg::remux::get_media_duration(&output).expect("read duration");
+    let duration = zensloom_enc_ffmpeg::remux::get_media_duration(&output).expect("read duration");
 
     let single_dir_output = recording.path().join("single_dir_baseline.mp4");
     let baseline_dir = recording.path().join("baseline_dir");
@@ -1384,7 +1384,7 @@ fn finalize_to_progressive_mp4_includes_respawn_fragments() {
     RecoveryManager::finalize_to_progressive_mp4(&baseline_dir, &single_dir_output)
         .expect("baseline finalize should succeed");
     let baseline_duration =
-        cap_enc_ffmpeg::remux::get_media_duration(&single_dir_output).expect("baseline duration");
+        zensloom_enc_ffmpeg::remux::get_media_duration(&single_dir_output).expect("baseline duration");
 
     assert!(
         duration.as_secs_f64() > baseline_duration.as_secs_f64() * 1.5,

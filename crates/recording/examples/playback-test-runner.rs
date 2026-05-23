@@ -1,7 +1,7 @@
-use anyhow::bail;
-use cap_audio::{AudioData, SyncAnalyzer};
-use cap_project::{RecordingMeta, RecordingMetaInner, StudioRecordingMeta};
-use cap_rendering::decoder::spawn_decoder;
+﻿use anyhow::bail;
+use zensloom_audio::{AudioData, SyncAnalyzer};
+use zensloom_project::{RecordingMeta, RecordingMetaInner, StudioRecordingMeta};
+use zensloom_rendering::decoder::spawn_decoder;
 use chrono::{Local, Utc};
 use clap::{Parser, Subcommand};
 use std::{

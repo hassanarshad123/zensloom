@@ -1,4 +1,4 @@
-#![allow(dead_code)]
+﻿#![allow(dead_code)]
 
 use ffmpeg::{format, frame, sys::AVHWDeviceType};
 use std::{
@@ -13,7 +13,7 @@ use tracing::info;
 
 use crate::{DecodedFrame, PixelFormat};
 #[cfg(target_os = "windows")]
-use cap_video_decode::FrameTextures;
+use zensloom_video_decode::FrameTextures;
 
 use super::{
     DecoderInitResult, DecoderType, FRAME_CACHE_SIZE, VideoDecoderMessage,
@@ -222,7 +222,7 @@ impl FfmpegDecoder {
             } else {
                 None
             };
-            let mut this = match cap_video_decode::FFmpegDecoder::new(path.clone(), hw_device_type)
+            let mut this = match zensloom_video_decode::FFmpegDecoder::new(path.clone(), hw_device_type)
             {
                 Err(e) => {
                     let _ = ready_tx.send(Err(e));
@@ -258,7 +258,7 @@ impl FfmpegDecoder {
             let first_frame_result = (&mut frames).flatten().next();
 
             if first_frame_result.is_none() && is_hw {
-                let mut sw_this = match cap_video_decode::FFmpegDecoder::new(path.clone(), None) {
+                let mut sw_this = match zensloom_video_decode::FFmpegDecoder::new(path.clone(), None) {
                     Err(e) => {
                         let _ = ready_tx.send(Err(format!("Software fallback failed: {e}")));
                         return;

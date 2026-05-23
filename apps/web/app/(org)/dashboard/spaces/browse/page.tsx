@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { Button, Input } from "@cap/ui";
+import { Button, Input } from "@zensloom/ui";
 import {
 	faEdit,
 	faLayerGroup,

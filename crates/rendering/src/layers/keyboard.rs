@@ -1,5 +1,5 @@
-use bytemuck::{Pod, Zeroable};
-use cap_project::XY;
+﻿use bytemuck::{Pod, Zeroable};
+use zensloom_project::XY;
 use glyphon::{
     Attrs, Buffer, Cache, Color, Family, FontSystem, Metrics, Resolution, Shaping, SwashCache,
     TextArea, TextAtlas, TextBounds, TextRenderer, Viewport, Weight,
@@ -596,12 +596,12 @@ impl KeyboardLayer {
 }
 
 struct ActiveKeyboardSegment<'a> {
-    segment: &'a cap_project::KeyboardTrackSegment,
+    segment: &'a zensloom_project::KeyboardTrackSegment,
 }
 
 fn find_active_keyboard_segment<'a>(
     time: f64,
-    segments: &'a [cap_project::KeyboardTrackSegment],
+    segments: &'a [zensloom_project::KeyboardTrackSegment],
     default_fade_duration: f32,
 ) -> Option<ActiveKeyboardSegment<'a>> {
     for segment in segments {
@@ -622,7 +622,7 @@ fn find_active_keyboard_segment<'a>(
     None
 }
 
-fn build_visible_text(segment: &cap_project::KeyboardTrackSegment, current_time: f64) -> String {
+fn build_visible_text(segment: &zensloom_project::KeyboardTrackSegment, current_time: f64) -> String {
     if segment.keys.is_empty() {
         return segment.display_text.clone();
     }
@@ -711,12 +711,12 @@ mod tests {
 
     #[test]
     fn shortcut_segments_show_the_full_combo() {
-        let segment = cap_project::KeyboardTrackSegment {
+        let segment = zensloom_project::KeyboardTrackSegment {
             id: "kb-1".to_string(),
             start: 1.0,
             end: 1.8,
             display_text: "⌘T".to_string(),
-            keys: vec![cap_project::KeyPressDisplay {
+            keys: vec![zensloom_project::KeyPressDisplay {
                 key: "t".to_string(),
                 time_offset: 0.0,
             }],

@@ -1,6 +1,6 @@
-import { db } from "@cap/database";
-import * as Db from "@cap/database/schema";
-import { Video } from "@cap/web-domain";
+import { db } from "@zensloom/database";
+import * as Db from "@zensloom/database/schema";
+import { Video } from "@zensloom/web-domain";
 import { zValidator } from "@hono/zod-validator";
 import { and, eq } from "drizzle-orm";
 import { Hono } from "hono";

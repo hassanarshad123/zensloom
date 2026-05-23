@@ -1,7 +1,7 @@
-use crate::sources::audio_mixer::AudioMixer;
+﻿use crate::sources::audio_mixer::AudioMixer;
 use anyhow::{Context, anyhow};
-use cap_media_info::{AudioInfo, VideoInfo};
-use cap_timestamp::{MasterClock, SourceClockOutcome, SourceClockState, Timestamp, Timestamps};
+use zensloom_media_info::{AudioInfo, VideoInfo};
+use zensloom_timestamp::{MasterClock, SourceClockOutcome, SourceClockState, Timestamp, Timestamps};
 use futures::{
     FutureExt, SinkExt, StreamExt, TryFutureExt,
     channel::{mpsc, oneshot},
@@ -392,7 +392,7 @@ pub const DISK_SPACE_POLL_INTERVAL: Duration = Duration::from_secs(2);
 
 pub struct DiskSpaceMonitor {
     last_poll: Option<Instant>,
-    last_status: cap_utils::disk_space::DiskSpaceStatus,
+    last_status: zensloom_utils::disk_space::DiskSpaceStatus,
     stopped: bool,
 }
 
@@ -400,7 +400,7 @@ impl DiskSpaceMonitor {
     pub fn new() -> Self {
         Self {
             last_poll: None,
-            last_status: cap_utils::disk_space::DiskSpaceStatus::Ok,
+            last_status: zensloom_utils::disk_space::DiskSpaceStatus::Ok,
             stopped: false,
         }
     }
@@ -422,7 +422,7 @@ impl DiskSpaceMonitor {
         }
         self.last_poll = Some(now);
 
-        let bytes = match cap_utils::disk_space::free_bytes_for_path(path) {
+        let bytes = match zensloom_utils::disk_space::free_bytes_for_path(path) {
             Ok(bytes) => bytes,
             Err(err) => {
                 trace!(error = %err, path = %path.display(), "DiskSpaceMonitor: free_bytes_for_path failed");
@@ -430,30 +430,30 @@ impl DiskSpaceMonitor {
             }
         };
 
-        let status = cap_utils::disk_space::DiskSpaceStatus::from_bytes(bytes);
+        let status = zensloom_utils::disk_space::DiskSpaceStatus::from_bytes(bytes);
         let changed = status != self.last_status;
         self.last_status = status;
 
         match status {
-            cap_utils::disk_space::DiskSpaceStatus::Ok => DiskSpacePollResult::Ok,
-            cap_utils::disk_space::DiskSpaceStatus::Low => {
+            zensloom_utils::disk_space::DiskSpaceStatus::Ok => DiskSpacePollResult::Ok,
+            zensloom_utils::disk_space::DiskSpaceStatus::Low => {
                 if changed {
                     warn!(
                         bytes_remaining = bytes,
-                        warn_threshold_bytes = cap_utils::disk_space::LOW_DISK_WARN_BYTES,
+                        warn_threshold_bytes = zensloom_utils::disk_space::LOW_DISK_WARN_BYTES,
                         path = %path.display(),
                         "Disk space low"
                     );
                     health.emit(PipelineHealthEvent::DiskSpaceLow {
                         bytes_remaining: bytes,
-                        warn_threshold_bytes: cap_utils::disk_space::LOW_DISK_WARN_BYTES,
+                        warn_threshold_bytes: zensloom_utils::disk_space::LOW_DISK_WARN_BYTES,
                     });
                 }
                 DiskSpacePollResult::Low {
                     bytes_remaining: bytes,
                 }
             }
-            cap_utils::disk_space::DiskSpaceStatus::Exhausted => {
+            zensloom_utils::disk_space::DiskSpaceStatus::Exhausted => {
                 if changed {
                     error!(
                         bytes_remaining = bytes,
@@ -2450,7 +2450,7 @@ async fn setup_audio_sources(
             let stop_flag = stop_flag.clone();
             move || {
                 #[cfg(windows)]
-                let _mmcss = cap_mediafoundation_utils::MmcssAudioHandle::register_audio();
+                let _mmcss = zensloom_mediafoundation_utils::MmcssAudioHandle::register_audio();
                 audio_mixer.run(audio_tx, ready_tx, stop_flag);
                 Ok(())
             }
@@ -3508,12 +3508,12 @@ mod tests {
         }
 
         fn test_video_info() -> VideoInfo {
-            VideoInfo::from_raw(cap_media_info::RawVideoFormat::Bgra, 16, 16, 30)
+            VideoInfo::from_raw(zensloom_media_info::RawVideoFormat::Bgra, 16, 16, 30)
         }
 
         fn test_audio_info() -> AudioInfo {
             AudioInfo::new_raw(
-                cap_media_info::Sample::F32(cap_media_info::Type::Packed),
+                zensloom_media_info::Sample::F32(zensloom_media_info::Type::Packed),
                 48_000,
                 2,
             )
@@ -3899,7 +3899,7 @@ mod tests {
 
     mod video_start_gate {
         use super::*;
-        use cap_media_info::AudioInfo;
+        use zensloom_media_info::AudioInfo;
 
         const TEST_SAMPLE_RATE: u32 = 48_000;
         const TEST_CHANNELS: usize = 2;

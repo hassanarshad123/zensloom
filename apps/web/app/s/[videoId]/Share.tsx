@@ -1,8 +1,8 @@
 "use client";
 
-import type { comments as commentsSchema } from "@cap/database/schema";
-import type { ViewerSettingKey } from "@cap/web-backend";
-import type { ImageUpload, Video } from "@cap/web-domain";
+import type { comments as commentsSchema } from "@zensloom/database/schema";
+import type { ViewerSettingKey } from "@zensloom/web-backend";
+import type { ImageUpload, Video } from "@zensloom/web-domain";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import {

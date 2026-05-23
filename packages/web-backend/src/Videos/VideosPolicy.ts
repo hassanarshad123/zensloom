@@ -1,11 +1,11 @@
-import { isEmailAllowedByRestriction } from "@cap/utils";
+﻿import { isEmailAllowedByRestriction } from "@zensloom/utils";
 import {
 	type DatabaseError,
 	type Organisation,
 	Policy,
 	type User,
 	Video,
-} from "@cap/web-domain";
+} from "@zensloom/web-domain";
 import { Array, Effect, Option } from "effect";
 
 import { Database } from "../Database.ts";

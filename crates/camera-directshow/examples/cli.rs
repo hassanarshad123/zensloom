@@ -1,4 +1,4 @@
-fn main() {
+﻿fn main() {
     #[cfg(windows)]
     windows::main();
     #[cfg(not(windows))]
@@ -7,7 +7,7 @@ fn main() {
 
 #[cfg(windows)]
 mod windows {
-    use cap_camera_directshow::*;
+    use zensloom_camera_directshow::*;
     use std::{fmt::Display, time::Duration};
     use tracing::error;
     use windows::{

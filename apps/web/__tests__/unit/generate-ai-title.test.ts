@@ -1,14 +1,14 @@
-import { describe, expect, it, vi } from "vitest";
+﻿import { describe, expect, it, vi } from "vitest";
 
-vi.mock("@cap/database", () => ({
+vi.mock("@zensloom/database", () => ({
 	db: vi.fn(),
 }));
 
-vi.mock("@cap/env", () => ({
+vi.mock("@zensloom/env", () => ({
 	serverEnv: () => ({}),
 }));
 
-vi.mock("@cap/web-backend", () => ({
+vi.mock("@zensloom/web-backend", () => ({
 	Storage: {},
 }));
 

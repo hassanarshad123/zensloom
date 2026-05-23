@@ -1,4 +1,4 @@
-use cap_project::{TextSegment, XY};
+﻿use zensloom_project::{TextSegment, XY};
 
 const BASE_TEXT_HEIGHT: f64 = 0.2;
 const MAX_FONT_SIZE_PX: f32 = 256.0;

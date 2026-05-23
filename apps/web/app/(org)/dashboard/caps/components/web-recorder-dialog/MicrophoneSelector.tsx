@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
 	SelectContent,
@@ -6,7 +6,7 @@ import {
 	SelectRoot,
 	SelectTrigger,
 	SelectValue,
-} from "@cap/ui";
+} from "@zensloom/ui";
 import clsx from "clsx";
 import { MicIcon, MicOffIcon } from "lucide-react";
 import type { KeyboardEvent, MouseEvent } from "react";

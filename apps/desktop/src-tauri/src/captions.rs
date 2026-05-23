@@ -1,5 +1,5 @@
-use anyhow::Result;
-use cap_audio::AudioData;
+﻿use anyhow::Result;
+use zensloom_audio::AudioData;
 use ffmpeg::{
     ChannelLayout, codec as avcodec,
     format::{self as avformat},
@@ -23,7 +23,7 @@ use tokio::sync::Mutex;
 use tracing::instrument;
 use whisper_rs::{FullParams, SamplingStrategy, WhisperContext, WhisperContextParameters};
 
-pub use cap_project::{CaptionSegment, CaptionSettings, CaptionWord};
+pub use zensloom_project::{CaptionSegment, CaptionSettings, CaptionWord};
 
 use crate::{general_settings::GeneralSettingsStore, http_client};
 
@@ -923,7 +923,7 @@ fn process_with_whisper(
 
     Ok(CaptionData {
         segments,
-        settings: Some(cap_project::CaptionSettings::default()),
+        settings: Some(zensloom_project::CaptionSettings::default()),
     })
 }
 
@@ -1040,7 +1040,7 @@ fn process_with_parakeet(
 
     Ok(CaptionData {
         segments,
-        settings: Some(cap_project::CaptionSettings::default()),
+        settings: Some(zensloom_project::CaptionSettings::default()),
     })
 }
 
@@ -1368,7 +1368,7 @@ pub async fn save_captions(
     Ok(())
 }
 
-pub fn parse_captions_json(json: &str) -> Result<cap_project::CaptionsData, String> {
+pub fn parse_captions_json(json: &str) -> Result<zensloom_project::CaptionsData, String> {
     match serde_json::from_str::<serde_json::Value>(json) {
         Ok(json_value) => {
             if let Some(segments_array) = json_value.get("segments").and_then(|v| v.as_array()) {
@@ -1389,7 +1389,7 @@ pub fn parse_captions_json(json: &str) -> Result<cap_project::CaptionsData, Stri
                                     word.get("start").and_then(|v| v.as_f64()),
                                     word.get("end").and_then(|v| v.as_f64()),
                                 ) {
-                                    words.push(cap_project::CaptionWord {
+                                    words.push(zensloom_project::CaptionWord {
                                         text: w_text.to_string(),
                                         start: w_start as f32,
                                         end: w_end as f32,
@@ -1397,7 +1397,7 @@ pub fn parse_captions_json(json: &str) -> Result<cap_project::CaptionsData, Stri
                                 }
                             }
                         }
-                        segments.push(cap_project::CaptionSegment {
+                        segments.push(zensloom_project::CaptionSegment {
                             id: id.to_string(),
                             start: start as f32,
                             end: end as f32,
@@ -1503,7 +1503,7 @@ pub fn parse_captions_json(json: &str) -> Result<cap_project::CaptionsData, Stri
                         .and_then(|v| v.as_bool())
                         .unwrap_or(false);
 
-                    cap_project::CaptionSettings {
+                    zensloom_project::CaptionSettings {
                         enabled,
                         font,
                         size,
@@ -1523,10 +1523,10 @@ pub fn parse_captions_json(json: &str) -> Result<cap_project::CaptionsData, Stri
                         active_word_highlight,
                     }
                 } else {
-                    cap_project::CaptionSettings::default()
+                    zensloom_project::CaptionSettings::default()
                 };
 
-                Ok(cap_project::CaptionsData { segments, settings })
+                Ok(zensloom_project::CaptionsData { segments, settings })
             } else {
                 Err("Missing or invalid segments array in captions file".to_string())
             }

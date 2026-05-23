@@ -1,6 +1,6 @@
-import { db } from "@cap/database";
-import { videoUploads } from "@cap/database/schema";
-import type { User, Video } from "@cap/web-domain";
+﻿import { db } from "@zensloom/database";
+import { videoUploads } from "@zensloom/database/schema";
+import type { User, Video } from "@zensloom/web-domain";
 import { and, eq, notInArray } from "drizzle-orm";
 import { start } from "workflow/api";
 import { finalizeDesktopRecordingWorkflow } from "@/workflows/finalize-desktop-recording";

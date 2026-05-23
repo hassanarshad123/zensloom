@@ -1,6 +1,6 @@
-import { updateIfDefined } from "@cap/database";
-import * as Db from "@cap/database/schema";
-import { serverEnv } from "@cap/env";
+import { updateIfDefined } from "@zensloom/database";
+import * as Db from "@zensloom/database/schema";
+import { serverEnv } from "@zensloom/env";
 import {
 	Database,
 	makeCurrentUserLayer,
@@ -8,8 +8,8 @@ import {
 	Storage,
 	VideosPolicy,
 	VideosRepo,
-} from "@cap/web-backend";
-import { Policy, Video } from "@cap/web-domain";
+} from "@zensloom/web-backend";
+import { Policy, Video } from "@zensloom/web-domain";
 import { zValidator } from "@hono/zod-validator";
 import { and, eq } from "drizzle-orm";
 import { Effect, Option, Schedule } from "effect";

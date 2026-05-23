@@ -1,7 +1,7 @@
-import { db } from "@cap/database";
-import { videos, videoUploads } from "@cap/database/schema";
-import { provideOptionalAuth, Tinybird } from "@cap/web-backend";
-import { CurrentUser, Video } from "@cap/web-domain";
+﻿import { db } from "@zensloom/database";
+import { videos, videoUploads } from "@zensloom/database/schema";
+import { provideOptionalAuth, Tinybird } from "@zensloom/web-backend";
+import { CurrentUser, Video } from "@zensloom/web-domain";
 import { eq } from "drizzle-orm";
 import { Effect, Option } from "effect";
 import type { NextRequest } from "next/server";

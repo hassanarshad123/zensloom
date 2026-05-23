@@ -1,4 +1,4 @@
-import { Button } from "@cap/ui-solid";
+﻿import { Button } from "@zensloom/ui-solid";
 import { useNavigate } from "@solidjs/router";
 import {
 	createMutation,
@@ -1578,8 +1578,8 @@ function createUpdateCheck() {
 		let shouldUpdate: boolean | undefined;
 		try {
 			shouldUpdate = await dialog.confirm(
-				`Version ${update.version} of Cap is available, would you like to install it?`,
-				{ title: "Update Cap", okLabel: "Update", cancelLabel: "Ignore" },
+				`Version ${update.version} of Zensloom is available, would you like to install it?`,
+				{ title: "Update Zensloom", okLabel: "Update", cancelLabel: "Ignore" },
 			);
 		} catch (e) {
 			console.error("Failed to show update dialog:", e);

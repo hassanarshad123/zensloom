@@ -1,4 +1,4 @@
-// use std::ffi::c_void;
+﻿// use std::ffi::c_void;
 
 // use cocoa::{
 //     base::{id, nil},
@@ -245,7 +245,7 @@ unsafe fn disable_window_occlusion_detection(ns_window: cocoa::base::id) {
         if responds {
             let _: () = msg_send![ns_window, _setWindowOcclusionDetectionEnabled: false];
             tracing::info!(
-                target: "cap_desktop_lib::liquid_glass",
+                target: "zensloom_desktop_lib::liquid_glass",
                 "Disabled window occlusion detection via _setWindowOcclusionDetectionEnabled:"
             );
             return;
@@ -258,7 +258,7 @@ unsafe fn disable_window_occlusion_detection(ns_window: cocoa::base::id) {
         if responds {
             let _: () = msg_send![ns_window, setWindowOcclusionDetectionEnabled: false];
             tracing::info!(
-                target: "cap_desktop_lib::liquid_glass",
+                target: "zensloom_desktop_lib::liquid_glass",
                 "Disabled window occlusion detection via setWindowOcclusionDetectionEnabled:"
             );
             return;
@@ -271,7 +271,7 @@ unsafe fn disable_window_occlusion_detection(ns_window: cocoa::base::id) {
         if responds {
             let _: () = msg_send![ns_window, _setOcclusionDetectionEnabled: false];
             tracing::info!(
-                target: "cap_desktop_lib::liquid_glass",
+                target: "zensloom_desktop_lib::liquid_glass",
                 "Disabled window occlusion detection via _setOcclusionDetectionEnabled:"
             );
             return;
@@ -284,14 +284,14 @@ unsafe fn disable_window_occlusion_detection(ns_window: cocoa::base::id) {
         if responds {
             let _: () = msg_send![ns_window, setOcclusionDetectionEnabled: false];
             tracing::info!(
-                target: "cap_desktop_lib::liquid_glass",
+                target: "zensloom_desktop_lib::liquid_glass",
                 "Disabled window occlusion detection via setOcclusionDetectionEnabled:"
             );
             return;
         }
 
         tracing::warn!(
-            target: "cap_desktop_lib::liquid_glass",
+            target: "zensloom_desktop_lib::liquid_glass",
             "NSWindow does not respond to any known occlusion-detection selector; \
              glass backdrop will freeze when app deactivates"
         );
@@ -305,7 +305,7 @@ unsafe fn disable_webview_occlusion_detection(content_view: cocoa::base::id) {
     unsafe {
         let Some(wkwebview_class) = Class::get("WKWebView") else {
             tracing::warn!(
-                target: "cap_desktop_lib::liquid_glass",
+                target: "zensloom_desktop_lib::liquid_glass",
                 "WKWebView class not found; skipping WebView occlusion fix"
             );
             return;
@@ -336,7 +336,7 @@ unsafe fn disable_webview_occlusion_detection(content_view: cocoa::base::id) {
             if responds {
                 let _: () = msg_send![subview, _setWebViewWindowOcclusionDetectionEnabled: false];
                 tracing::info!(
-                    target: "cap_desktop_lib::liquid_glass",
+                    target: "zensloom_desktop_lib::liquid_glass",
                     "Disabled WKWebView occlusion via _setWebViewWindowOcclusionDetectionEnabled:"
                 );
                 return;
@@ -349,21 +349,21 @@ unsafe fn disable_webview_occlusion_detection(content_view: cocoa::base::id) {
             if responds {
                 let _: () = msg_send![subview, _setWindowOcclusionDetectionEnabled: false];
                 tracing::info!(
-                    target: "cap_desktop_lib::liquid_glass",
+                    target: "zensloom_desktop_lib::liquid_glass",
                     "Disabled WKWebView occlusion via _setWindowOcclusionDetectionEnabled:"
                 );
                 return;
             }
 
             tracing::warn!(
-                target: "cap_desktop_lib::liquid_glass",
+                target: "zensloom_desktop_lib::liquid_glass",
                 "WKWebView does not respond to any known occlusion-detection selector"
             );
             return;
         }
 
         tracing::warn!(
-            target: "cap_desktop_lib::liquid_glass",
+            target: "zensloom_desktop_lib::liquid_glass",
             "No WKWebView found in content view subviews"
         );
     }
@@ -379,19 +379,19 @@ unsafe fn force_glass_view_always_active(glass_view: cocoa::base::id) {
         if responds_to_set_state {
             // NSVisualEffectStateActive == 1
             let _: () = msg_send![glass_view, setState: 1isize];
-            tracing::info!(target: "cap_desktop_lib::liquid_glass", "NSGlassEffectView responds to setState:");
+            tracing::info!(target: "zensloom_desktop_lib::liquid_glass", "NSGlassEffectView responds to setState:");
         }
 
         let responds_to_set_active: bool =
             msg_send![glass_view, respondsToSelector: sel!(setActive:)];
         if responds_to_set_active {
             let _: () = msg_send![glass_view, setActive: true];
-            tracing::info!(target: "cap_desktop_lib::liquid_glass", "NSGlassEffectView responds to setActive:");
+            tracing::info!(target: "zensloom_desktop_lib::liquid_glass", "NSGlassEffectView responds to setActive:");
         }
 
         if !responds_to_set_state && !responds_to_set_active {
             tracing::warn!(
-                target: "cap_desktop_lib::liquid_glass",
+                target: "zensloom_desktop_lib::liquid_glass",
                 "NSGlassEffectView responds to neither setState: nor setActive: — \
                  cannot pin material to always-active"
             );

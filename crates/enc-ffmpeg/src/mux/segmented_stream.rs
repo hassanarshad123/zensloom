@@ -1,4 +1,4 @@
-use cap_media_info::VideoInfo;
+﻿use zensloom_media_info::VideoInfo;
 use ffmpeg::{format, frame};
 use serde::Serialize;
 use std::{
@@ -881,12 +881,12 @@ impl SegmentedVideoEncoder {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use cap_media_info::VideoInfo;
+    use zensloom_media_info::VideoInfo;
     use std::sync::mpsc;
 
     fn test_video_info() -> VideoInfo {
         VideoInfo {
-            pixel_format: cap_media_info::Pixel::NV12,
+            pixel_format: zensloom_media_info::Pixel::NV12,
             width: 320,
             height: 240,
             time_base: ffmpeg::Rational(1, 1_000_000),

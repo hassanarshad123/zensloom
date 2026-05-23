@@ -1,4 +1,4 @@
-export {
+﻿export {
 	type LanguageCode,
 	SUPPORTED_LANGUAGES,
-} from "@cap/web-domain";
+} from "@zensloom/web-domain";

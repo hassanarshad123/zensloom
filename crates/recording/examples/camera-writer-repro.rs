@@ -1,14 +1,14 @@
-#[cfg(not(target_os = "macos"))]
+﻿#[cfg(not(target_os = "macos"))]
 fn main() {
     eprintln!("camera-writer-repro is only available on macOS");
 }
 
 #[cfg(target_os = "macos")]
 fn main() -> anyhow::Result<()> {
-    use cap_camera::{CameraInfo, CapturedFrame, Format};
-    use cap_camera_ffmpeg::CapturedFrameExt;
-    use cap_enc_avfoundation::{MP4Encoder, QueueFrameError};
-    use cap_media_info::VideoInfo;
+    use zensloom_camera::{CameraInfo, CapturedFrame, Format};
+    use zensloom_camera_ffmpeg::CapturedFrameExt;
+    use zensloom_enc_avfoundation::{MP4Encoder, QueueFrameError};
+    use zensloom_media_info::VideoInfo;
     use cidre::{arc, cm};
     use std::{
         cmp::Ordering,
@@ -135,7 +135,7 @@ fn main() -> anyhow::Result<()> {
         format_limit: usize,
         preferred_camera: Option<&str>,
     ) -> anyhow::Result<Vec<ProbeTarget>> {
-        let cameras = cap_camera::list_cameras().collect::<Vec<_>>();
+        let cameras = zensloom_camera::list_cameras().collect::<Vec<_>>();
         let selected_cameras = if all_cameras {
             cameras
         } else {

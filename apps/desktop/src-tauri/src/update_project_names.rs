@@ -1,10 +1,10 @@
-use std::{
+﻿use std::{
     collections::HashSet,
     path::{Path, PathBuf},
     sync::Arc,
 };
 
-use cap_project::RecordingMeta;
+use zensloom_project::RecordingMeta;
 use futures::StreamExt;
 use tauri::AppHandle;
 use tauri_plugin_store::StoreExt;
@@ -266,7 +266,7 @@ async fn migrate_project_filename_async(
         .parent()
         .ok_or("Project path has no parent directory")?;
 
-    let unique_filename = cap_utils::ensure_unique_filename(&filename, parent_dir)
+    let unique_filename = zensloom_utils::ensure_unique_filename(&filename, parent_dir)
         .map_err(|e| format!("Failed to ensure unique filename: {e}"))?;
 
     let final_path = parent_dir.join(&unique_filename);

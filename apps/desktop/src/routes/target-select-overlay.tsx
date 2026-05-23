@@ -1,4 +1,4 @@
-import { Button } from "@cap/ui-solid";
+﻿import { Button } from "@zensloom/ui-solid";
 import { createEventListener } from "@solid-primitives/event-listener";
 import { createElementSize } from "@solid-primitives/resize-observer";
 import { makePersisted } from "@solid-primitives/storage";

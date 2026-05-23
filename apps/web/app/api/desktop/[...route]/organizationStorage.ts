@@ -1,11 +1,11 @@
-import { db } from "@cap/database";
+import { db } from "@zensloom/database";
 import {
 	organizationMembers,
 	organizations,
 	s3Buckets,
 	storageIntegrations,
-} from "@cap/database/schema";
-import type { Organisation, User } from "@cap/web-domain";
+} from "@zensloom/database/schema";
+import type { Organisation, User } from "@zensloom/web-domain";
 import { and, desc, eq, isNull, or } from "drizzle-orm";
 
 const googleDriveProvider = "googleDrive";

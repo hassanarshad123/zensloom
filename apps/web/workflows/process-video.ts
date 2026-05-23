@@ -1,8 +1,8 @@
-import { db } from "@cap/database";
-import { videos, videoUploads } from "@cap/database/schema";
-import { serverEnv } from "@cap/env";
-import { Storage } from "@cap/web-backend";
-import { Video } from "@cap/web-domain";
+﻿import { db } from "@zensloom/database";
+import { videos, videoUploads } from "@zensloom/database/schema";
+import { serverEnv } from "@zensloom/env";
+import { Storage } from "@zensloom/web-backend";
+import { Video } from "@zensloom/web-domain";
 import { eq } from "drizzle-orm";
 import { FatalError } from "workflow";
 import { runPromise } from "@/lib/server";

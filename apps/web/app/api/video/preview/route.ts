@@ -1,5 +1,5 @@
-import { provideOptionalAuth, Storage, Videos } from "@cap/web-backend";
-import { Video } from "@cap/web-domain";
+﻿import { provideOptionalAuth, Storage, Videos } from "@zensloom/web-backend";
+import { Video } from "@zensloom/web-domain";
 import { Effect, Option } from "effect";
 import { type NextRequest, NextResponse } from "next/server";
 import { runPromise } from "@/lib/server";

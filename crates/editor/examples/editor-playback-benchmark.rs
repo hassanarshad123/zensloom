@@ -1,20 +1,20 @@
-use std::{
+﻿use std::{
     collections::HashMap,
     path::{Path, PathBuf},
     sync::Arc,
     time::{Duration, Instant},
 };
 
-use cap_editor::{
+use zensloom_editor::{
     EditorFrameOutput, Playback, PlaybackFrameSource, PlaybackRenderOutputFormat,
     PlaybackSkipReason, PlaybackTelemetry, PlaybackTelemetryEvent, Renderer,
     start_renderer_layers_creation,
 };
-use cap_project::{
+use zensloom_project::{
     ProjectConfiguration, RecordingMeta, RecordingMetaInner, StudioRecordingMeta,
     TimelineConfiguration, TimelineSegment, XY,
 };
-use cap_rendering::{FrameRenderStageTimings, ProjectRecordingsMeta, RenderVideoConstants, Video};
+use zensloom_rendering::{FrameRenderStageTimings, ProjectRecordingsMeta, RenderVideoConstants, Video};
 use tokio::sync::{mpsc, watch};
 
 fn percentile(data: &[f64], p: f64) -> f64 {
@@ -463,7 +463,7 @@ async fn main() {
     let layers_rx = start_renderer_layers_creation(&render_constants);
 
     let segment_medias =
-        match cap_editor::create_segments(&recording_meta, meta.as_ref(), false).await {
+        match zensloom_editor::create_segments(&recording_meta, meta.as_ref(), false).await {
             Ok(segments) => Arc::new(segments),
             Err(e) => {
                 eprintln!("Failed to create segments: {e}");
@@ -477,8 +477,8 @@ async fn main() {
         let bytes = match output {
             EditorFrameOutput::Nv12(frame) => {
                 let metadata_bytes = match frame.format {
-                    cap_rendering::GpuOutputFormat::Nv12 => 28,
-                    cap_rendering::GpuOutputFormat::Rgba => 24,
+                    zensloom_rendering::GpuOutputFormat::Nv12 => 28,
+                    zensloom_rendering::GpuOutputFormat::Rgba => 24,
                 };
                 let data = frame.data.into_vec();
                 data.len() + metadata_bytes

@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { classNames } from "@cap/utils";
+import { classNames } from "@zensloom/utils";
 import * as React from "react";
 
 const Table = React.forwardRef<

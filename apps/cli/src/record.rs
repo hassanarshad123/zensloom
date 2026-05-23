@@ -1,4 +1,4 @@
-use cap_recording::{screen_capture::ScreenCaptureTarget, studio_recording};
+﻿use zensloom_recording::{screen_capture::ScreenCaptureTarget, studio_recording};
 use clap::Args;
 use scap_targets::{DisplayId, WindowId};
 use std::{env::current_dir, path::PathBuf};
@@ -29,12 +29,12 @@ pub struct RecordStart {
 impl RecordStart {
     pub async fn run(self) -> Result<(), String> {
         let target_info = match (self.target.screen, self.target.window) {
-            (Some(id), _) => cap_recording::screen_capture::list_displays()
+            (Some(id), _) => zensloom_recording::screen_capture::list_displays()
                 .into_iter()
                 .find(|s| s.0.id == id)
                 .map(|(s, _)| ScreenCaptureTarget::Display { id: s.id })
                 .ok_or(format!("Screen with id '{id}' not found")),
-            (_, Some(id)) => cap_recording::screen_capture::list_windows()
+            (_, Some(id)) => zensloom_recording::screen_capture::list_windows()
                 .into_iter()
                 .find(|s| s.0.id == id)
                 .map(|(s, _)| ScreenCaptureTarget::Window { id: s.id })
@@ -64,7 +64,7 @@ impl RecordStart {
             .with_fragmented(false)
             .build(
                 #[cfg(target_os = "macos")]
-                Some(cap_recording::SendableShareableContent::from(
+                Some(zensloom_recording::SendableShareableContent::from(
                     cidre::sc::ShareableContent::current().await.unwrap(),
                 )),
             )

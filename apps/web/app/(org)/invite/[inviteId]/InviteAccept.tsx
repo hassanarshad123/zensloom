@@ -1,7 +1,7 @@
 "use client";
 
-import type { userSelectProps } from "@cap/database/auth/session";
-import { Button, Logo } from "@cap/ui";
+import type { userSelectProps } from "@zensloom/database/auth/session";
+import { Button, Logo } from "@zensloom/ui";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";

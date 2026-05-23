@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
 	Button,
@@ -9,7 +9,7 @@ import {
 	DialogTitle,
 	Input,
 	Label,
-} from "@cap/ui";
+} from "@zensloom/ui";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";

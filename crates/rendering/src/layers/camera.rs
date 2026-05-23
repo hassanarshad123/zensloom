@@ -1,4 +1,4 @@
-use cap_project::XY;
+﻿use zensloom_project::XY;
 use std::sync::Arc;
 use wgpu::util::DeviceExt;
 
@@ -26,7 +26,7 @@ pub struct CameraLayer {
 #[derive(Clone, Copy)]
 struct BlurCacheEntry {
     recording_time: f32,
-    mode: cap_camera_effects::BlurMode,
+    mode: zensloom_segment::BlurMode,
     texture_idx: usize,
     output_generation: u64,
 }
@@ -492,8 +492,8 @@ impl CameraLayer {
     pub fn attach_shared_blur(
         &mut self,
         device: &wgpu::Device,
-        processor: &cap_camera_effects::BlurProcessor,
-        mode: cap_camera_effects::BlurMode,
+        processor: &zensloom_segment::BlurProcessor,
+        mode: zensloom_segment::BlurMode,
     ) {
         if self.hidden || self.last_recording_time.is_none() {
             return;

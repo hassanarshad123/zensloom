@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
-import { Button } from "@cap/ui";
-import { ImageUpload } from "@cap/web-domain";
+import { Button } from "@zensloom/ui";
+import { ImageUpload } from "@zensloom/web-domain";
 import { faImage, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";

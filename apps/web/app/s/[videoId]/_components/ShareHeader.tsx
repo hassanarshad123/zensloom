@@ -1,8 +1,8 @@
 "use client";
 
-import { buildEnv, NODE_ENV } from "@cap/env";
-import { Button, Logo } from "@cap/ui";
-import type { ViewerSettingKey } from "@cap/web-backend";
+import { buildEnv, NODE_ENV } from "@zensloom/env";
+import { Button, Logo } from "@zensloom/ui";
+import type { ViewerSettingKey } from "@zensloom/web-backend";
 import {
 	faChartSimple,
 	faChevronDown,

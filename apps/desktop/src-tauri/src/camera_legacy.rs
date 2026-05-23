@@ -1,8 +1,8 @@
-use std::sync::Arc;
+﻿use std::sync::Arc;
 use std::sync::atomic::{AtomicU8, Ordering};
 use std::time::{Duration, Instant};
 
-use cap_recording::FFmpegVideoFrame;
+use zensloom_recording::FFmpegVideoFrame;
 use flume::Sender;
 use tokio::sync::watch;
 use tokio_util::sync::CancellationToken;
@@ -46,7 +46,7 @@ fn scaled_preview_dimensions(width: u32, height: u32) -> (u32, u32) {
 }
 
 pub async fn create_camera_preview_ws(
-    blur_rx: watch::Receiver<cap_project::BackgroundBlurMode>,
+    blur_rx: watch::Receiver<zensloom_project::BackgroundBlurMode>,
 ) -> (Sender<FFmpegVideoFrame>, u16, CancellationToken) {
     let (camera_tx, camera_rx) = flume::bounded::<FFmpegVideoFrame>(4);
     let (frame_tx, _) = tokio::sync::broadcast::channel::<WSFrame>(4);
@@ -75,12 +75,12 @@ pub async fn create_camera_preview_ws(
             last_preview_at = Some(now);
 
             let blur_mode = *blur_rx.borrow_and_update();
-            let blur_enabled = blur_mode != cap_project::BackgroundBlurMode::Off;
+            let blur_enabled = blur_mode != zensloom_project::BackgroundBlurMode::Off;
             let effects_mode = match blur_mode {
-                cap_project::BackgroundBlurMode::Off | cap_project::BackgroundBlurMode::Light => {
-                    cap_camera_effects::BlurMode::Light
+                zensloom_project::BackgroundBlurMode::Off | zensloom_project::BackgroundBlurMode::Light => {
+                    zensloom_segment::BlurMode::Light
                 }
-                cap_project::BackgroundBlurMode::Heavy => cap_camera_effects::BlurMode::Heavy,
+                zensloom_project::BackgroundBlurMode::Heavy => zensloom_segment::BlurMode::Heavy,
             };
 
             let (target_width, target_height) =
@@ -219,7 +219,7 @@ struct WsBlurState {
 struct WsBlurResources {
     device: wgpu::Device,
     queue: wgpu::Queue,
-    processor: cap_camera_effects::BlurProcessor,
+    processor: zensloom_segment::BlurProcessor,
     source_texture: Option<(u32, u32, wgpu::Texture)>,
     readbacks: Option<(u32, u32, [WsReadback; 2])>,
     current_idx: usize,
@@ -239,7 +239,7 @@ impl WsBlurState {
         width: u32,
         height: u32,
         stride: u32,
-        mode: cap_camera_effects::BlurMode,
+        mode: zensloom_segment::BlurMode,
     ) -> Option<(Arc<Vec<u8>>, u32, u32, u32)> {
         if !self.init_attempted {
             self.init_attempted = true;
@@ -462,7 +462,7 @@ fn init_headless_blur() -> Option<WsBlurResources> {
     .ok()?;
 
     let mut processor =
-        cap_camera_effects::BlurProcessor::new(&device, wgpu::TextureFormat::Rgba8Unorm).ok()?;
+        zensloom_segment::BlurProcessor::new(&device, wgpu::TextureFormat::Rgba8Unorm).ok()?;
     processor.set_inference_interval(WS_BLUR_INFERENCE_INTERVAL);
 
     tracing::info!("WebSocket camera blur processor initialized (headless)");

@@ -1,7 +1,7 @@
-"use server";
+﻿"use server";
 
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
+import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
 import {
 	comments,
 	folders,
@@ -12,8 +12,8 @@ import {
 	users,
 	videos,
 	videoUploads,
-} from "@cap/database/schema";
-import type { Space } from "@cap/web-domain";
+} from "@zensloom/database/schema";
+import type { Space } from "@zensloom/web-domain";
 import { and, desc, eq, isNull, sql } from "drizzle-orm";
 
 export async function getUserVideos(spaceId: Space.SpaceIdOrOrganisationId) {

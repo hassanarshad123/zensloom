@@ -1,7 +1,7 @@
-import { getCurrentUser } from "@cap/database/auth/session";
-import { serverEnv } from "@cap/env";
-import { makeCurrentUserLayer } from "@cap/web-backend";
-import { Folder } from "@cap/web-domain";
+import { getCurrentUser } from "@zensloom/database/auth/session";
+import { serverEnv } from "@zensloom/env";
+import { makeCurrentUserLayer } from "@zensloom/web-backend";
+import { Folder } from "@zensloom/web-domain";
 import { Effect } from "effect";
 import { notFound } from "next/navigation";
 import {

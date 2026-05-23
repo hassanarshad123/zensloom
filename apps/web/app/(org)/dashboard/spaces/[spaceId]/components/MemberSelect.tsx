@@ -6,8 +6,8 @@ import {
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "@cap/ui";
-import type { ImageUpload } from "@cap/web-domain";
+} from "@zensloom/ui";
+import type { ImageUpload } from "@zensloom/web-domain";
 import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";

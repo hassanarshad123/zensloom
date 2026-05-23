@@ -1,4 +1,4 @@
-// credit @filleduchaos
+﻿// credit @filleduchaos
 
 use crate::{
     UploadProgress, VideoUploadInfo,
@@ -9,8 +9,8 @@ use crate::{
 };
 use async_stream::{stream, try_stream};
 use bytes::Bytes;
-use cap_project::{RecordingMeta, S3UploadMeta, UploadMeta};
-use cap_utils::spawn_actor;
+use zensloom_project::{RecordingMeta, S3UploadMeta, UploadMeta};
+use zensloom_utils::spawn_actor;
 use ffmpeg::ffi::AV_TIME_BASE;
 use flume::Receiver;
 use futures::future::join;
@@ -398,7 +398,7 @@ pub fn try_repair_corrupt_mp4(path: &Path) -> Result<(), String> {
         "Attempting to repair corrupt MP4 via FFmpeg remux"
     );
 
-    cap_enc_ffmpeg::remux::remux_file(path, &repaired_path)
+    zensloom_enc_ffmpeg::remux::remux_file(path, &repaired_path)
         .map_err(|e| format!("FFmpeg remux repair failed for {}: {e}", path.display()))?;
 
     let repaired_size = std::fs::metadata(&repaired_path)
@@ -642,7 +642,7 @@ struct FailedSegmentInfo {
     subpath: String,
     file_path: PathBuf,
     is_init: bool,
-    media_type: cap_enc_ffmpeg::segmented_stream::SegmentMediaType,
+    media_type: zensloom_enc_ffmpeg::segmented_stream::SegmentMediaType,
     index: u32,
     duration: f64,
     expected_size: u64,
@@ -802,7 +802,7 @@ impl SegmentUploader {
         app: AppHandle,
         video_id: String,
         segment_rx: std::sync::mpsc::Receiver<
-            cap_enc_ffmpeg::segmented_stream::SegmentCompletedEvent,
+            zensloom_enc_ffmpeg::segmented_stream::SegmentCompletedEvent,
         >,
         recording_done: Option<flume::Receiver<()>>,
         recording_dir: PathBuf,
@@ -1023,13 +1023,13 @@ impl SegmentUploader {
         app: AppHandle,
         video_id: String,
         segment_rx: std::sync::mpsc::Receiver<
-            cap_enc_ffmpeg::segmented_stream::SegmentCompletedEvent,
+            zensloom_enc_ffmpeg::segmented_stream::SegmentCompletedEvent,
         >,
         recording_done: Option<flume::Receiver<()>>,
         recording_dir: PathBuf,
         pre_created_video: VideoUploadInfo,
     ) -> Result<u64, AuthedApiError> {
-        use cap_enc_ffmpeg::segmented_stream::SegmentMediaType;
+        use zensloom_enc_ffmpeg::segmented_stream::SegmentMediaType;
 
         info!("Starting segment uploader for {video_id}");
 
@@ -1106,7 +1106,7 @@ impl SegmentUploader {
         };
 
         let (async_segment_tx, mut async_segment_rx) = tokio::sync::mpsc::unbounded_channel::<
-            cap_enc_ffmpeg::segmented_stream::SegmentCompletedEvent,
+            zensloom_enc_ffmpeg::segmented_stream::SegmentCompletedEvent,
         >();
 
         let bridge_handle = {

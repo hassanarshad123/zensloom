@@ -1,4 +1,4 @@
-import {
+﻿import {
 	Pagination,
 	PaginationContent,
 	PaginationEllipsis,
@@ -6,7 +6,7 @@ import {
 	PaginationLink,
 	PaginationNext,
 	PaginationPrevious,
-} from "@cap/ui";
+} from "@zensloom/ui";
 
 interface CapPaginationProps {
 	currentPage: number;

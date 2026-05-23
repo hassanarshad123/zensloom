@@ -1,18 +1,18 @@
-"use server";
+﻿"use server";
 
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
-import { sendEmail } from "@cap/database/emails/config";
-import { OrganizationInvite } from "@cap/database/emails/organization-invite";
-import { nanoId } from "@cap/database/helpers";
+import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
+import { sendEmail } from "@zensloom/database/emails/config";
+import { OrganizationInvite } from "@zensloom/database/emails/organization-invite";
+import { nanoId } from "@zensloom/database/helpers";
 import {
 	organizationInvites,
 	organizationMembers,
 	organizations,
 	users,
-} from "@cap/database/schema";
-import { serverEnv } from "@cap/env";
-import type { Organisation } from "@cap/web-domain";
+} from "@zensloom/database/schema";
+import { serverEnv } from "@zensloom/env";
+import type { Organisation } from "@zensloom/web-domain";
 import { and, eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import {

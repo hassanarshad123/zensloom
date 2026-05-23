@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
-import { LogoSpinner } from "@cap/ui";
-import { calculateStrokeDashoffset, getProgressCircleConfig } from "@cap/utils";
+import { LogoSpinner } from "@zensloom/ui";
+import { calculateStrokeDashoffset, getProgressCircleConfig } from "@zensloom/utils";
 import { useStore } from "@tanstack/react-store";
 import { type UploadStatus, useUploadingContext } from "../UploadingContext";
 

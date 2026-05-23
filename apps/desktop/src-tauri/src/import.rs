@@ -1,11 +1,11 @@
-use cap_enc_ffmpeg::{
+﻿use zensloom_enc_ffmpeg::{
     AudioEncoder,
     h264::{H264EncoderBuilder, H264Preset},
     opus::OpusEncoder,
     remux::{get_media_duration, probe_video_can_decode},
 };
-use cap_media_info::{AudioInfo, FFRational, Pixel, VideoInfo, ensure_even};
-use cap_project::{
+use zensloom_media_info::{AudioInfo, FFRational, Pixel, VideoInfo, ensure_even};
+use zensloom_project::{
     AudioMeta, ClipConfiguration, CursorEvents, CursorMeta, Cursors, InstantRecordingMeta,
     MultipleSegment, MultipleSegments, Platform, ProjectConfiguration, RecordingMeta,
     RecordingMetaInner, SingleSegment, StudioRecordingMeta, StudioRecordingStatus,
@@ -157,7 +157,7 @@ fn is_mp4_import_path(path: &Path) -> bool {
             .is_some_and(|ext| ext.eq_ignore_ascii_case("mp4"))
 }
 
-fn is_cap_project_path(path: &Path) -> bool {
+fn is_zensloom_project_path(path: &Path) -> bool {
     path.is_dir() && path.join("recording-meta.json").is_file()
 }
 
@@ -573,7 +573,7 @@ fn copy_keyboard_path(
 ) -> Result<Option<RelativePathBuf>, String> {
     if let Some(source_relative_path) = &source_segment.keyboard {
         let file_name =
-            relative_file_name(source_relative_path, cap_project::KEYBOARD_EVENTS_FILE_NAME);
+            relative_file_name(source_relative_path, zensloom_project::KEYBOARD_EVENTS_FILE_NAME);
         let Some(source_path) = source_asset_path(
             &source_meta.project_path,
             source_relative_path,
@@ -598,8 +598,8 @@ fn copy_keyboard_path(
     };
 
     for file_name in [
-        cap_project::KEYBOARD_EVENTS_FILE_NAME,
-        cap_project::LEGACY_KEYBOARD_EVENTS_FILE_NAME,
+        zensloom_project::KEYBOARD_EVENTS_FILE_NAME,
+        zensloom_project::LEGACY_KEYBOARD_EVENTS_FILE_NAME,
     ] {
         let source_relative_path = display_dir.join(file_name);
         let Some(source_path) = source_asset_path(
@@ -1723,7 +1723,7 @@ async fn append_mp4_to_editor_project(
     Ok(1)
 }
 
-async fn append_cap_project_to_editor_project(
+async fn append_zensloom_project_to_editor_project(
     app: AppHandle,
     target_project_path: PathBuf,
     source_project_path: PathBuf,
@@ -1858,8 +1858,8 @@ pub async fn add_existing_recording_to_editor(
     let app = window.app_handle().clone();
     let imported_count = if is_mp4_import_path(&source_path) {
         append_mp4_to_editor_project(app, target_project_path, source_path).await?
-    } else if is_cap_project_path(&source_path) {
-        append_cap_project_to_editor_project(app, target_project_path, source_path).await?
+    } else if is_zensloom_project_path(&source_path) {
+        append_zensloom_project_to_editor_project(app, target_project_path, source_path).await?
     } else {
         return Err("Select an MP4 file or a Cap project folder".to_string());
     };
@@ -1923,7 +1923,7 @@ pub async fn start_image_import(app: AppHandle, source_path: PathBuf) -> Result<
     let project_name = generate_image_project_name(&source_path);
     let filename = project_name.replace(":", ".");
     let filename = format!("{}.cap", sanitize_filename::sanitize(&filename));
-    let project_path = screenshots_dir.join(cap_utils::ensure_unique_filename(
+    let project_path = screenshots_dir.join(zensloom_utils::ensure_unique_filename(
         &filename,
         &screenshots_dir,
     )?);

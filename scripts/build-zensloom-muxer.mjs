@@ -70,19 +70,19 @@ async function main() {
 
 	for (const sidecar of [
 		{
-			packageName: "cap-muxer",
-			sourceBinary: "cap-muxer",
-			destBinary: "cap-muxer",
+			packageName: "zensloom-muxer",
+			sourceBinary: "zensloom-muxer",
+			destBinary: "zensloom-muxer",
 			watchPaths: [
-				path.join(repoRoot, "crates", "cap-muxer"),
-				path.join(repoRoot, "crates", "cap-muxer-protocol"),
+				path.join(repoRoot, "crates", "zensloom-muxer"),
+				path.join(repoRoot, "crates", "zensloom-muxer-protocol"),
 				path.join(repoRoot, "Cargo.lock"),
 			],
 		},
 		{
 			packageName: "cap",
 			sourceBinary: "cap",
-			destBinary: "cap-exporter",
+			destBinary: "zensloom-exporter",
 			watchPaths: [
 				path.join(repoRoot, "apps", "cli"),
 				path.join(repoRoot, "crates", "editor"),

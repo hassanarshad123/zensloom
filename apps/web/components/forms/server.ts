@@ -1,15 +1,15 @@
-"use server";
+﻿"use server";
 
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
-import { nanoId } from "@cap/database/helpers";
+import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
+import { nanoId } from "@zensloom/database/helpers";
 import {
 	organizationMembers,
 	organizations,
 	users,
-} from "@cap/database/schema";
-import { S3Buckets } from "@cap/web-backend";
-import { ImageUpload, Organisation, type User } from "@cap/web-domain";
+} from "@zensloom/database/schema";
+import { S3Buckets } from "@zensloom/web-backend";
+import { ImageUpload, Organisation, type User } from "@zensloom/web-domain";
 import { eq } from "drizzle-orm";
 import { Effect, Option } from "effect";
 import { revalidatePath } from "next/cache";

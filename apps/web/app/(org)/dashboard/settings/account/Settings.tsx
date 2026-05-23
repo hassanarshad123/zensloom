@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
 	Button,
@@ -12,8 +12,8 @@ import {
 	DialogTitle,
 	Input,
 	Select,
-} from "@cap/ui";
-import { type ImageUpload, Organisation } from "@cap/web-domain";
+} from "@zensloom/ui";
+import { type ImageUpload, Organisation } from "@zensloom/web-domain";
 import { useMutation } from "@tanstack/react-query";
 import { Effect, Option } from "effect";
 import { LogOut } from "lucide-react";

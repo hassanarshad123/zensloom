@@ -1,6 +1,6 @@
-import { db } from "@cap/database";
-import { videos, videoUploads } from "@cap/database/schema";
-import type { Video } from "@cap/web-domain";
+﻿import { db } from "@zensloom/database";
+import { videos, videoUploads } from "@zensloom/database/schema";
+import type { Video } from "@zensloom/web-domain";
 import { eq } from "drizzle-orm";
 
 const SECOND = 1000;

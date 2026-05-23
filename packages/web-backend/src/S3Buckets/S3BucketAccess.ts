@@ -1,11 +1,11 @@
-import { Readable } from "node:stream";
+﻿import { Readable } from "node:stream";
 import * as S3 from "@aws-sdk/client-s3";
 import {
 	createPresignedPost,
 	type PresignedPostOptions,
 } from "@aws-sdk/s3-presigned-post";
 import * as S3Presigner from "@aws-sdk/s3-request-presigner";
-import { S3Error } from "@cap/web-domain";
+import { S3Error } from "@zensloom/web-domain";
 import type { RequestPresigningArguments } from "@smithy/types";
 import { type Cause, Effect, Option, Stream } from "effect";
 

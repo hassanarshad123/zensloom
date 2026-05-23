@@ -1,12 +1,12 @@
-use crate::PendingScreenshots;
+﻿use crate::PendingScreenshots;
 use crate::frame_ws::{WSFrame, create_watch_frame_ws};
 use crate::gpu_context;
 use crate::windows::{CapWindowId, ScreenshotEditorWindowIds};
-use cap_project::{
+use zensloom_project::{
     ProjectConfiguration, RecordingMeta, RecordingMetaInner, SingleSegment, StudioRecordingMeta,
     VideoMeta,
 };
-use cap_rendering::{
+use zensloom_rendering::{
     DecodedFrame, DecodedSegmentFrames, FrameRenderer, ProjectUniforms, RenderVideoConstants,
     RendererLayers, ZoomFocusInterpolator,
 };
@@ -245,7 +245,7 @@ impl ScreenshotEditorInstances {
         };
 
         let shared = if let Some(gpu) = gpu_context::get_shared_gpu().await {
-            cap_rendering::SharedWgpuDevice {
+            zensloom_rendering::SharedWgpuDevice {
                 instance: (*gpu.instance).clone(),
                 adapter: (*gpu.adapter).clone(),
                 device: (*gpu.device).clone(),
@@ -253,7 +253,7 @@ impl ScreenshotEditorInstances {
                 is_software_adapter: gpu.is_software_adapter,
             }
         } else {
-            let instance = cap_rendering::create_wgpu_instance().await;
+            let instance = zensloom_rendering::create_wgpu_instance().await;
             let adapter = instance
                 .request_adapter(&wgpu::RequestAdapterOptions {
                     power_preference: wgpu::PowerPreference::HighPerformance,
@@ -263,7 +263,7 @@ impl ScreenshotEditorInstances {
                 .await
                 .map_err(|_| "No GPU adapter found".to_string())?;
             let adapter_info = adapter.get_info();
-            let is_software_adapter = cap_rendering::is_software_wgpu_adapter(&adapter_info);
+            let is_software_adapter = zensloom_rendering::is_software_wgpu_adapter(&adapter_info);
 
             let (device, queue) = adapter
                 .request_device(&wgpu::DeviceDescriptor {
@@ -273,7 +273,7 @@ impl ScreenshotEditorInstances {
                 })
                 .await
                 .map_err(|e| e.to_string())?;
-            cap_rendering::SharedWgpuDevice {
+            zensloom_rendering::SharedWgpuDevice {
                 instance,
                 adapter,
                 device,
@@ -282,8 +282,8 @@ impl ScreenshotEditorInstances {
             }
         };
 
-        let options = cap_rendering::RenderOptions {
-            screen_size: cap_project::XY::new(width, height),
+        let options = zensloom_rendering::RenderOptions {
+            screen_size: zensloom_project::XY::new(width, height),
             camera_size: None,
         };
 
@@ -351,7 +351,7 @@ impl ScreenshotEditorInstances {
                 let (base_w, base_h) =
                     ProjectUniforms::get_base_size(&constants.options, &current_config);
 
-                let cursor_events = cap_project::CursorEvents::default();
+                let cursor_events = zensloom_project::CursorEvents::default();
                 let zoom_focus_interpolator = ZoomFocusInterpolator::new(
                     &cursor_events,
                     None,
@@ -370,7 +370,7 @@ impl ScreenshotEditorInstances {
                     &current_config,
                     0,
                     30,
-                    cap_project::XY::new(base_w, base_h),
+                    zensloom_project::XY::new(base_w, base_h),
                     &cursor_events,
                     &segment_frames,
                     0.0,
@@ -381,7 +381,7 @@ impl ScreenshotEditorInstances {
                     .render_immediate(
                         segment_frames,
                         uniforms,
-                        &cap_project::CursorEvents::default(),
+                        &zensloom_project::CursorEvents::default(),
                         true,
                         &mut layers,
                     )
@@ -1269,7 +1269,7 @@ pub async fn render_screenshot_png(instance: &ScreenshotEditorInstance) -> Resul
     };
 
     let shared = if let Some(gpu) = gpu_context::get_shared_gpu().await {
-        cap_rendering::SharedWgpuDevice {
+        zensloom_rendering::SharedWgpuDevice {
             instance: (*gpu.instance).clone(),
             adapter: (*gpu.adapter).clone(),
             device: (*gpu.device).clone(),
@@ -1277,7 +1277,7 @@ pub async fn render_screenshot_png(instance: &ScreenshotEditorInstance) -> Resul
             is_software_adapter: gpu.is_software_adapter,
         }
     } else {
-        let instance = cap_rendering::create_wgpu_instance().await;
+        let instance = zensloom_rendering::create_wgpu_instance().await;
         let adapter = instance
             .request_adapter(&wgpu::RequestAdapterOptions {
                 power_preference: wgpu::PowerPreference::HighPerformance,
@@ -1287,7 +1287,7 @@ pub async fn render_screenshot_png(instance: &ScreenshotEditorInstance) -> Resul
             .await
             .map_err(|_| "No GPU adapter found".to_string())?;
         let adapter_info = adapter.get_info();
-        let is_software_adapter = cap_rendering::is_software_wgpu_adapter(&adapter_info);
+        let is_software_adapter = zensloom_rendering::is_software_wgpu_adapter(&adapter_info);
         let (device, queue) = adapter
             .request_device(&wgpu::DeviceDescriptor {
                 label: Some("cap-rendering-device"),
@@ -1296,7 +1296,7 @@ pub async fn render_screenshot_png(instance: &ScreenshotEditorInstance) -> Resul
             })
             .await
             .map_err(|e| e.to_string())?;
-        cap_rendering::SharedWgpuDevice {
+        zensloom_rendering::SharedWgpuDevice {
             instance,
             adapter,
             device,
@@ -1305,8 +1305,8 @@ pub async fn render_screenshot_png(instance: &ScreenshotEditorInstance) -> Resul
         }
     };
 
-    let options = cap_rendering::RenderOptions {
-        screen_size: cap_project::XY::new(width, height),
+    let options = zensloom_rendering::RenderOptions {
+        screen_size: zensloom_project::XY::new(width, height),
         camera_size: None,
     };
 
@@ -1326,7 +1326,7 @@ pub async fn render_screenshot_png(instance: &ScreenshotEditorInstance) -> Resul
     let display_size = ProjectUniforms::display_size(
         &constants.options,
         &config,
-        cap_project::XY::new(base_width, base_height),
+        zensloom_project::XY::new(base_width, base_height),
     )
     .coord;
     let crop = ProjectUniforms::get_crop(&constants.options, &config);
@@ -1338,7 +1338,7 @@ pub async fn render_screenshot_png(instance: &ScreenshotEditorInstance) -> Resul
         1.0,
     );
 
-    let resolution_base = cap_project::XY::new(
+    let resolution_base = zensloom_project::XY::new(
         (((base_width as f64 * export_scale).ceil() as u32) + 3) & !3,
         (((base_height as f64 * export_scale).ceil() as u32) + 1) & !1,
     );
@@ -1367,7 +1367,7 @@ pub async fn render_screenshot_png(instance: &ScreenshotEditorInstance) -> Resul
         segment_time: 0.0,
         recording_time: 0.0,
     };
-    let cursor_events = cap_project::CursorEvents::default();
+    let cursor_events = zensloom_project::CursorEvents::default();
     let zoom_focus_interpolator = ZoomFocusInterpolator::new(
         &cursor_events,
         None,
@@ -1395,7 +1395,7 @@ pub async fn render_screenshot_png(instance: &ScreenshotEditorInstance) -> Resul
         .render_immediate(
             segment_frames,
             uniforms,
-            &cap_project::CursorEvents::default(),
+            &zensloom_project::CursorEvents::default(),
             true,
             &mut layers,
         )

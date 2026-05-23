@@ -1,11 +1,11 @@
-"use server";
+﻿"use server";
 
-import { db } from "@cap/database";
-import { users, videos, videoUploads } from "@cap/database/schema";
-import type { VideoMetadata } from "@cap/database/types";
-import { serverEnv } from "@cap/env";
-import { provideOptionalAuth, VideosPolicy } from "@cap/web-backend";
-import { Policy, type Video } from "@cap/web-domain";
+import { db } from "@zensloom/database";
+import { users, videos, videoUploads } from "@zensloom/database/schema";
+import type { VideoMetadata } from "@zensloom/database/types";
+import { serverEnv } from "@zensloom/env";
+import { provideOptionalAuth, VideosPolicy } from "@zensloom/web-backend";
+import { Policy, type Video } from "@zensloom/web-domain";
 import { eq } from "drizzle-orm";
 import { Effect, Exit } from "effect";
 import {

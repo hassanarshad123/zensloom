@@ -1,4 +1,4 @@
-use std::time::Duration;
+﻿use std::time::Duration;
 
 use ffmpeg::{
     Packet, Rational,
@@ -258,7 +258,7 @@ impl H264PacketEncoder {
 mod tests {
     use super::*;
     use crate::video::h264::{H264EncoderBuilder, H264Preset};
-    use cap_media_info::{Pixel, VideoInfo};
+    use zensloom_media_info::{Pixel, VideoInfo};
 
     fn test_video_info() -> VideoInfo {
         VideoInfo {

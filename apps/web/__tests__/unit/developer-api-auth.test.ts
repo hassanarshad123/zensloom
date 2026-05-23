@@ -1,6 +1,6 @@
-import { describe, expect, it, vi } from "vitest";
+﻿import { describe, expect, it, vi } from "vitest";
 
-vi.mock("@cap/database", () => {
+vi.mock("@zensloom/database", () => {
 	const mockDb = {
 		select: vi.fn(() => mockDb),
 		insert: vi.fn(() => mockDb),
@@ -16,11 +16,11 @@ vi.mock("@cap/database", () => {
 	return { db: () => mockDb, __mockDb: mockDb };
 });
 
-vi.mock("@cap/database/auth/session", () => ({
+vi.mock("@zensloom/database/auth/session", () => ({
 	getCurrentUser: vi.fn(),
 }));
 
-vi.mock("@cap/database/schema", () => ({
+vi.mock("@zensloom/database/schema", () => ({
 	developerApiKeys: {
 		appId: "appId",
 		keyHash: "keyHash",
@@ -34,7 +34,7 @@ vi.mock("@cap/database/schema", () => ({
 	users: { id: "id" },
 }));
 
-vi.mock("@cap/env", () => ({
+vi.mock("@zensloom/env", () => ({
 	buildEnv: { NEXT_PUBLIC_WEB_URL: "https://cap.so" },
 }));
 

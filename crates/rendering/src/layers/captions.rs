@@ -1,5 +1,5 @@
-use bytemuck::{Pod, Zeroable};
-use cap_project::XY;
+﻿use bytemuck::{Pod, Zeroable};
+use zensloom_project::XY;
 use glyphon::cosmic_text::LayoutRunIter;
 use glyphon::{
     Attrs, Buffer, Cache, Color, Family, FontSystem, Metrics, Resolution, Shaping, SwashCache,
@@ -797,12 +797,12 @@ impl CaptionsLayer {
 }
 
 struct ActiveCaptionSegment<'a> {
-    segment: &'a cap_project::CaptionTrackSegment,
+    segment: &'a zensloom_project::CaptionTrackSegment,
 }
 
 fn find_active_caption_segment<'a>(
     time: f64,
-    segments: &'a [cap_project::CaptionTrackSegment],
+    segments: &'a [zensloom_project::CaptionTrackSegment],
     default_fade_duration: f32,
 ) -> Option<ActiveCaptionSegment<'a>> {
     for segment in segments {

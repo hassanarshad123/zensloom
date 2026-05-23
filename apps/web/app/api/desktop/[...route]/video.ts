@@ -1,7 +1,7 @@
-import { db } from "@cap/database";
-import { sendEmail } from "@cap/database/emails/config";
-import { FirstShareableLink } from "@cap/database/emails/first-shareable-link";
-import { nanoId } from "@cap/database/helpers";
+import { db } from "@zensloom/database";
+import { sendEmail } from "@zensloom/database/emails/config";
+import { FirstShareableLink } from "@zensloom/database/emails/first-shareable-link";
+import { nanoId } from "@zensloom/database/helpers";
 import {
 	importedVideos,
 	organizationMembers,
@@ -9,11 +9,11 @@ import {
 	users,
 	videos,
 	videoUploads,
-} from "@cap/database/schema";
-import { buildEnv, NODE_ENV, serverEnv } from "@cap/env";
-import { dub, userIsPro } from "@cap/utils";
-import { Storage } from "@cap/web-backend";
-import { Organisation, Video } from "@cap/web-domain";
+} from "@zensloom/database/schema";
+import { buildEnv, NODE_ENV, serverEnv } from "@zensloom/env";
+import { dub, userIsPro } from "@zensloom/utils";
+import { Storage } from "@zensloom/web-backend";
+import { Organisation, Video } from "@zensloom/web-domain";
 import { zValidator } from "@hono/zod-validator";
 import { and, count, eq, lte, or } from "drizzle-orm";
 import { Effect, Option } from "effect";

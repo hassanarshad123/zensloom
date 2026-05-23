@@ -1,4 +1,4 @@
-use cidre::cv::{self, pixel_buffer::LockFlags};
+﻿use cidre::cv::{self, pixel_buffer::LockFlags};
 
 pub(crate) fn copy_plane_data(
     src: &[u8],
@@ -159,12 +159,12 @@ pub(crate) fn fill_frame_from_sample_buf(
 }
 
 pub(crate) fn ffmpeg_pixel_format_for_cap(
-    cap_pixel: cap_media_info::Pixel,
+    cap_pixel: zensloom_media_info::Pixel,
 ) -> ffmpeg::format::Pixel {
     match cap_pixel {
-        cap_media_info::Pixel::NV12 => ffmpeg::format::Pixel::NV12,
-        cap_media_info::Pixel::BGRA => ffmpeg::format::Pixel::BGRA,
-        cap_media_info::Pixel::UYVY422 => ffmpeg::format::Pixel::UYVY422,
+        zensloom_media_info::Pixel::NV12 => ffmpeg::format::Pixel::NV12,
+        zensloom_media_info::Pixel::BGRA => ffmpeg::format::Pixel::BGRA,
+        zensloom_media_info::Pixel::UYVY422 => ffmpeg::format::Pixel::UYVY422,
         _ => ffmpeg::format::Pixel::NV12,
     }
 }

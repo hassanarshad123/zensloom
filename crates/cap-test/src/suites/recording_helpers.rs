@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+﻿use anyhow::{Context, Result};
 use cpal::StreamError;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -54,7 +54,7 @@ pub async fn record_studio_at_path(
     mut opts: StudioRecordingOptions,
     project_path: PathBuf,
 ) -> Result<PathBuf> {
-    use cap_recording::{MicrophoneFeed, screen_capture::ScreenCaptureTarget, studio_recording};
+    use zensloom_recording::{MicrophoneFeed, screen_capture::ScreenCaptureTarget, studio_recording};
     use kameo::Actor as _;
     use scap_targets::Display;
 
@@ -72,7 +72,7 @@ pub async fn record_studio_at_path(
     let shareable_content = cidre::sc::ShareableContent::current()
         .await
         .context("Failed to get shareable content - check screen recording permissions")
-        .map(cap_recording::SendableShareableContent::from)?;
+        .map(zensloom_recording::SendableShareableContent::from)?;
 
     let (error_tx, _error_rx) = flume::bounded::<StreamError>(16);
 
@@ -80,7 +80,7 @@ pub async fn record_studio_at_path(
         if let Some((label, _, _)) = MicrophoneFeed::default_device() {
             let mic_feed = MicrophoneFeed::spawn(MicrophoneFeed::new(error_tx.clone()));
             mic_feed
-                .ask(cap_recording::feeds::microphone::SetInput {
+                .ask(zensloom_recording::feeds::microphone::SetInput {
                     label,
                     settings: None,
                 })
@@ -88,7 +88,7 @@ pub async fn record_studio_at_path(
                 .await?;
             tokio::time::sleep(Duration::from_millis(100)).await;
             Some(Arc::new(
-                mic_feed.ask(cap_recording::feeds::microphone::Lock).await?,
+                mic_feed.ask(zensloom_recording::feeds::microphone::Lock).await?,
             ))
         } else {
             warn!("No microphone device found");
@@ -137,7 +137,7 @@ pub async fn record_studio_at_path(
 }
 
 pub fn materialize_display_outputs(project_path: &Path) -> Result<Vec<PathBuf>> {
-    use cap_recording::recovery::RecoveryManager;
+    use zensloom_recording::recovery::RecoveryManager;
 
     if let Some(incomplete) = RecoveryManager::inspect_recording(project_path) {
         match RecoveryManager::recover(&incomplete) {

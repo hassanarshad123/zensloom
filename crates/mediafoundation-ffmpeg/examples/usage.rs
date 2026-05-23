@@ -1,11 +1,11 @@
-fn main() {
+﻿fn main() {
     #[cfg(windows)]
     win::main();
 }
 
 #[cfg(windows)]
 mod win {
-    use cap_mediafoundation_ffmpeg::{H264StreamMuxer, MuxerConfig};
+    use zensloom_mediafoundation_ffmpeg::{H264StreamMuxer, MuxerConfig};
     use ffmpeg::format;
     use std::path::PathBuf;
 

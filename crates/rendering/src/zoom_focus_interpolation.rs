@@ -1,4 +1,4 @@
-use cap_project::{ClickSpringConfig, CursorEvents, ScreenMovementSpring, XY, ZoomSegment};
+﻿use zensloom_project::{ClickSpringConfig, CursorEvents, ScreenMovementSpring, XY, ZoomSegment};
 
 use crate::{
     Coord, RawDisplayUVSpace,
@@ -64,7 +64,7 @@ impl ClickCluster {
     }
 }
 
-fn cursor_position_at(moves: &[cap_project::CursorMoveEvent], time_ms: f64) -> Option<(f64, f64)> {
+fn cursor_position_at(moves: &[zensloom_project::CursorMoveEvent], time_ms: f64) -> Option<(f64, f64)> {
     if moves.is_empty() {
         return None;
     }
@@ -145,7 +145,7 @@ fn build_clusters(
         return clusters;
     }
 
-    let events_in_range: Vec<&cap_project::CursorMoveEvent> = cursor_events
+    let events_in_range: Vec<&zensloom_project::CursorMoveEvent> = cursor_events
         .moves
         .iter()
         .filter(|m| m.time_ms >= start_ms && m.time_ms <= end_ms)
@@ -327,7 +327,7 @@ impl ZoomFocusInterpolator {
     ) -> Vec<SegmentClusters> {
         zoom_segments
             .iter()
-            .filter(|s| matches!(s.mode, cap_project::ZoomMode::Auto))
+            .filter(|s| matches!(s.mode, zensloom_project::ZoomMode::Auto))
             .map(|s| SegmentClusters {
                 start_secs: s.start,
                 end_secs: s.end,
@@ -606,7 +606,7 @@ impl ZoomFocusInterpolator {
 
 #[cfg(test)]
 mod tests {
-    use cap_project::{ClickSpringConfig, CursorMoveEvent, GlideDirection, ZoomMode};
+    use zensloom_project::{ClickSpringConfig, CursorMoveEvent, GlideDirection, ZoomMode};
 
     use super::*;
 

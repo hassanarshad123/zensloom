@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+﻿import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockDb = vi.fn();
 
@@ -21,15 +21,15 @@ type MockDbChain = {
 	transaction?: ReturnType<typeof vi.fn>;
 };
 
-vi.mock("@cap/database", () => ({
+vi.mock("@zensloom/database", () => ({
 	db: mockDb,
 }));
 
-vi.mock("@cap/database/helpers", () => ({
+vi.mock("@zensloom/database/helpers", () => ({
 	nanoId: vi.fn(() => "test-nano-id"),
 }));
 
-vi.mock("@cap/database/schema", () => ({
+vi.mock("@zensloom/database/schema", () => ({
 	developerApps: { id: "id", deletedAt: "deletedAt" },
 	developerCreditAccounts: {
 		id: "id",

@@ -1,4 +1,4 @@
-import { buildEnv } from "@cap/env";
+﻿import { buildEnv } from "@zensloom/env";
 
 const activeSubscriptionStatuses = new Set([
 	"active",

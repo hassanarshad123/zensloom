@@ -1,5 +1,5 @@
-use cap_camera::CapturedFrame;
-use cap_camera_avfoundation::ImageBufExt;
+﻿use zensloom_camera::CapturedFrame;
+use zensloom_camera_avfoundation::ImageBufExt;
 use cidre::*;
 use ffmpeg::{format::Pixel, software::scaling};
 use std::{

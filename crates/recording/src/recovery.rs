@@ -1,15 +1,15 @@
-use std::{
+﻿use std::{
     path::{Path, PathBuf},
     time::Duration,
 };
 
-use cap_enc_ffmpeg::fragmented_mp4::tail_is_complete;
-use cap_enc_ffmpeg::remux::{
+use zensloom_enc_ffmpeg::fragmented_mp4::tail_is_complete;
+use zensloom_enc_ffmpeg::remux::{
     concatenate_audio_to_ogg, concatenate_m4s_segments_with_init, concatenate_video_fragments,
     get_media_duration, get_video_fps, probe_media_valid, probe_video_can_decode,
     probe_video_seek_points, remux_file,
 };
-use cap_project::{
+use zensloom_project::{
     AudioMeta, Cursors, MultipleSegment, MultipleSegments, ProjectConfiguration, RecordingMeta,
     RecordingMetaInner, StudioRecordingMeta, StudioRecordingStatus, TimelineConfiguration,
     TimelineSegment, VideoMeta,
@@ -56,9 +56,9 @@ pub enum RecoveryError {
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
     #[error("Failed to concatenate video fragments: {0}")]
-    VideoConcat(cap_enc_ffmpeg::remux::RemuxError),
+    VideoConcat(zensloom_enc_ffmpeg::remux::RemuxError),
     #[error("Failed to concatenate audio fragments: {0}")]
-    AudioConcat(cap_enc_ffmpeg::remux::RemuxError),
+    AudioConcat(zensloom_enc_ffmpeg::remux::RemuxError),
     #[error("Failed to serialize meta: {0}")]
     Serialize(#[from] serde_json::Error),
     #[error("No recoverable segments found")]
@@ -1035,7 +1035,7 @@ impl RecoveryManager {
 
         let concat_result = if group_outputs.len() == 1 {
             std::fs::rename(&group_outputs[0], output)
-                .map_err(|e| RecoveryError::VideoConcat(cap_enc_ffmpeg::remux::RemuxError::Io(e)))
+                .map_err(|e| RecoveryError::VideoConcat(zensloom_enc_ffmpeg::remux::RemuxError::Io(e)))
         } else {
             concatenate_video_fragments(&group_outputs, output).map_err(RecoveryError::VideoConcat)
         };
@@ -1161,11 +1161,11 @@ impl RecoveryManager {
                 let system_audio_path = segment_dir.join("system_audio.ogg");
                 let cursor_path = segment_dir.join("cursor.json");
                 let keyboard_path = {
-                    let binary = segment_dir.join(cap_project::KEYBOARD_EVENTS_FILE_NAME);
+                    let binary = segment_dir.join(zensloom_project::KEYBOARD_EVENTS_FILE_NAME);
                     if binary.exists() {
                         binary
                     } else {
-                        segment_dir.join(cap_project::LEGACY_KEYBOARD_EVENTS_FILE_NAME)
+                        segment_dir.join(zensloom_project::LEGACY_KEYBOARD_EVENTS_FILE_NAME)
                     }
                 };
 
@@ -1375,9 +1375,9 @@ impl RecoveryManager {
 
                 cursors.insert(
                     id_str.to_string(),
-                    cap_project::CursorMeta {
+                    zensloom_project::CursorMeta {
                         image_path: relative_path,
-                        hotspot: cap_project::XY::new(0.0, 0.0),
+                        hotspot: zensloom_project::XY::new(0.0, 0.0),
                         shape: None,
                     },
                 );

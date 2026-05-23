@@ -1,4 +1,4 @@
-use ffmpeg::{
+﻿use ffmpeg::{
     codec as avcodec,
     format::{self as avformat, context::input::PacketIter},
     frame as avframe,
@@ -49,7 +49,7 @@ fn query_d3d11_video_decoder_capabilities() -> HwDecoderCapabilities {
     };
 
     let result: Result<HwDecoderCapabilities, String> = (|| {
-        let selected = cap_d3d_adapter::select_capture_adapter(None)?;
+        let selected = zensloom_d3d_adapter::select_capture_adapter(None)?;
 
         let mut device = None;
         unsafe {

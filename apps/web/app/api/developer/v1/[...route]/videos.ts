@@ -1,5 +1,5 @@
-import { db } from "@cap/database";
-import { developerVideos } from "@cap/database/schema";
+import { db } from "@zensloom/database";
+import { developerVideos } from "@zensloom/database/schema";
 import { and, desc, eq, isNull } from "drizzle-orm";
 import { Hono } from "hono";
 import { withDeveloperSecretAuth } from "../../../utils";

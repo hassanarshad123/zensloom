@@ -1,12 +1,12 @@
-use crate::{
+﻿use crate::{
     NewScreenshotAdded, NewStudioRecordingAdded, RecordingStarted, RecordingStopped,
     RequestOpenSettings, recording,
     recording_settings::{RecordingSettingsStore, RecordingTargetMode},
     windows::ShowCapWindow,
 };
-use cap_recording::RecordingMode;
+use zensloom_recording::RecordingMode;
 
-use cap_project::{RecordingMeta, RecordingMetaInner};
+use zensloom_project::{RecordingMeta, RecordingMetaInner};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::{
     path::PathBuf,
@@ -394,7 +394,7 @@ fn build_tray_menu(app: &AppHandle, cache: &PreviousItemsCache) -> tauri::Result
                 &MenuItem::with_id(
                     app,
                     "version",
-                    format!("Cap v{}", env!("CARGO_PKG_VERSION")),
+                    format!("Zensloom v{}", env!("CARGO_PKG_VERSION")),
                     false,
                     None::<&str>,
                 )?,
@@ -517,7 +517,7 @@ fn build_tray_menu(app: &AppHandle, cache: &PreviousItemsCache) -> tauri::Result
     menu.append(&MenuItem::with_id(
         app,
         "version",
-        format!("Cap v{}", env!("CARGO_PKG_VERSION")),
+        format!("Zensloom v{}", env!("CARGO_PKG_VERSION")),
         false,
         None::<&str>,
     )?)?;
@@ -717,7 +717,7 @@ pub fn create_tray(app: &AppHandle) -> tauri::Result<()> {
                 Ok(TrayItem::TakeScreenshot) => {
                     let app = app.clone();
                     tokio::spawn(async move {
-                        use cap_recording::screen_capture::ScreenCaptureTarget;
+                        use zensloom_recording::screen_capture::ScreenCaptureTarget;
                         use scap_targets::Display;
 
                         let display =

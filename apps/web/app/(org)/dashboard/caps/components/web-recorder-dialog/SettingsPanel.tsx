@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { Switch } from "@cap/ui";
+import { Switch } from "@zensloom/ui";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeftIcon } from "lucide-react";
 

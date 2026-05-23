@@ -1,5 +1,5 @@
-use cap_camera::CameraInfo;
-use cap_recording::{
+﻿use zensloom_camera::CameraInfo;
+use zensloom_recording::{
     CameraFeed,
     benchmark::{BenchmarkConfig, EncoderInfo, PipelineMetrics},
     feeds::camera::{self, DeviceOrModelID},
@@ -97,8 +97,8 @@ async fn run_camera_frame_rate_test(
 async fn run_camera_encoding_benchmark(
     camera_info: &CameraInfo,
     config: &BenchmarkConfig,
-) -> cap_recording::benchmark::MetricsSnapshot {
-    use cap_frame_converter::{
+) -> zensloom_recording::benchmark::MetricsSnapshot {
+    use zensloom_frame_converter::{
         AsyncConverterPool, ConversionConfig, ConverterPoolConfig, DropStrategy,
     };
 
@@ -157,7 +157,7 @@ async fn run_camera_encoding_benchmark(
 
     let mut output =
         ffmpeg::format::output_as("/dev/null", "mp4").expect("Failed to create dummy output");
-    let video_info = cap_media_info::VideoInfo {
+    let video_info = zensloom_media_info::VideoInfo {
         width,
         height,
         pixel_format: input_format,
@@ -165,7 +165,7 @@ async fn run_camera_encoding_benchmark(
         time_base: (1, 30).into(),
     };
 
-    let mut encoder = cap_enc_ffmpeg::h264::H264Encoder::builder(video_info)
+    let mut encoder = zensloom_enc_ffmpeg::h264::H264Encoder::builder(video_info)
         .with_external_conversion()
         .build(&mut output)
         .expect("Failed to create encoder");
@@ -337,7 +337,7 @@ async fn main() {
     );
     println!("Platform: {}\n", std::env::consts::OS);
 
-    let cameras: Vec<_> = cap_camera::list_cameras().map(CameraSelection).collect();
+    let cameras: Vec<_> = zensloom_camera::list_cameras().map(CameraSelection).collect();
 
     if cameras.is_empty() {
         println!("No cameras found!");

@@ -1,20 +1,20 @@
-use anyhow::anyhow;
-use cap_fail::fail;
-use cap_media_info::ffmpeg_sample_format_for;
-use cap_project::CursorMoveEvent;
-use cap_project::cursor::SHORT_CURSOR_SHAPE_DEBOUNCE_MS;
-use cap_project::{
+﻿use anyhow::anyhow;
+use zensloom_fail::fail;
+use zensloom_media_info::ffmpeg_sample_format_for;
+use zensloom_project::CursorMoveEvent;
+use zensloom_project::cursor::SHORT_CURSOR_SHAPE_DEBOUNCE_MS;
+use zensloom_project::{
     CameraShape, CursorClickEvent, GlideDirection, InstantRecordingMeta, MultipleSegments,
     Platform, ProjectConfiguration, RecordingMeta, RecordingMetaInner, SharingMeta,
     StudioRecordingMeta, StudioRecordingStatus, TimelineConfiguration, TimelineSegment, ZoomMode,
     ZoomSegment, cursor::CursorEvents,
 };
 #[cfg(target_os = "macos")]
-use cap_recording::SendableShareableContent;
-use cap_recording::feeds::camera::CameraFeedLock;
+use zensloom_recording::SendableShareableContent;
+use zensloom_recording::feeds::camera::CameraFeedLock;
 #[cfg(target_os = "macos")]
-use cap_recording::sources::screen_capture::SourceError;
-use cap_recording::{
+use zensloom_recording::sources::screen_capture::SourceError;
+use zensloom_recording::{
     RecordingMode,
     feeds::{camera, microphone},
     instant_recording,
@@ -26,8 +26,8 @@ use cap_recording::{
     },
     studio_recording,
 };
-use cap_rendering::{ProjectRecordingsMeta, STANDARD_CURSOR_HEIGHT};
-use cap_utils::{ensure_dir, moment_format_to_chrono, spawn_actor};
+use zensloom_rendering::{ProjectRecordingsMeta, STANDARD_CURSOR_HEIGHT};
+use zensloom_utils::{ensure_dir, moment_format_to_chrono, spawn_actor};
 use cpal::traits::DeviceTrait;
 use futures::{FutureExt, stream};
 use lazy_static::lazy_static;
@@ -251,14 +251,14 @@ impl InProgressRecording {
         }
     }
 
-    pub fn done_fut(&self) -> cap_recording::DoneFut {
+    pub fn done_fut(&self) -> zensloom_recording::DoneFut {
         match self {
             Self::Instant { handle, .. } => handle.done_fut(),
             Self::Studio { handle, .. } => handle.done_fut(),
         }
     }
 
-    pub fn take_health_rx(&mut self) -> Option<cap_recording::HealthReceiver> {
+    pub fn take_health_rx(&mut self) -> Option<zensloom_recording::HealthReceiver> {
         match self {
             Self::Instant { handle, .. } => handle.take_health_rx(),
             Self::Studio { .. } => None,
@@ -330,11 +330,11 @@ pub async fn list_capture_windows() -> Vec<CaptureWindow> {
 
 #[tauri::command(async)]
 #[specta::specta]
-pub fn list_cameras() -> Vec<cap_camera::CameraInfo> {
+pub fn list_cameras() -> Vec<zensloom_camera::CameraInfo> {
     if !permissions::do_permissions_check(false).camera.permitted() {
         return vec![];
     }
-    cap_camera::list_cameras().collect()
+    zensloom_camera::list_cameras().collect()
 }
 
 #[derive(Debug, Clone, serde::Serialize, specta::Type)]
@@ -381,7 +381,7 @@ pub fn get_camera_formats(device_id: String) -> Option<CameraWithFormats> {
         return None;
     }
 
-    cap_camera::list_cameras()
+    zensloom_camera::list_cameras()
         .find(|c| c.device_id() == device_id)
         .map(|camera| {
             let formats: Vec<CameraFormatInfo> = camera
@@ -888,9 +888,9 @@ pub async fn start_recording(
     ensure_dir(&recordings_base_dir)
         .map_err(|e| format!("Failed to create recordings directory: {e}"))?;
 
-    match cap_utils::disk_space::free_bytes_for_path(&recordings_base_dir) {
+    match zensloom_utils::disk_space::free_bytes_for_path(&recordings_base_dir) {
         Ok(bytes) => {
-            if bytes <= cap_utils::disk_space::LOW_DISK_STOP_BYTES {
+            if bytes <= zensloom_utils::disk_space::LOW_DISK_STOP_BYTES {
                 let gb = bytes as f64 / 1_073_741_824.0;
                 error!(
                     bytes_remaining = bytes,
@@ -899,10 +899,10 @@ pub async fn start_recording(
                 return Err(format!(
                     "Not enough disk space to start recording ({:.2} GB free). Free up at least {} MB and try again.",
                     gb,
-                    (cap_utils::disk_space::LOW_DISK_STOP_BYTES / (1024 * 1024))
+                    (zensloom_utils::disk_space::LOW_DISK_STOP_BYTES / (1024 * 1024))
                 ));
             }
-            if bytes <= cap_utils::disk_space::LOW_DISK_WARN_BYTES {
+            if bytes <= zensloom_utils::disk_space::LOW_DISK_WARN_BYTES {
                 let gb = bytes as f64 / 1_073_741_824.0;
                 warn!(
                     bytes_remaining = bytes,
@@ -916,7 +916,7 @@ pub async fn start_recording(
         }
     }
 
-    let project_file_path = recordings_base_dir.join(&cap_utils::ensure_unique_filename(
+    let project_file_path = recordings_base_dir.join(&zensloom_utils::ensure_unique_filename(
         &filename,
         &recordings_base_dir,
     )?);
@@ -1212,13 +1212,13 @@ pub async fn start_recording(
                                     .unwrap_or_default()
                                 {
                                     crate::general_settings::StudioRecordingQuality::Compatibility => {
-                                        cap_recording::StudioQuality::Compatibility
+                                        zensloom_recording::StudioQuality::Compatibility
                                     }
                                     crate::general_settings::StudioRecordingQuality::Balanced => {
-                                        cap_recording::StudioQuality::Balanced
+                                        zensloom_recording::StudioQuality::Balanced
                                     }
                                     crate::general_settings::StudioRecordingQuality::Ultra => {
-                                        cap_recording::StudioQuality::Ultra
+                                        zensloom_recording::StudioQuality::Ultra
                                     }
                                 },
                             );
@@ -1502,7 +1502,7 @@ pub async fn start_recording(
                         use crate::recording_telemetry::mode_label;
                         let mode_str = mode_label(*mode);
                         match &event {
-                            cap_recording::PipelineHealthEvent::DiskSpaceLow {
+                            zensloom_recording::PipelineHealthEvent::DiskSpaceLow {
                                 bytes_remaining,
                                 ..
                             } => async_capture_event(
@@ -1512,7 +1512,7 @@ pub async fn start_recording(
                                     bytes_remaining: *bytes_remaining,
                                 },
                             ),
-                            cap_recording::PipelineHealthEvent::DiskSpaceExhausted {
+                            zensloom_recording::PipelineHealthEvent::DiskSpaceExhausted {
                                 bytes_remaining,
                             } => async_capture_event(
                                 &app,
@@ -1521,7 +1521,7 @@ pub async fn start_recording(
                                     bytes_remaining: *bytes_remaining,
                                 },
                             ),
-                            cap_recording::PipelineHealthEvent::DeviceLost { subsystem } => {
+                            zensloom_recording::PipelineHealthEvent::DeviceLost { subsystem } => {
                                 async_capture_event(
                                     &app,
                                     PostHogEvent::RecordingDeviceLost {
@@ -1530,7 +1530,7 @@ pub async fn start_recording(
                                     },
                                 )
                             }
-                            cap_recording::PipelineHealthEvent::EncoderRebuilt {
+                            zensloom_recording::PipelineHealthEvent::EncoderRebuilt {
                                 backend,
                                 attempt,
                             } => async_capture_event(
@@ -1541,7 +1541,7 @@ pub async fn start_recording(
                                     attempt: *attempt,
                                 },
                             ),
-                            cap_recording::PipelineHealthEvent::SourceAudioReset {
+                            zensloom_recording::PipelineHealthEvent::SourceAudioReset {
                                 source,
                                 starvation_ms,
                             } => async_capture_event(
@@ -1552,7 +1552,7 @@ pub async fn start_recording(
                                     starvation_ms: *starvation_ms,
                                 },
                             ),
-                            cap_recording::PipelineHealthEvent::CaptureTargetLost { target } => {
+                            zensloom_recording::PipelineHealthEvent::CaptureTargetLost { target } => {
                                 async_capture_event(
                                     &app,
                                     PostHogEvent::RecordingCaptureTargetLost {
@@ -1561,7 +1561,7 @@ pub async fn start_recording(
                                     },
                                 )
                             }
-                            cap_recording::PipelineHealthEvent::RecoveryFragmentCorrupt {
+                            zensloom_recording::PipelineHealthEvent::RecoveryFragmentCorrupt {
                                 ..
                             } => {}
                             _ => {}
@@ -1569,58 +1569,58 @@ pub async fn start_recording(
                     }
 
                     let reason = match &event {
-                        cap_recording::PipelineHealthEvent::FrameDropRateHigh {
+                        zensloom_recording::PipelineHealthEvent::FrameDropRateHigh {
                             source,
                             rate_pct,
                         } => Some(format!("High frame drop rate on {source}: {rate_pct:.0}%")),
-                        cap_recording::PipelineHealthEvent::AudioGapDetected { gap_ms } => {
+                        zensloom_recording::PipelineHealthEvent::AudioGapDetected { gap_ms } => {
                             Some(format!("Audio gap detected: {gap_ms}ms"))
                         }
-                        cap_recording::PipelineHealthEvent::SourceRestarting => {
+                        zensloom_recording::PipelineHealthEvent::SourceRestarting => {
                             Some("Capture source restarting".to_string())
                         }
-                        cap_recording::PipelineHealthEvent::AudioDegradedToVideoOnly { reason } => {
+                        zensloom_recording::PipelineHealthEvent::AudioDegradedToVideoOnly { reason } => {
                             Some(format!("Audio lost: {reason}"))
                         }
-                        cap_recording::PipelineHealthEvent::Stalled { source, waited_ms } => {
+                        zensloom_recording::PipelineHealthEvent::Stalled { source, waited_ms } => {
                             Some(format!("Pipeline stalled on {source} ({waited_ms}ms)"))
                         }
-                        cap_recording::PipelineHealthEvent::MuxerCrashed { reason } => {
+                        zensloom_recording::PipelineHealthEvent::MuxerCrashed { reason } => {
                             Some(format!("Muxer crashed: {reason}"))
                         }
-                        cap_recording::PipelineHealthEvent::DiskSpaceLow {
+                        zensloom_recording::PipelineHealthEvent::DiskSpaceLow {
                             bytes_remaining,
                             ..
                         } => Some(format!(
                             "Low disk space: {:.2} GB remaining",
                             *bytes_remaining as f64 / 1_073_741_824.0
                         )),
-                        cap_recording::PipelineHealthEvent::DiskSpaceExhausted {
+                        zensloom_recording::PipelineHealthEvent::DiskSpaceExhausted {
                             bytes_remaining,
                         } => Some(format!(
                             "Disk full: {:.2} GB remaining",
                             *bytes_remaining as f64 / 1_073_741_824.0
                         )),
-                        cap_recording::PipelineHealthEvent::DeviceLost { subsystem } => {
+                        zensloom_recording::PipelineHealthEvent::DeviceLost { subsystem } => {
                             Some(format!("Graphics device lost: {subsystem}"))
                         }
-                        cap_recording::PipelineHealthEvent::EncoderRebuilt { backend, attempt } => {
+                        zensloom_recording::PipelineHealthEvent::EncoderRebuilt { backend, attempt } => {
                             Some(format!("Encoder rebuilt: {backend} (attempt {attempt})"))
                         }
-                        cap_recording::PipelineHealthEvent::SourceAudioReset {
+                        zensloom_recording::PipelineHealthEvent::SourceAudioReset {
                             source,
                             starvation_ms,
                         } => Some(format!("Audio source reset: {source} ({starvation_ms}ms)")),
-                        cap_recording::PipelineHealthEvent::RecoveryFragmentCorrupt {
+                        zensloom_recording::PipelineHealthEvent::RecoveryFragmentCorrupt {
                             path,
                             reason,
                         } => Some(format!(
                             "Corrupt recovery fragment skipped: {path} ({reason})"
                         )),
-                        cap_recording::PipelineHealthEvent::CaptureTargetLost { target } => {
+                        zensloom_recording::PipelineHealthEvent::CaptureTargetLost { target } => {
                             Some(format!("Capture target lost: {target}"))
                         }
-                        cap_recording::PipelineHealthEvent::SourceRestarted => None,
+                        zensloom_recording::PipelineHealthEvent::SourceRestarted => None,
                     };
 
                     if let Some(reason) = reason {
@@ -1628,7 +1628,7 @@ pub async fn start_recording(
                             is_degraded = true;
                             RecordingEvent::Degraded { reason }.emit(&app).ok();
                         }
-                    } else if matches!(event, cap_recording::PipelineHealthEvent::SourceRestarted)
+                    } else if matches!(event, zensloom_recording::PipelineHealthEvent::SourceRestarted)
                         && is_degraded
                     {
                         is_degraded = false;
@@ -2007,7 +2007,7 @@ pub async fn take_screenshot(
     use crate::NewScreenshotAdded;
     use crate::notifications;
     use crate::{PendingScreenshot, PendingScreenshots};
-    use cap_recording::screenshot::capture_screenshot;
+    use zensloom_recording::screenshot::capture_screenshot;
     use image::ImageEncoder;
     use std::time::Instant;
 
@@ -2069,7 +2069,7 @@ pub async fn take_screenshot(
 
     let screenshots_base_dir = app.path().app_data_dir().unwrap().join("screenshots");
 
-    let project_file_path = screenshots_base_dir.join(&cap_utils::ensure_unique_filename(
+    let project_file_path = screenshots_base_dir.join(&zensloom_utils::ensure_unique_filename(
         &filename,
         &screenshots_base_dir,
     )?);
@@ -2095,27 +2095,27 @@ pub async fn take_screenshot(
 
     let relative_path = relative_path::RelativePathBuf::from(image_filename);
 
-    let video_meta = cap_project::VideoMeta {
+    let video_meta = zensloom_project::VideoMeta {
         path: relative_path,
         fps: 0,
         start_time: Some(0.0),
         device_id: None,
     };
 
-    let segment = cap_project::SingleSegment {
+    let segment = zensloom_project::SingleSegment {
         display: video_meta,
         camera: None,
         audio: None,
         cursor: None,
     };
 
-    let meta = cap_project::RecordingMeta {
+    let meta = zensloom_project::RecordingMeta {
         platform: Some(Platform::default()),
         project_path: project_file_path.clone(),
         pretty_name: project_name,
         sharing: None,
-        inner: cap_project::RecordingMetaInner::Studio(Box::new(
-            cap_project::StudioRecordingMeta::SingleSegment { segment },
+        inner: zensloom_project::RecordingMetaInner::Studio(Box::new(
+            zensloom_project::StudioRecordingMeta::SingleSegment { segment },
         )),
         upload: None,
     };
@@ -2123,7 +2123,7 @@ pub async fn take_screenshot(
     meta.save_for_project()
         .map_err(|e| format!("Failed to save recording meta: {e}"))?;
 
-    cap_project::ProjectConfiguration::default()
+    zensloom_project::ProjectConfiguration::default()
         .write(&project_file_path)
         .map_err(|e| format!("Failed to save project config: {e}"))?;
 
@@ -2462,7 +2462,7 @@ async fn handle_recording_finish(
 
             let config = project_config_from_recording(
                 app,
-                &cap_recording::studio_recording::CompletedRecording {
+                &zensloom_recording::studio_recording::CompletedRecording {
                     project_path: recording.project_path,
                     meta: updated_studio_meta.clone(),
                     cursor_data: recording.cursor_data,
@@ -2486,7 +2486,7 @@ async fn handle_recording_finish(
             ..
         } => {
             if !recording.health.is_uploadable()
-                && let cap_recording::RecordingHealth::Damaged { ref reason } = recording.health
+                && let zensloom_recording::RecordingHealth::Damaged { ref reason } = recording.health
             {
                 error!(
                     reason,
@@ -2655,7 +2655,7 @@ async fn finalize_studio_recording(
     app: &AppHandle,
     recording_dir: PathBuf,
     screenshots_dir: PathBuf,
-    recording: cap_recording::studio_recording::CompletedRecording,
+    recording: zensloom_recording::studio_recording::CompletedRecording,
     default_preset: Option<ProjectConfiguration>,
     capture_target: Option<ScreenCaptureTarget>,
 ) -> Result<(), String> {
@@ -2706,7 +2706,7 @@ async fn finalize_studio_recording(
 
     let config = project_config_from_recording(
         app,
-        &cap_recording::studio_recording::CompletedRecording {
+        &zensloom_recording::studio_recording::CompletedRecording {
             project_path: recording.project_path,
             meta: updated_studio_meta,
             cursor_data: recording.cursor_data,
@@ -2895,7 +2895,7 @@ fn project_config_from_recording(
             }
         }
 
-        config.camera.background_blur = cap_project::BackgroundBlurConfig {
+        config.camera.background_blur = zensloom_project::BackgroundBlurConfig {
             mode: camera_preview_state.background_blur,
         };
     }
@@ -2960,7 +2960,7 @@ fn apply_screen_recording_presentation_defaults(
     using_default_config: bool,
     default_wallpaper_path: Option<String>,
 ) {
-    use cap_project::{BackgroundSource, ScreenMovementSpring};
+    use zensloom_project::{BackgroundSource, ScreenMovementSpring};
 
     if matches!(capture_target, Some(ScreenCaptureTarget::CameraOnly)) {
         return;
@@ -3003,7 +3003,7 @@ fn default_cursor_size_for_recording(recordings: &ProjectRecordingsMeta) -> u32 
     const MAX_RECORDING_HEIGHT_RATIO: f32 = 0.075;
 
     let Some(first_segment) = recordings.segments.first() else {
-        return cap_project::CursorConfiguration::default().size;
+        return zensloom_project::CursorConfiguration::default().size;
     };
 
     let desired_height = (REGULAR_CURSOR_HEIGHT * DEFAULT_CURSOR_SCALE)
@@ -3358,7 +3358,7 @@ mod tests {
         assert_eq!(config.background.padding, 0.0);
         assert!(matches!(
             config.background.source,
-            cap_project::BackgroundSource::Color {
+            zensloom_project::BackgroundSource::Color {
                 value: [255, 255, 255],
                 alpha: 255,
             }
@@ -3383,7 +3383,7 @@ mod tests {
         assert_eq!(config.background.rounding, 2.0);
         assert!(matches!(
             config.background.source,
-            cap_project::BackgroundSource::Wallpaper { path: Some(path) } if path == "wallpaper.jpg"
+            zensloom_project::BackgroundSource::Wallpaper { path: Some(path) } if path == "wallpaper.jpg"
         ));
     }
 

@@ -1,9 +1,9 @@
-use cap_audio::{
+﻿use zensloom_audio::{
     AudioData, AudioRendererTrack, FromSampleBytes, StereoMode, cast_f32_slice_to_bytes,
 };
-use cap_media::MediaError;
-use cap_media_info::AudioInfo;
-use cap_project::{AudioConfiguration, ClipOffsets, ProjectConfiguration, TimelineConfiguration};
+use zensloom_media::MediaError;
+use zensloom_media_info::AudioInfo;
+use zensloom_project::{AudioConfiguration, ClipOffsets, ProjectConfiguration, TimelineConfiguration};
 use ffmpeg::{
     ChannelLayout, Dictionary, format as avformat, frame::Audio as FFAudio, software::resampling,
 };
@@ -80,7 +80,7 @@ impl AudioSegmentTrack {
 struct TimelineCursor<'a> {
     segment_end_samples: usize,
     segment_time: f64,
-    segment: &'a cap_project::TimelineSegment,
+    segment: &'a zensloom_project::TimelineSegment,
 }
 
 impl AudioRenderer {
@@ -315,7 +315,7 @@ impl AudioRenderer {
             })
             .collect::<Vec<_>>();
 
-        cap_audio::render_audio(&track_datas, self.cursor.samples, samples, out_offset, out)
+        zensloom_audio::render_audio(&track_datas, self.cursor.samples, samples, out_offset, out)
     }
 }
 
@@ -648,7 +648,7 @@ impl<T: FromSampleBytes> PrerenderedAudioBuffer<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use cap_project::{
+    use zensloom_project::{
         ClipConfiguration, ProjectConfiguration, TimelineConfiguration, TimelineSegment,
     };
     use std::{path::Path, sync::Arc};

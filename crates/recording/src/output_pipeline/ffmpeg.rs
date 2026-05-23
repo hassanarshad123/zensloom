@@ -1,9 +1,9 @@
-use crate::{
+﻿use crate::{
     SharedPauseState, TaskPool,
     output_pipeline::{AudioFrame, AudioMuxer, Muxer, VideoFrame, VideoMuxer},
 };
 use anyhow::{Context, anyhow};
-use cap_enc_ffmpeg::{
+use zensloom_enc_ffmpeg::{
     aac::AACEncoder,
     dash_audio::{DashAudioSegmentEncoder, DashAudioSegmentEncoderConfig},
     fragmented_audio::{FinishError as FragmentedAudioFinishError, FragmentedAudioFile},
@@ -13,8 +13,8 @@ use cap_enc_ffmpeg::{
     segmented_audio::SegmentedAudioEncoder,
     segmented_stream::{SegmentCompletedEvent, SegmentedVideoEncoder, SegmentedVideoEncoderConfig},
 };
-use cap_media_info::{AudioInfo, VideoInfo};
-use cap_timestamp::Timestamp;
+use zensloom_media_info::{AudioInfo, VideoInfo};
+use zensloom_timestamp::Timestamp;
 use std::{
     path::PathBuf,
     sync::{
@@ -51,8 +51,8 @@ impl Muxer for Mp4Muxer {
     async fn setup(
         _: Self::Config,
         output_path: std::path::PathBuf,
-        video_config: Option<cap_media_info::VideoInfo>,
-        audio_config: Option<cap_media_info::AudioInfo>,
+        video_config: Option<zensloom_media_info::VideoInfo>,
+        audio_config: Option<zensloom_media_info::AudioInfo>,
         _: Arc<AtomicBool>,
         _: &mut TaskPool,
     ) -> anyhow::Result<Self>

@@ -1,4 +1,4 @@
-import type { Notification } from "@cap/web-api-contract";
+﻿import type { Notification } from "@zensloom/web-api-contract";
 
 type NotificationType = Notification["type"];
 

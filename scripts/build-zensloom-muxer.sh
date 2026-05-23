@@ -5,8 +5,8 @@ set -euo pipefail
 # externalBin expects, and copy them into apps/desktop/src-tauri/binaries.
 #
 # Usage:
-#   scripts/build-cap-muxer.sh                    # uses host triple
-#   scripts/build-cap-muxer.sh <target-triple>    # uses given triple
+#   scripts/build-zensloom-muxer.sh                    # uses host triple
+#   scripts/build-zensloom-muxer.sh <target-triple>    # uses given triple
 #
 # Example target triples:
 #   aarch64-apple-darwin
@@ -48,5 +48,5 @@ build_sidecar() {
     echo "Copied $(realpath "$src" 2>/dev/null || echo "$src") -> $dest"
 }
 
-build_sidecar "cap-muxer" "cap-muxer" "cap-muxer"
-build_sidecar "cap" "cap" "cap-exporter"
+build_sidecar "zensloom-muxer" "zensloom-muxer" "zensloom-muxer"
+build_sidecar "cap" "cap" "zensloom-exporter"

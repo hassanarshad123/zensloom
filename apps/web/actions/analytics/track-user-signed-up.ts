@@ -1,8 +1,8 @@
-"use server";
+﻿"use server";
 
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
-import { users } from "@cap/database/schema";
+import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
+import { users } from "@zensloom/database/schema";
 import { sql } from "drizzle-orm";
 
 const SIGNUP_TRACKING_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;

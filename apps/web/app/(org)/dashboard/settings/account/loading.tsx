@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { SkeletonPage } from "@cap/ui";
+import { SkeletonPage } from "@zensloom/ui";
 
 export default function Loading() {
 	return (

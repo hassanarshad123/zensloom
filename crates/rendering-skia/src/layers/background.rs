@@ -1,6 +1,6 @@
-use crate::SkiaRenderingError;
+﻿use crate::SkiaRenderingError;
 use crate::layers::{FrameData, RecordableLayer, SkiaProjectUniforms};
-use cap_project::BackgroundSource;
+use zensloom_project::BackgroundSource;
 use skia_safe::{
     Canvas, Color, Image, Paint, Picture, PictureRecorder, Point, Rect, Shader, TileMode,
 };
@@ -58,11 +58,11 @@ impl From<BackgroundSource> for Background {
 pub struct BackgroundLayer {
     // Current background configuration
     current_background: Option<Background>,
-    current_border: Option<cap_project::BorderConfiguration>,
+    current_border: Option<zensloom_project::BorderConfiguration>,
 
     // Track what we rendered last to detect changes
     last_rendered_background: Option<Background>,
-    last_rendered_border: Option<cap_project::BorderConfiguration>,
+    last_rendered_border: Option<zensloom_project::BorderConfiguration>,
     last_rendered_size: (u32, u32),
 
     // For image backgrounds
@@ -110,7 +110,7 @@ impl BackgroundLayer {
         &self,
         canvas: &Canvas,
         bounds: Rect,
-        border: &cap_project::BorderConfiguration,
+        border: &zensloom_project::BorderConfiguration,
     ) {
         if !border.enabled || border.width <= 0.0 {
             return;

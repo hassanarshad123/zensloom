@@ -1,8 +1,8 @@
-use crate::editor_window::{OptionalWindowEditorInstance, WindowEditorInstance};
+﻿use crate::editor_window::{OptionalWindowEditorInstance, WindowEditorInstance};
 use crate::{FramesRendered, get_video_metadata};
-use cap_export::{ExporterBase, make_cursor_only_project};
-use cap_project::{RecordingMeta, XY};
-use cap_rendering::{
+use zensloom_export::{ExporterBase, make_cursor_only_project};
+use zensloom_project::{RecordingMeta, XY};
+use zensloom_rendering::{
     FrameRenderer, ProjectRecordingsMeta, ProjectUniforms, RenderSegment, RenderVideoConstants,
     RendererLayers, ZoomFocusInterpolator, spring_mass_damper::SpringMassDamperSimulationConfig,
 };
@@ -41,10 +41,7 @@ fn export_panic_error(panic: Box<dyn Any + Send>) -> String {
         panic = %panic_msg,
         "export command panicked"
     );
-    sentry::capture_message(
-        &format!("Export command panicked: {panic_msg}"),
-        sentry::Level::Error,
-    );
+    tracing::error!("Export command panicked: {panic_msg}");
     "Export failed unexpectedly".to_string()
 }
 
@@ -66,10 +63,7 @@ async fn run_protected_export(
                 panic = %panic_msg,
                 "export task panicked"
             );
-            sentry::capture_message(
-                &format!("Export task panicked: {panic_msg}"),
-                sentry::Level::Error,
-            );
+            tracing::error!("Export task panicked: {panic_msg}");
             Err("Export failed unexpectedly".to_string())
         }
     }
@@ -298,7 +292,7 @@ async fn run_out_of_process_export_attempt(
     }
 
     if mode.is_software_safe() {
-        command.env("CAP_EXPORT_FORCE_SOFTWARE_ENCODER", "1");
+        command.env("zensloom_export_FORCE_SOFTWARE_ENCODER", "1");
         if cfg!(windows) {
             command.env("CAP_RENDER_FORCE_SOFTWARE_ADAPTER", "1");
         }
@@ -450,7 +444,7 @@ fn exporter_binary_candidates(root: &Path) -> Vec<PathBuf> {
                 .join("src-tauri")
                 .join("binaries")
                 .join(format!(
-                    "cap-exporter-{target_triple}{}",
+                    "zensloom-exporter-{target_triple}{}",
                     std::env::consts::EXE_SUFFIX
                 )),
         );
@@ -466,7 +460,7 @@ fn adjacent_exporter_binary_candidates(dir: &Path) -> Vec<PathBuf> {
 
     if let Some(target_triple) = current_target_triple() {
         candidates.push(dir.join(format!(
-            "cap-exporter-{target_triple}{}",
+            "zensloom-exporter-{target_triple}{}",
             std::env::consts::EXE_SUFFIX
         )));
     }
@@ -475,7 +469,7 @@ fn adjacent_exporter_binary_candidates(dir: &Path) -> Vec<PathBuf> {
         candidates.push(dir.join(subdir).join(exporter_bin_name()));
         if let Some(target_triple) = current_target_triple() {
             candidates.push(dir.join(subdir).join(format!(
-                "cap-exporter-{target_triple}{}",
+                "zensloom-exporter-{target_triple}{}",
                 std::env::consts::EXE_SUFFIX
             )));
         }
@@ -508,9 +502,9 @@ fn current_target_triple() -> Option<&'static str> {
 
 fn exporter_bin_name() -> &'static str {
     if cfg!(windows) {
-        "cap-exporter.exe"
+        "zensloom-exporter.exe"
     } else {
-        "cap-exporter"
+        "zensloom-exporter"
     }
 }
 
@@ -548,9 +542,9 @@ async fn wait_for_export_preview_idle(flag: &AtomicBool) {
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, Type)]
 #[serde(tag = "format")]
 pub enum ExportSettings {
-    Mp4(cap_export::mp4::Mp4ExportSettings),
-    Gif(cap_export::gif::GifExportSettings),
-    Mov(cap_export::mov::MovExportSettings),
+    Mp4(zensloom_export::mp4::Mp4ExportSettings),
+    Gif(zensloom_export::gif::GifExportSettings),
+    Mov(zensloom_export::mov::MovExportSettings),
 }
 
 impl ExportSettings {
@@ -578,9 +572,9 @@ impl ExportSettings {
 }
 
 fn export_project_config(
-    project_config: cap_project::ProjectConfiguration,
+    project_config: zensloom_project::ProjectConfiguration,
     cursor_only: bool,
-) -> cap_project::ProjectConfiguration {
+) -> zensloom_project::ProjectConfiguration {
     if cursor_only {
         make_cursor_only_project(project_config)
     } else {
@@ -796,13 +790,13 @@ async fn export_video_inner(
                     Ok(path)
                 }
                 Err(retry_e) => {
-                    sentry::capture_message(&retry_e, sentry::Level::Error);
+                    tracing::error!(%retry_e, "export retry failed");
                     Err(retry_e)
                 }
             }
         }
         Err(e) => {
-            sentry::capture_message(&e, sentry::Level::Error);
+            tracing::error!(%e, "export failed");
             Err(e)
         }
     }
@@ -1014,10 +1008,7 @@ pub async fn generate_export_preview(
                 panic = %panic_msg,
                 "generate_export_preview panicked"
             );
-            sentry::capture_message(
-                &format!("Export preview panicked: {panic_msg}"),
-                sentry::Level::Error,
-            );
+            tracing::error!("Export preview panicked: {panic_msg}");
             Err("Export preview failed unexpectedly".to_string())
         }
     }
@@ -1030,13 +1021,13 @@ async fn generate_export_preview_inner(
     settings: ExportPreviewSettings,
 ) -> Result<ExportPreviewResult, String> {
     use base64::{Engine, engine::general_purpose::STANDARD};
-    use cap_editor::create_segments;
+    use zensloom_editor::create_segments;
     use std::time::Instant;
 
     let recording_meta = RecordingMeta::load_for_project(&project_path)
         .map_err(|e| format!("Failed to load recording meta: {e}"))?;
 
-    let cap_project::RecordingMetaInner::Studio(studio_meta) = &recording_meta.inner else {
+    let zensloom_project::RecordingMetaInner::Studio(studio_meta) = &recording_meta.inner else {
         return Err("Cannot preview non-studio recordings".to_string());
     };
 
@@ -1225,15 +1216,15 @@ mod tests {
 
     #[test]
     fn export_settings_exposes_force_ffmpeg_for_mp4_only() {
-        let mp4_settings = ExportSettings::Mp4(cap_export::mp4::Mp4ExportSettings {
+        let mp4_settings = ExportSettings::Mp4(zensloom_export::mp4::Mp4ExportSettings {
             fps: 30,
             resolution_base: XY { x: 1280, y: 720 },
-            compression: cap_export::mp4::ExportCompression::Web,
+            compression: zensloom_export::mp4::ExportCompression::Web,
             custom_bpp: None,
             force_ffmpeg_decoder: true,
             optimize_filesize: false,
         });
-        let gif_settings = ExportSettings::Gif(cap_export::gif::GifExportSettings {
+        let gif_settings = ExportSettings::Gif(zensloom_export::gif::GifExportSettings {
             fps: 15,
             resolution_base: XY { x: 1280, y: 720 },
             quality: None,
@@ -1261,7 +1252,7 @@ mod tests {
         )
         .unwrap();
 
-        let gif_settings = ExportSettings::Gif(cap_export::gif::GifExportSettings {
+        let gif_settings = ExportSettings::Gif(zensloom_export::gif::GifExportSettings {
             fps: 15,
             resolution_base: XY { x: 1280, y: 720 },
             quality: None,
@@ -1275,7 +1266,7 @@ mod tests {
     fn windows_exports_do_not_force_ffmpeg_without_explicit_setting() {
         let dir = tempdir().unwrap();
 
-        let gif_settings = ExportSettings::Gif(cap_export::gif::GifExportSettings {
+        let gif_settings = ExportSettings::Gif(zensloom_export::gif::GifExportSettings {
             fps: 15,
             resolution_base: XY { x: 1280, y: 720 },
             quality: None,
@@ -1307,10 +1298,7 @@ pub async fn generate_export_preview_fast(
                 panic = %panic_msg,
                 "generate_export_preview_fast panicked"
             );
-            sentry::capture_message(
-                &format!("Export preview panicked: {panic_msg}"),
-                sentry::Level::Error,
-            );
+            tracing::error!("Export preview panicked: {panic_msg}");
             Err("Export preview failed unexpectedly".to_string())
         }
     }

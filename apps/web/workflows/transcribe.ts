@@ -1,22 +1,22 @@
-import { promises as fs } from "node:fs";
-import { db } from "@cap/database";
+﻿import { promises as fs } from "node:fs";
+import { db } from "@zensloom/database";
 import {
 	organizations,
 	users,
 	videos,
 	videoUploads,
-} from "@cap/database/schema";
-import type { VideoMetadata } from "@cap/database/types";
-import { serverEnv } from "@cap/env";
-import { userIsPro } from "@cap/utils";
-import { Storage } from "@cap/web-backend";
+} from "@zensloom/database/schema";
+import type { VideoMetadata } from "@zensloom/database/types";
+import { serverEnv } from "@zensloom/env";
+import { userIsPro } from "@zensloom/utils";
+import { Storage } from "@zensloom/web-backend";
 import {
 	AI_GENERATION_LANGUAGE_AUTO,
 	type AiGenerationLanguage,
 	type AiGenerationLanguageCode,
 	parseAiGenerationLanguage,
 	type Video,
-} from "@cap/web-domain";
+} from "@zensloom/web-domain";
 import { createClient } from "@deepgram/sdk";
 import { eq } from "drizzle-orm";
 import { FatalError } from "workflow";

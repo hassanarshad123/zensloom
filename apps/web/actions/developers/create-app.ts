@@ -1,14 +1,14 @@
-"use server";
+﻿"use server";
 
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
-import { encrypt } from "@cap/database/crypto";
-import { nanoId, nanoIdLong } from "@cap/database/helpers";
+import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
+import { encrypt } from "@zensloom/database/crypto";
+import { nanoId, nanoIdLong } from "@zensloom/database/helpers";
 import {
 	developerApiKeys,
 	developerApps,
 	developerCreditAccounts,
-} from "@cap/database/schema";
+} from "@zensloom/database/schema";
 import { hashKey } from "@/lib/developer-key-hash";
 
 export async function createDeveloperApp(data: {

@@ -1,4 +1,4 @@
-use cap_recording::oop_muxer::{
+﻿use zensloom_recording::oop_muxer::{
     MuxerSubprocess, MuxerSubprocessConfig, RespawningMuxerSubprocess, VideoStreamInit,
     resolve_muxer_binary,
 };
@@ -20,7 +20,7 @@ fn setup_muxer_binary() -> PathBuf {
     for candidate in [target_debug, target_release] {
         if candidate.exists() {
             MUXER_BINARY.call_once(|| unsafe {
-                std::env::set_var(cap_recording::oop_muxer::ENV_BIN_PATH, &candidate);
+                std::env::set_var(zensloom_recording::oop_muxer::ENV_BIN_PATH, &candidate);
             });
             return candidate;
         }
@@ -73,7 +73,7 @@ fn subprocess_survives_kill_and_parent_reports_crashed() {
     let fake_extradata = vec![0x01, 0x64, 0x00, 0x33, 0xFF, 0xE1, 0x00, 0x17];
     let config = minimal_video_config(&output_dir, fake_extradata);
 
-    use cap_recording::PipelineHealthEvent;
+    use zensloom_recording::PipelineHealthEvent;
     let (health_tx, mut health_rx) = tokio::sync::mpsc::channel::<PipelineHealthEvent>(16);
 
     let mut subprocess =
@@ -120,12 +120,12 @@ fn resolve_muxer_binary_respects_env_override() {
     let fake = temp.path().join("fake-muxer");
     std::fs::write(&fake, b"").unwrap();
     unsafe {
-        std::env::set_var(cap_recording::oop_muxer::ENV_BIN_PATH, &fake);
+        std::env::set_var(zensloom_recording::oop_muxer::ENV_BIN_PATH, &fake);
     }
     let resolved = resolve_muxer_binary().expect("resolve with override");
     assert_eq!(resolved, fake);
     unsafe {
-        std::env::remove_var(cap_recording::oop_muxer::ENV_BIN_PATH);
+        std::env::remove_var(zensloom_recording::oop_muxer::ENV_BIN_PATH);
     }
 }
 
@@ -133,14 +133,14 @@ fn resolve_muxer_binary_respects_env_override() {
 fn resolve_muxer_binary_fails_with_invalid_env() {
     unsafe {
         std::env::set_var(
-            cap_recording::oop_muxer::ENV_BIN_PATH,
+            zensloom_recording::oop_muxer::ENV_BIN_PATH,
             "/nonexistent/path/definitely-not-here-12345",
         );
     }
     let err = resolve_muxer_binary().unwrap_err();
     assert!(err.to_string().contains("missing path"));
     unsafe {
-        std::env::remove_var(cap_recording::oop_muxer::ENV_BIN_PATH);
+        std::env::remove_var(zensloom_recording::oop_muxer::ENV_BIN_PATH);
     }
 }
 
@@ -183,9 +183,9 @@ fn subprocess_survives_finish_after_init_only() {
 
 #[test]
 fn encoder_to_subprocess_end_to_end_produces_playable_init_and_segments() {
-    use cap_enc_ffmpeg::h264::{H264EncoderBuilder, H264Preset};
-    use cap_enc_ffmpeg::h264_packet::EncodePacketError;
-    use cap_media_info::{Pixel, VideoInfo};
+    use zensloom_enc_ffmpeg::h264::{H264EncoderBuilder, H264Preset};
+    use zensloom_enc_ffmpeg::h264_packet::EncodePacketError;
+    use zensloom_media_info::{Pixel, VideoInfo};
 
     ffmpeg::init().ok();
 
@@ -240,7 +240,7 @@ fn encoder_to_subprocess_end_to_end_produces_playable_init_and_segments() {
 
     fn ship_packet(
         subprocess: &mut MuxerSubprocess,
-        pkt: cap_enc_ffmpeg::h264_packet::EncodedPacket,
+        pkt: zensloom_enc_ffmpeg::h264_packet::EncodedPacket,
     ) -> Result<(), EncodePacketError> {
         subprocess
             .write_video_packet(

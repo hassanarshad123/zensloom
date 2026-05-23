@@ -1,4 +1,4 @@
-use cap_media_info::{Pixel, Sample, Type};
+﻿use zensloom_media_info::{Pixel, Sample, Type};
 use std::time::Duration;
 
 #[derive(Debug, Clone)]

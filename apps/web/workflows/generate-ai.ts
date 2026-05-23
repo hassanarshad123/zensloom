@@ -1,15 +1,15 @@
-import { db } from "@cap/database";
-import { organizations, videos } from "@cap/database/schema";
-import type { VideoMetadata } from "@cap/database/types";
-import { serverEnv } from "@cap/env";
-import { Storage } from "@cap/web-backend";
+﻿import { db } from "@zensloom/database";
+import { organizations, videos } from "@zensloom/database/schema";
+import type { VideoMetadata } from "@zensloom/database/types";
+import { serverEnv } from "@zensloom/env";
+import { Storage } from "@zensloom/web-backend";
 import {
 	AI_GENERATION_LANGUAGE_AUTO,
 	type AiGenerationLanguage,
 	getAiGenerationLanguageName,
 	parseAiGenerationLanguage,
 	type Video,
-} from "@cap/web-domain";
+} from "@zensloom/web-domain";
 import { eq } from "drizzle-orm";
 import { Effect, Option } from "effect";
 import { FatalError } from "workflow";

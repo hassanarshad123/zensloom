@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+﻿import { describe, expect, test } from "bun:test";
 import app from "../app";
 
 describe("GET /", () => {
@@ -8,7 +8,7 @@ describe("GET /", () => {
 		expect(response.status).toBe(200);
 		const data = await response.json();
 		expect(data).toEqual({
-			name: "@cap/media-server",
+			name: "@zensloom/media-server",
 			version: "1.0.0",
 			endpoints: [
 				"/health",

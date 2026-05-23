@@ -1,11 +1,11 @@
-import {
+﻿import {
 	provideOptionalAuth,
 	Storage,
 	Videos,
 	VideosRepo,
 	verifyStorageObjectToken,
-} from "@cap/web-backend";
-import { Storage as StorageDomain, Video } from "@cap/web-domain";
+} from "@zensloom/web-backend";
+import { Storage as StorageDomain, Video } from "@zensloom/web-domain";
 import { Effect, Option } from "effect";
 import type { NextRequest } from "next/server";
 import { runPromise } from "@/lib/server";

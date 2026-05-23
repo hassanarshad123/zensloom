@@ -1,4 +1,4 @@
-import type {
+﻿import type {
 	AiGenerationLanguage,
 	Comment,
 	Folder,
@@ -9,7 +9,7 @@ import type {
 	Storage,
 	User,
 	Video,
-} from "@cap/web-domain";
+} from "@zensloom/web-domain";
 import { sql } from "drizzle-orm";
 import {
 	bigint,

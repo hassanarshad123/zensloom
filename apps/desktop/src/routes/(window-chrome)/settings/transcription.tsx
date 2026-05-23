@@ -1,4 +1,4 @@
-import { Button } from "@cap/ui-solid";
+﻿import { Button } from "@zensloom/ui-solid";
 import {
 	createEffect,
 	createResource,

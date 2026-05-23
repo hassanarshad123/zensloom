@@ -1,4 +1,4 @@
-#[cfg(target_os = "macos")]
+﻿#[cfg(target_os = "macos")]
 use crate::SendableShareableContent;
 #[cfg(target_os = "macos")]
 use crate::output_pipeline::{
@@ -25,12 +25,12 @@ use crate::output_pipeline::{
     WindowsFragmentedM4SCameraMuxerConfig,
 };
 use anyhow::{Context as _, anyhow, bail};
-use cap_media_info::VideoInfo;
-use cap_project::{
+use zensloom_media_info::VideoInfo;
+use zensloom_project::{
     CursorEvents, KeyboardEvents, MultipleSegment, MultipleSegments, Platform, RecordingMeta,
     RecordingMetaInner, StudioRecordingMeta, StudioRecordingStatus,
 };
-use cap_timestamp::{Timestamp, Timestamps};
+use zensloom_timestamp::{Timestamp, Timestamps};
 use futures::{FutureExt, StreamExt, future::OptionFuture, stream::FuturesUnordered};
 use kameo::{Actor as _, prelude::*};
 use relative_path::RelativePathBuf;
@@ -884,7 +884,7 @@ async fn spawn_studio_recording_actor(
 pub struct CompletedRecording {
     pub project_path: PathBuf,
     pub meta: StudioRecordingMeta,
-    pub cursor_data: cap_project::CursorImages,
+    pub cursor_data: zensloom_project::CursorImages,
 }
 
 async fn stop_recording(
@@ -893,8 +893,8 @@ async fn stop_recording(
     cursors: Cursors,
     fragmented: bool,
 ) -> Result<CompletedRecording, RecordingError> {
-    use cap_project::*;
-    use cap_timestamp::{AUDIO_OUTPUT_FRAMES, DEFAULT_SAMPLE_RATE};
+    use zensloom_project::*;
+    use zensloom_timestamp::{AUDIO_OUTPUT_FRAMES, DEFAULT_SAMPLE_RATE};
 
     const DEFAULT_FPS: u32 = 30;
 
@@ -1087,7 +1087,7 @@ async fn stop_recording(
     let meta = StudioRecordingMeta::MultipleSegments {
         inner: MultipleSegments {
             segments: segment_metas,
-            cursors: cap_project::Cursors::Correct(
+            cursors: zensloom_project::Cursors::Correct(
                 cursors
                     .into_values()
                     .map(|cursor| {
@@ -1109,7 +1109,7 @@ async fn stop_recording(
 
     persist_final_recording_meta(&recording_dir, &meta);
 
-    let project_config = cap_project::ProjectConfiguration::default();
+    let project_config = zensloom_project::ProjectConfiguration::default();
     project_config
         .write(&recording_dir)
         .map_err(RecordingError::from)?;
@@ -1546,7 +1546,7 @@ async fn create_segment_pipeline(
                     .ok_or(CreateSegmentPipelineError::NoBounds)?;
 
                 let cursor_output_path = dir.join("cursor.json");
-                let keyboard_output_path = dir.join(cap_project::KEYBOARD_EVENTS_FILE_NAME);
+                let keyboard_output_path = dir.join(zensloom_project::KEYBOARD_EVENTS_FILE_NAME);
                 let incremental_output = if fragmented && custom_cursor_capture {
                     Some(cursor_output_path.clone())
                 } else {
@@ -1643,7 +1643,7 @@ fn write_in_progress_meta(recording_dir: &Path) -> anyhow::Result<()> {
         inner: RecordingMetaInner::Studio(Box::new(StudioRecordingMeta::MultipleSegments {
             inner: MultipleSegments {
                 segments: Vec::new(),
-                cursors: cap_project::Cursors::default(),
+                cursors: zensloom_project::Cursors::default(),
                 status: Some(StudioRecordingStatus::InProgress),
             },
         })),
@@ -1706,7 +1706,7 @@ mod tests {
             _config: Self::Config,
             _output_path: PathBuf,
             _video_config: Option<VideoInfo>,
-            _audio_config: Option<cap_media_info::AudioInfo>,
+            _audio_config: Option<zensloom_media_info::AudioInfo>,
             _pause_flag: Arc<std::sync::atomic::AtomicBool>,
             _tasks: &mut TaskPool,
         ) -> anyhow::Result<Self>
@@ -1760,7 +1760,7 @@ mod tests {
             config: Self::Config,
             _output_path: PathBuf,
             _video_config: Option<VideoInfo>,
-            _audio_config: Option<cap_media_info::AudioInfo>,
+            _audio_config: Option<zensloom_media_info::AudioInfo>,
             _pause_flag: Arc<std::sync::atomic::AtomicBool>,
             _tasks: &mut TaskPool,
         ) -> anyhow::Result<Self>
@@ -1793,12 +1793,12 @@ mod tests {
     }
 
     fn test_video_info() -> VideoInfo {
-        VideoInfo::from_raw(cap_media_info::RawVideoFormat::Bgra, 16, 16, 30)
+        VideoInfo::from_raw(zensloom_media_info::RawVideoFormat::Bgra, 16, 16, 30)
     }
 
-    fn test_audio_info() -> cap_media_info::AudioInfo {
-        cap_media_info::AudioInfo::new_raw(
-            cap_media_info::Sample::F32(cap_media_info::Type::Packed),
+    fn test_audio_info() -> zensloom_media_info::AudioInfo {
+        zensloom_media_info::AudioInfo::new_raw(
+            zensloom_media_info::Sample::F32(zensloom_media_info::Type::Packed),
             48_000,
             2,
         )

@@ -1,6 +1,6 @@
-import { nanoId } from "@cap/database/helpers";
-import * as Db from "@cap/database/schema";
-import { Video } from "@cap/web-domain";
+﻿import { nanoId } from "@zensloom/database/helpers";
+import * as Db from "@zensloom/database/schema";
+import { Video } from "@zensloom/web-domain";
 import * as Dz from "drizzle-orm";
 import type { MySqlInsertBase } from "drizzle-orm/mysql-core";
 import { Effect, Option } from "effect";

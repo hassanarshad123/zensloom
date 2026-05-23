@@ -1,4 +1,4 @@
-[package]
+﻿[package]
 name = "scap-direct3d"
 version = "0.1.0"
 edition = "2024"
@@ -47,4 +47,4 @@ tracing.workspace = true
 workspace-hack = { version = "0.1", path = "../workspace-hack" }
 
 [target.'cfg(target_os = "windows")'.dependencies]
-cap-d3d-adapter = { path = "../d3d-adapter" }
+zensloom-d3d-adapter = { path = "../d3d-adapter" }

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
 	Button,
@@ -15,7 +15,7 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@cap/ui";
+} from "@zensloom/ui";
 import {
 	faArrowLeft,
 	faCircleCheck,

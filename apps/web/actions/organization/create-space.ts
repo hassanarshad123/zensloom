@@ -1,18 +1,18 @@
-"use server";
+﻿"use server";
 
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
-import { hashPassword } from "@cap/database/crypto";
-import { nanoId } from "@cap/database/helpers";
-import { spaceMembers, spaces } from "@cap/database/schema";
-import { userIsPro } from "@cap/utils";
+import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
+import { hashPassword } from "@zensloom/database/crypto";
+import { nanoId } from "@zensloom/database/helpers";
+import { spaceMembers, spaces } from "@zensloom/database/schema";
+import { userIsPro } from "@zensloom/utils";
 import {
 	type ImageUpload,
 	Space,
 	SpaceMemberId,
 	type SpaceMemberRole,
 	User,
-} from "@cap/web-domain";
+} from "@zensloom/web-domain";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import {

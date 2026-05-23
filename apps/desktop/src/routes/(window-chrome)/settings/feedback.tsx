@@ -1,4 +1,4 @@
-import { Button } from "@cap/ui-solid";
+﻿import { Button } from "@zensloom/ui-solid";
 import { action, useAction, useSubmission } from "@solidjs/router";
 import { getVersion } from "@tauri-apps/api/app";
 import { type OsType, type as ostype } from "@tauri-apps/plugin-os";
@@ -61,7 +61,7 @@ export default function FeedbackTab() {
 			<SettingsPageContent>
 				<Section
 					title="Feedback"
-					description="Help us improve Cap by submitting feedback or reporting bugs. We'll get right on it."
+					description="Help us improve Zensloom by submitting feedback or reporting bugs. We'll get right on it."
 				>
 					<form
 						class="space-y-4"
@@ -107,7 +107,7 @@ export default function FeedbackTab() {
 
 				<Section
 					title="Join the Community"
-					description="Have questions, want to share ideas, or just hang out? Join the Cap Discord community."
+					description="Have questions, want to share ideas, or just hang out? Join the Zensloom community community."
 				>
 					<Button
 						onClick={() => shell.open("https://cap.link/discord")}

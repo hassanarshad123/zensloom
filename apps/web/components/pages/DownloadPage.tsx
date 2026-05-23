@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { Button } from "@cap/ui";
+import { Button } from "@zensloom/ui";
 import { useDetectPlatform } from "hooks/useDetectPlatform";
 import Link from "next/link";
 import { trackEvent } from "@/app/utils/analytics";

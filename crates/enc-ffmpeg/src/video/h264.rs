@@ -1,6 +1,6 @@
-use std::{thread, time::Duration};
+﻿use std::{thread, time::Duration};
 
-use cap_media_info::{Pixel, VideoInfo, ensure_even};
+use zensloom_media_info::{Pixel, VideoInfo, ensure_even};
 use ffmpeg::{
     Dictionary,
     codec::{codec::Codec, context, encoder},
@@ -806,7 +806,7 @@ fn requires_software_encoder(config: &VideoInfo, preset: H264Preset, is_export: 
 
     #[cfg(target_os = "windows")]
     {
-        use cap_frame_converter::{GpuVendor, detect_primary_gpu};
+        use zensloom_frame_converter::{GpuVendor, detect_primary_gpu};
 
         let encoder_name = match detect_primary_gpu().map(|info| info.vendor) {
             Some(GpuVendor::Nvidia) => "h264_nvenc",
@@ -841,7 +841,7 @@ fn get_default_encoder_priority(_config: &VideoInfo) -> &'static [&'static str] 
 
     #[cfg(target_os = "windows")]
     {
-        use cap_frame_converter::{GpuVendor, detect_primary_gpu};
+        use zensloom_frame_converter::{GpuVendor, detect_primary_gpu};
 
         static ENCODER_PRIORITY_NVIDIA: &[&str] =
             &["h264_nvenc", "h264_mf", "h264_qsv", "h264_amf", "libx264"];
@@ -888,7 +888,7 @@ fn get_encoder_priority_with_override(
 }
 
 fn force_software_encoder() -> bool {
-    std::env::var("CAP_EXPORT_FORCE_SOFTWARE_ENCODER").is_ok_and(|value| {
+    std::env::var("zensloom_export_FORCE_SOFTWARE_ENCODER").is_ok_and(|value| {
         matches!(
             value.to_ascii_lowercase().as_str(),
             "1" | "true" | "yes" | "on"
@@ -902,7 +902,7 @@ fn export_encoder_priority_override(
 ) -> Option<&'static [&'static str]> {
     #[cfg(target_os = "windows")]
     {
-        use cap_frame_converter::{GpuVendor, detect_primary_gpu};
+        use zensloom_frame_converter::{GpuVendor, detect_primary_gpu};
 
         static ENCODER_PRIORITY_AMD_EXPORT: &[&str] =
             &["h264_amf", "h264_mf", "h264_nvenc", "h264_qsv", "libx264"];

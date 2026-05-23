@@ -1,4 +1,4 @@
-import { buildEnv } from "@cap/env";
+﻿import { buildEnv } from "@zensloom/env";
 import type { PropsWithChildren } from "react";
 import { formatStarCount, getGitHubStars } from "@/utils/github";
 import { MessengerWidget } from "../Layout/MessengerWidget";

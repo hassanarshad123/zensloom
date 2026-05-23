@@ -1,7 +1,7 @@
-import { db } from "@cap/database";
-import { organizations, videos, videoUploads } from "@cap/database/schema";
-import { serverEnv } from "@cap/env";
-import type { Video } from "@cap/web-domain";
+﻿import { db } from "@zensloom/database";
+import { organizations, videos, videoUploads } from "@zensloom/database/schema";
+import { serverEnv } from "@zensloom/env";
+import type { Video } from "@zensloom/web-domain";
 import { eq } from "drizzle-orm";
 import { start } from "workflow/api";
 import { transcribeVideoWorkflow } from "@/workflows/transcribe";

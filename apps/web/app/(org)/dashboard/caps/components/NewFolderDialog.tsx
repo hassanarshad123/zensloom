@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
 	Button,
@@ -8,8 +8,8 @@ import {
 	DialogHeader,
 	DialogTitle,
 	Input,
-} from "@cap/ui";
-import type { Folder, Space } from "@cap/web-domain";
+} from "@zensloom/ui";
+import type { Folder, Space } from "@zensloom/web-domain";
 import { faFolderPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type RiveFile, useRiveFile } from "@rive-app/react-canvas";

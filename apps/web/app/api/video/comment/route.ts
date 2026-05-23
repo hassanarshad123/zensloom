@@ -1,9 +1,9 @@
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
-import { nanoId } from "@cap/database/helpers";
-import { comments } from "@cap/database/schema";
-import { serverEnv } from "@cap/env";
-import { Comment, User, Video } from "@cap/web-domain";
+﻿import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
+import { nanoId } from "@zensloom/database/helpers";
+import { comments } from "@zensloom/database/schema";
+import { serverEnv } from "@zensloom/env";
+import { Comment, User, Video } from "@zensloom/web-domain";
 import { headers } from "next/headers";
 import type { NextRequest } from "next/server";
 import { rateLimitMiddleware } from "@/utils/helpers";

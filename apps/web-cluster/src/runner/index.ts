@@ -1,5 +1,5 @@
-import { createServer } from "node:http";
-import { Database, S3Buckets, Videos, Workflows } from "@cap/web-backend";
+﻿import { createServer } from "node:http";
+import { Database, S3Buckets, Videos, Workflows } from "@zensloom/web-backend";
 import { ClusterWorkflowEngine, RunnerAddress } from "@effect/cluster";
 import * as NodeSdk from "@effect/opentelemetry/NodeSdk";
 import {

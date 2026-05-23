@@ -1,8 +1,8 @@
-import { db } from "@cap/database";
-import { videos } from "@cap/database/schema";
-import type { VideoMetadata } from "@cap/database/types";
-import { serverEnv } from "@cap/env";
-import type { Video } from "@cap/web-domain";
+﻿import { db } from "@zensloom/database";
+import { videos } from "@zensloom/database/schema";
+import type { VideoMetadata } from "@zensloom/database/types";
+import { serverEnv } from "@zensloom/env";
+import type { Video } from "@zensloom/web-domain";
 import { eq } from "drizzle-orm";
 import { start } from "workflow/api";
 import { generateAiWorkflow } from "@/workflows/generate-ai";

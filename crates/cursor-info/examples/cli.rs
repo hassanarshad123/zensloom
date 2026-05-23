@@ -1,6 +1,6 @@
-use cap_cursor_info::CursorShape;
+﻿use zensloom_cursor_info::CursorShape;
 #[cfg(target_os = "macos")]
-use cap_cursor_info::CursorShapeMacOS;
+use zensloom_cursor_info::CursorShapeMacOS;
 #[cfg(target_os = "macos")]
 use sha2::{Digest, Sha256};
 #[cfg(target_os = "macos")]

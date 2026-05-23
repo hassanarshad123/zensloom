@@ -1,5 +1,5 @@
-use anyhow::Result;
-use cap_project::{
+﻿use anyhow::Result;
+use zensloom_project::{
     AspectRatio, CameraShape, CameraXPosition, CameraYPosition, ClipOffsets, CornerStyle, Crop,
     CursorEvents, CursorType, MaskKind, ProjectConfiguration, RecordingMeta, StudioRecordingMeta,
     XY,
@@ -511,7 +511,7 @@ pub enum RenderingError {
 
 pub struct RenderSegment {
     pub cursor: Arc<CursorEvents>,
-    pub keyboard: Arc<cap_project::KeyboardEvents>,
+    pub keyboard: Arc<zensloom_project::KeyboardEvents>,
     pub decoders: RecordingSegmentDecoders,
     pub render_display: bool,
 }
@@ -1366,7 +1366,7 @@ async fn recover_initial_frames_with_backtrack(
     segment_time: f64,
     needs_camera: bool,
     needs_display: bool,
-    offsets: cap_project::ClipOffsets,
+    offsets: zensloom_project::ClipOffsets,
     current_frame_number: u32,
     fps: u32,
 ) -> Option<DecodedSegmentFrames> {
@@ -1403,7 +1403,7 @@ async fn decode_segment_frames_with_retry(
     segment_time: f64,
     needs_camera: bool,
     needs_display: bool,
-    offsets: cap_project::ClipOffsets,
+    offsets: zensloom_project::ClipOffsets,
     current_frame_number: u32,
     is_initial_frame: bool,
     fps: u32,
@@ -2567,12 +2567,12 @@ impl ProjectUniforms {
         let prev_segments_cursor = SegmentsCursor::new(prev_frame_time as f64, zoom_segments);
         let recording_time_for_zoom_focus_interpolate = segments_cursor
             .segment
-            .filter(|s| matches!(s.mode, cap_project::ZoomMode::Auto))
+            .filter(|s| matches!(s.mode, zensloom_project::ZoomMode::Auto))
             .map(|s| current_recording_time.min(s.end as f32))
             .unwrap_or(current_recording_time);
         let prev_recording_time_for_zoom_focus_interpolate = prev_segments_cursor
             .segment
-            .filter(|s| matches!(s.mode, cap_project::ZoomMode::Auto))
+            .filter(|s| matches!(s.mode, zensloom_project::ZoomMode::Auto))
             .map(|s| prev_recording_time.min(s.end as f32))
             .unwrap_or(prev_recording_time);
         let zoom_focus =
@@ -2668,7 +2668,7 @@ impl ProjectUniforms {
             SegmentsCursor::new(motion_prev_frame_time as f64, zoom_segments);
         let motion_prev_recording_time_for_zoom_focus_interpolate = motion_prev_segments_cursor
             .segment
-            .filter(|s| matches!(s.mode, cap_project::ZoomMode::Auto))
+            .filter(|s| matches!(s.mode, zensloom_project::ZoomMode::Auto))
             .map(|s| motion_prev_recording_time.min(s.end as f32))
             .unwrap_or(motion_prev_recording_time);
         let motion_prev_zoom_focus = zoom_focus_interpolator
@@ -3728,7 +3728,7 @@ pub struct RendererLayers {
     text: TextLayer,
     captions: CaptionsLayer,
     keyboard: KeyboardLayer,
-    camera_blur_processor: Option<cap_camera_effects::BlurProcessor>,
+    camera_blur_processor: Option<zensloom_segment::BlurProcessor>,
     camera_blur_init_failed: bool,
 }
 
@@ -3777,7 +3777,7 @@ impl RendererLayers {
 
     fn ensure_camera_blur_processor(&mut self, device: &wgpu::Device) {
         if self.camera_blur_processor.is_none() && !self.camera_blur_init_failed {
-            match cap_camera_effects::BlurProcessor::new(device, wgpu::TextureFormat::Rgba8Unorm) {
+            match zensloom_segment::BlurProcessor::new(device, wgpu::TextureFormat::Rgba8Unorm) {
                 Ok(processor) => {
                     self.camera_blur_processor = Some(processor);
                 }
@@ -3793,7 +3793,7 @@ impl RendererLayers {
         &mut self,
         device: &wgpu::Device,
         queue: &wgpu::Queue,
-        mode: cap_camera_effects::BlurMode,
+        mode: zensloom_segment::BlurMode,
     ) {
         if self.camera.source_texture_for_blur().is_none()
             && self.camera_only.source_texture_for_blur().is_none()
@@ -3816,7 +3816,7 @@ impl RendererLayers {
 
         let _ = processor.process(device, queue, source_texture, mode);
 
-        let processor: &cap_camera_effects::BlurProcessor = processor;
+        let processor: &zensloom_segment::BlurProcessor = processor;
         self.camera.attach_shared_blur(device, processor, mode);
         self.camera_only.attach_shared_blur(device, processor, mode);
     }
@@ -3826,7 +3826,7 @@ impl RendererLayers {
         device: &wgpu::Device,
         queue: &wgpu::Queue,
         encoder: &mut wgpu::CommandEncoder,
-        mode: cap_camera_effects::BlurMode,
+        mode: zensloom_segment::BlurMode,
     ) {
         if self.camera.source_texture_for_blur().is_none()
             && self.camera_only.source_texture_for_blur().is_none()
@@ -3849,7 +3849,7 @@ impl RendererLayers {
 
         processor.process_into_encoder(device, queue, source_texture, encoder, mode);
 
-        let processor: &cap_camera_effects::BlurProcessor = processor;
+        let processor: &zensloom_segment::BlurProcessor = processor;
         self.camera.attach_shared_blur(device, processor, mode);
         self.camera_only.attach_shared_blur(device, processor, mode);
     }
@@ -4284,12 +4284,12 @@ async fn produce_frame_with_timings(
 }
 
 fn blur_mode_from_config(
-    config: &cap_project::BackgroundBlurConfig,
-) -> Option<cap_camera_effects::BlurMode> {
+    config: &zensloom_project::BackgroundBlurConfig,
+) -> Option<zensloom_segment::BlurMode> {
     match config.mode {
-        cap_project::BackgroundBlurMode::Off => None,
-        cap_project::BackgroundBlurMode::Light => Some(cap_camera_effects::BlurMode::Light),
-        cap_project::BackgroundBlurMode::Heavy => Some(cap_camera_effects::BlurMode::Heavy),
+        zensloom_project::BackgroundBlurMode::Off => None,
+        zensloom_project::BackgroundBlurMode::Light => Some(zensloom_segment::BlurMode::Light),
+        zensloom_project::BackgroundBlurMode::Heavy => Some(zensloom_segment::BlurMode::Heavy),
     }
 }
 
@@ -4372,7 +4372,7 @@ pub fn create_shader_render_pipeline(
 #[cfg(test)]
 mod project_uniforms_tests {
     use super::*;
-    use cap_project::CursorMoveEvent;
+    use zensloom_project::CursorMoveEvent;
 
     fn cursor_move(time_ms: f64, x: f64, y: f64) -> CursorMoveEvent {
         CursorMoveEvent {

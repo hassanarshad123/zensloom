@@ -1,5 +1,5 @@
-{
-	"name": "@cap/media-server",
+﻿{
+	"name": "@zensloom/media-server",
 	"private": true,
 	"type": "module",
 	"scripts": {

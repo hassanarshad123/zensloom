@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
 	LogoBadge,
@@ -8,7 +8,7 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@cap/ui";
+} from "@zensloom/ui";
 import {
 	faAppleWhole,
 	faDesktop,

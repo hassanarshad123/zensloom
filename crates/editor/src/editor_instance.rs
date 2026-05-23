@@ -1,12 +1,12 @@
-use crate::editor;
+﻿use crate::editor;
 use crate::playback::{self, PlaybackHandle, PlaybackStartError};
-use cap_audio::AudioData;
-use cap_project::StudioRecordingMeta;
-use cap_project::{
+use zensloom_audio::AudioData;
+use zensloom_project::StudioRecordingMeta;
+use zensloom_project::{
     CursorEvents, ProjectConfiguration, RecordingMeta, RecordingMetaInner, TimelineConfiguration,
     TimelineSegment, XY,
 };
-use cap_rendering::{
+use zensloom_rendering::{
     ProjectRecordingsMeta, ProjectUniforms, RecordingSegmentDecoders, RenderVideoConstants,
     SegmentVideoPaths, SharedWgpuDevice, Video, ZoomFocusInterpolator, get_duration,
     spring_mass_damper::SpringMassDamperSimulationConfig,
@@ -101,7 +101,7 @@ impl EditorInstance {
             return Err(format!("Video path {} not found!", project_path.display()));
         }
 
-        let recording_meta = cap_project::RecordingMeta::load_for_project(&project_path)
+        let recording_meta = zensloom_project::RecordingMeta::load_for_project(&project_path)
             .map_err(|e| format!("Failed to load recording meta: {e}"))?;
 
         let RecordingMetaInner::Studio(meta) = &recording_meta.inner else {
@@ -226,7 +226,7 @@ impl EditorInstance {
                                 segment.mic_device_id(),
                                 &calibration_store,
                             );
-                            cap_project::ClipConfiguration {
+                            zensloom_project::ClipConfiguration {
                                 index: i as u32,
                                 offsets: segment
                                     .calculate_audio_offsets_with_calibration(calibration_offset),
@@ -235,9 +235,9 @@ impl EditorInstance {
                         .collect();
                 }
                 StudioRecordingMeta::SingleSegment { .. } => {
-                    project.clips = vec![cap_project::ClipConfiguration {
+                    project.clips = vec![zensloom_project::ClipConfiguration {
                         index: 0,
-                        offsets: cap_project::ClipOffsets::default(),
+                        offsets: zensloom_project::ClipOffsets::default(),
                     }];
                 }
             }
@@ -624,7 +624,7 @@ pub struct SegmentMedia {
     pub audio: Option<Arc<AudioData>>,
     pub system_audio: Option<Arc<AudioData>>,
     pub cursor: Arc<CursorEvents>,
-    pub keyboard: Arc<cap_project::KeyboardEvents>,
+    pub keyboard: Arc<zensloom_project::KeyboardEvents>,
     pub decoders: RecordingSegmentDecoders,
 }
 
@@ -634,7 +634,7 @@ pub async fn create_segments(
     force_ffmpeg: bool,
 ) -> Result<Vec<SegmentMedia>, String> {
     match &meta {
-        cap_project::StudioRecordingMeta::SingleSegment { segment: s } => {
+        zensloom_project::StudioRecordingMeta::SingleSegment { segment: s } => {
             let audio = s
                 .audio
                 .as_ref()
@@ -686,7 +686,7 @@ pub async fn create_segments(
                 decoders,
             }])
         }
-        cap_project::StudioRecordingMeta::MultipleSegments { inner, .. } => {
+        zensloom_project::StudioRecordingMeta::MultipleSegments { inner, .. } => {
             let mut segments = vec![];
 
             for (i, s) in inner.segments.iter().enumerate() {
@@ -741,20 +741,20 @@ pub async fn create_segments(
     }
 }
 
-fn load_calibration_store(project_path: &std::path::Path) -> cap_audio::CalibrationStore {
+fn load_calibration_store(project_path: &std::path::Path) -> zensloom_audio::CalibrationStore {
     let calibration_dir = project_path
         .parent()
         .and_then(|p| p.parent())
         .map(|p| p.to_path_buf())
         .unwrap_or_else(|| project_path.to_path_buf());
 
-    cap_audio::CalibrationStore::load(&calibration_dir)
+    zensloom_audio::CalibrationStore::load(&calibration_dir)
 }
 
 fn get_calibration_offset(
     camera_id: Option<&str>,
     mic_id: Option<&str>,
-    store: &cap_audio::CalibrationStore,
+    store: &zensloom_audio::CalibrationStore,
 ) -> Option<f32> {
     match (camera_id, mic_id) {
         (Some(cam), Some(mic)) => store.get_offset(cam, mic).map(|o| o as f32),

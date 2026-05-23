@@ -1,10 +1,10 @@
-import {
+﻿import {
 	type DesktopOrganization,
 	DesktopOrganization as DesktopOrganizationSchema,
 	type OrganizationBrandColors,
 	OrganizationBrandColors as OrganizationBrandColorsSchema,
 	type OrganizationBrandingPatchBody,
-} from "@cap/web-api-contract";
+} from "@zensloom/web-api-contract";
 import { createEffect, createMemo, createSignal } from "solid-js";
 import { authStore, recordingSettingsStore } from "~/store";
 import { commands } from "./tauri";

@@ -1,9 +1,9 @@
-import {
+﻿import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "@cap/ui";
+} from "@zensloom/ui";
 import {
 	faEllipsis,
 	faPencil,

@@ -1,7 +1,7 @@
-use std::collections::HashMap;
+﻿use std::collections::HashMap;
 
 use bytemuck::{Pod, Zeroable};
-use cap_project::*;
+use zensloom_project::*;
 use image::GenericImageView;
 use tracing::error;
 use wgpu::{BindGroup, FilterMode, include_wgsl, util::DeviceExt};

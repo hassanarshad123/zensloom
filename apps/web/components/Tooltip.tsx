@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { classNames } from "@cap/utils";
+import { classNames } from "@zensloom/utils";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import type * as React from "react";
 

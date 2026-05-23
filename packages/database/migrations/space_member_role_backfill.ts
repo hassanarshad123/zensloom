@@ -1,5 +1,5 @@
-import { db } from "@cap/database";
-import { spaceMembers } from "@cap/database/schema";
+﻿import { db } from "@zensloom/database";
+import { spaceMembers } from "@zensloom/database/schema";
 import { sql } from "drizzle-orm";
 
 export async function runSpaceMemberRoleBackfill() {

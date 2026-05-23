@@ -1,4 +1,4 @@
-use cap_frame_converter::{
+﻿use zensloom_frame_converter::{
     AsyncConverterPool, ConversionConfig, ConverterPoolConfig, DropStrategy, FrameConverter,
     SwscaleConverter,
 };

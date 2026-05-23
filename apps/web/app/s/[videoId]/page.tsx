@@ -1,5 +1,5 @@
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
+import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
 import {
 	comments,
 	organizationMembers,
@@ -10,26 +10,26 @@ import {
 	users,
 	videos,
 	videoUploads,
-} from "@cap/database/schema";
-import type { VideoMetadata } from "@cap/database/types";
-import { buildEnv } from "@cap/env";
-import { Logo } from "@cap/ui";
-import { userIsPro } from "@cap/utils";
+} from "@zensloom/database/schema";
+import type { VideoMetadata } from "@zensloom/database/types";
+import { buildEnv } from "@zensloom/env";
+import { Logo } from "@zensloom/ui";
+import { userIsPro } from "@zensloom/utils";
 import {
 	Database,
 	ImageUploads,
 	provideOptionalAuth,
 	resolveEffectiveVideoRules,
 	Videos,
-} from "@cap/web-backend";
-import { VideosPolicy } from "@cap/web-backend/src/Videos/VideosPolicy";
+} from "@zensloom/web-backend";
+import { VideosPolicy } from "@zensloom/web-backend/src/Videos/VideosPolicy";
 import {
 	Comment,
 	type ImageUpload,
 	type Organisation,
 	Policy,
 	type Video,
-} from "@cap/web-domain";
+} from "@zensloom/web-domain";
 import { and, eq, type InferSelectModel, isNull, sql } from "drizzle-orm";
 import { Effect, Option } from "effect";
 import type { Metadata } from "next";

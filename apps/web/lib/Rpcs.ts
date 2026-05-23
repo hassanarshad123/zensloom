@@ -1,4 +1,4 @@
-import { Rpcs } from "@cap/web-domain";
+﻿import { Rpcs } from "@zensloom/web-domain";
 import { FetchHttpClient } from "@effect/platform";
 import { RpcClient, RpcSerialization } from "@effect/rpc";
 import { Effect, Layer } from "effect";

@@ -1,4 +1,4 @@
-use cap_project::{XY, ZoomSegment};
+﻿use zensloom_project::{XY, ZoomSegment};
 
 use crate::{Coord, RawDisplayUVSpace};
 
@@ -61,11 +61,11 @@ impl SegmentBounds {
         zoom_focus: Coord<RawDisplayUVSpace>,
         _actual_cursor: Option<Coord<RawDisplayUVSpace>>,
     ) -> Self {
-        let is_auto_mode = matches!(segment.mode, cap_project::ZoomMode::Auto);
+        let is_auto_mode = matches!(segment.mode, zensloom_project::ZoomMode::Auto);
 
         let focus_pos = match segment.mode {
-            cap_project::ZoomMode::Auto => (zoom_focus.x, zoom_focus.y),
-            cap_project::ZoomMode::Manual { x, y } => (x as f64, y as f64),
+            zensloom_project::ZoomMode::Auto => (zoom_focus.x, zoom_focus.y),
+            zensloom_project::ZoomMode::Manual { x, y } => (x as f64, y as f64),
         };
 
         let (effective_zoom, viewport_center) = if is_auto_mode {
@@ -262,7 +262,7 @@ impl InterpolatedZoom {
                 let ramp_smooth = ramp * ramp * (3.0 - 2.0 * ramp);
                 let zoom_t = ease_val * ramp_smooth;
 
-                let is_auto_zoom_out = matches!(prev_segment.mode, cap_project::ZoomMode::Auto);
+                let is_auto_zoom_out = matches!(prev_segment.mode, zensloom_project::ZoomMode::Auto);
                 let focus_for_bounds = if is_auto_zoom_out {
                     segment_end_focus.unwrap_or(zoom_focus)
                 } else {
@@ -415,7 +415,7 @@ impl InterpolatedZoom {
 
         if cursor
             .segment
-            .is_some_and(|s| matches!(s.mode, cap_project::ZoomMode::Auto))
+            .is_some_and(|s| matches!(s.mode, zensloom_project::ZoomMode::Auto))
             && let Some(cursor_coord) = actual_cursor
         {
             return result.ensure_cursor_visible_gentle((cursor_coord.x, cursor_coord.y));
@@ -608,7 +608,7 @@ fn t_clamp(v: f64) -> f64 {
 
 #[cfg(test)]
 mod test {
-    use cap_project::{GlideDirection, ZoomMode, ZoomSegment};
+    use zensloom_project::{GlideDirection, ZoomMode, ZoomSegment};
 
     use super::*;
 

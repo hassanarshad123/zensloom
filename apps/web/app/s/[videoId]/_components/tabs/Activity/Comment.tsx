@@ -1,5 +1,5 @@
-import { Button } from "@cap/ui";
-import type { Comment } from "@cap/web-domain";
+import { Button } from "@zensloom/ui";
+import type { Comment } from "@zensloom/web-domain";
 import { faReply, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 

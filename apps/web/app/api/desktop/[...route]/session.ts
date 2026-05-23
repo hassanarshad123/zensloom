@@ -1,8 +1,8 @@
-import { db } from "@cap/database";
-import { decodeSessionToken } from "@cap/database/auth/auth-options";
-import { getCurrentUser } from "@cap/database/auth/session";
-import { authApiKeys } from "@cap/database/schema";
-import { serverEnv } from "@cap/env";
+import { db } from "@zensloom/database";
+import { decodeSessionToken } from "@zensloom/database/auth/auth-options";
+import { getCurrentUser } from "@zensloom/database/auth/session";
+import { authApiKeys } from "@zensloom/database/schema";
+import { serverEnv } from "@zensloom/env";
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { getCookie } from "hono/cookie";

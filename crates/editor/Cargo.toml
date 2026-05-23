@@ -1,5 +1,5 @@
-[package]
-name = "cap-editor"
+﻿[package]
+name = "zensloom-editor"
 version = "0.1.0"
 edition = "2024"
 
@@ -19,11 +19,11 @@ name = "editor-playback-benchmark"
 path = "examples/editor-playback-benchmark.rs"
 
 [dependencies]
-cap-media = { path = "../media" }
-cap-project = { path = "../project" }
-cap-rendering = { path = "../rendering" }
-cap-audio = { path = "../audio" }
-cap-media-info = { path = "../media-info" }
+zensloom-media = { path = "../media" }
+zensloom-project = { path = "../project" }
+zensloom-rendering = { path = "../rendering" }
+zensloom-audio = { path = "../audio" }
+zensloom-media-info = { path = "../media-info" }
 
 tokio = { workspace = true, features = ["macros", "process", "fs"] }
 cpal.workspace = true
@@ -31,7 +31,7 @@ axum = { version = "0.7.5", features = ["ws"] }
 ffmpeg.workspace = true
 specta.workspace = true
 serde = { workspace = true }
-sentry.workspace = true
+# sentry removed - zero telemetry policy
 futures = { workspace = true }
 tracing.workspace = true
 flume.workspace = true

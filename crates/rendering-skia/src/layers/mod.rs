@@ -1,4 +1,4 @@
-use crate::SkiaRenderingError;
+﻿use crate::SkiaRenderingError;
 use skia_safe::{Canvas, Picture, PictureRecorder, Rect};
 use std::collections::HashMap;
 
@@ -10,8 +10,8 @@ pub use background::BackgroundLayer;
 #[derive(Debug, Clone)]
 pub struct SkiaProjectUniforms {
     pub output_size: (u32, u32),
-    pub background: cap_project::BackgroundSource,
-    pub border: Option<cap_project::BorderConfiguration>,
+    pub background: zensloom_project::BackgroundSource,
+    pub border: Option<zensloom_project::BorderConfiguration>,
     // Add more fields as needed
 }
 

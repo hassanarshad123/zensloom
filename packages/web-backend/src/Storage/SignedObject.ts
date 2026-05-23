@@ -1,5 +1,5 @@
-import { createHmac, timingSafeEqual } from "node:crypto";
-import { serverEnv } from "@cap/env";
+﻿import { createHmac, timingSafeEqual } from "node:crypto";
+import { serverEnv } from "@zensloom/env";
 
 type StorageObjectTokenPayload = {
 	videoId: string;

@@ -1,7 +1,7 @@
-import type { comments as commentsSchema } from "@cap/database/schema";
-import { NODE_ENV } from "@cap/env";
-import { Logo } from "@cap/ui";
-import type { ImageUpload } from "@cap/web-domain";
+import type { comments as commentsSchema } from "@zensloom/database/schema";
+import { NODE_ENV } from "@zensloom/env";
+import { Logo } from "@zensloom/ui";
+import type { ImageUpload } from "@zensloom/web-domain";
 import { useTranscript } from "hooks/use-transcript";
 import { useRouter } from "next/navigation";
 import {

@@ -1,17 +1,17 @@
-"use client";
+﻿"use client";
 
-import type { videos as videosSchema } from "@cap/database/schema";
-import type { VideoMetadata } from "@cap/database/types";
-import { buildEnv, NODE_ENV } from "@cap/env";
+import type { videos as videosSchema } from "@zensloom/database/schema";
+import type { VideoMetadata } from "@zensloom/database/types";
+import { buildEnv, NODE_ENV } from "@zensloom/env";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "@cap/ui";
-import { calculateStrokeDashoffset, getProgressCircleConfig } from "@cap/utils";
-import type { SpaceRuleSource, ViewerSettingKey } from "@cap/web-backend";
-import type { ImageUpload, Video } from "@cap/web-domain";
+} from "@zensloom/ui";
+import { calculateStrokeDashoffset, getProgressCircleConfig } from "@zensloom/utils";
+import type { SpaceRuleSource, ViewerSettingKey } from "@zensloom/web-backend";
+import type { ImageUpload, Video } from "@zensloom/web-domain";
 import { HttpClient } from "@effect/platform";
 import {
 	faChartSimple,

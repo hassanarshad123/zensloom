@@ -1,11 +1,11 @@
-"use server";
+﻿"use server";
 
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
-import { organizations, users } from "@cap/database/schema";
-import { userIsPro } from "@cap/utils";
-import { ImageUploads } from "@cap/web-backend";
-import { Organisation } from "@cap/web-domain";
+import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
+import { organizations, users } from "@zensloom/database/schema";
+import { userIsPro } from "@zensloom/utils";
+import { ImageUploads } from "@zensloom/web-backend";
+import { Organisation } from "@zensloom/web-domain";
 import { eq } from "drizzle-orm";
 import { Effect, Option } from "effect";
 import { revalidatePath } from "next/cache";

@@ -1,4 +1,4 @@
-use windows::Graphics::DirectX::Direct3D11::{IDirect3DDevice, IDirect3DSurface};
+﻿use windows::Graphics::DirectX::Direct3D11::{IDirect3DDevice, IDirect3DSurface};
 use windows::Win32::Foundation::HMODULE;
 use windows::Win32::Graphics::Direct3D11::{D3D11_CREATE_DEVICE_DEBUG, ID3D11Texture2D};
 use windows::Win32::Graphics::Dxgi::IDXGISurface;
@@ -42,7 +42,7 @@ fn create_d3d_device_on_pinned_adapter(
     flags: D3D11_CREATE_DEVICE_FLAG,
     device: *mut Option<ID3D11Device>,
 ) -> std::result::Result<String, String> {
-    let selected = cap_d3d_adapter::select_capture_adapter(None)?;
+    let selected = zensloom_d3d_adapter::select_capture_adapter(None)?;
 
     unsafe {
         D3D11CreateDevice(

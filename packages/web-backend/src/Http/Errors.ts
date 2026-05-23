@@ -1,4 +1,4 @@
-import { DatabaseError, Http, S3Error } from "@cap/web-domain";
+﻿import { DatabaseError, Http, S3Error } from "@zensloom/web-domain";
 import { Effect, Schema } from "effect";
 import { InvalidRpcAuth } from "../Workflows.ts";
 

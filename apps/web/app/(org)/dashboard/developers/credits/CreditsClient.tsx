@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
 	Button,
@@ -7,7 +7,7 @@ import {
 	CardHeader,
 	CardTitle,
 	Input,
-} from "@cap/ui";
+} from "@zensloom/ui";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";

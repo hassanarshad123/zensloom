@@ -1,4 +1,4 @@
-import { buildEnv } from "@cap/env";
+import { buildEnv } from "@zensloom/env";
 import { notFound } from "next/navigation";
 import { getMessengerConversationForViewer } from "@/lib/messenger/data";
 import { ChatWindow } from "./ChatWindow";

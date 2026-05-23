@@ -1,4 +1,4 @@
-import { Route, Router, useCurrentMatches } from "@solidjs/router";
+﻿import { Route, Router, useCurrentMatches } from "@solidjs/router";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import {
 	getCurrentWebviewWindow,
@@ -8,7 +8,7 @@ import { message } from "@tauri-apps/plugin-dialog";
 import { createEffect, lazy, onCleanup, onMount, Suspense } from "solid-js";
 import { Toaster } from "solid-toast";
 
-import "@cap/ui-solid/main.css";
+import "@zensloom/ui-solid/main.css";
 import "unfonts.css";
 import "./styles/theme.css";
 

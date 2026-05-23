@@ -1,4 +1,4 @@
-import { Button } from "@cap/ui-solid";
+﻿import { Button } from "@zensloom/ui-solid";
 import { A, type RouteSectionProps, useNavigate } from "@solidjs/router";
 import { createQuery } from "@tanstack/solid-query";
 import { getVersion } from "@tauri-apps/api/app";
@@ -149,8 +149,8 @@ export default function Settings(props: RouteSectionProps) {
 			}
 
 			const shouldUpdate = await dialog.confirm(
-				`Version ${update.version} of Cap is available, would you like to install it?`,
-				{ title: "Update Cap", okLabel: "Update", cancelLabel: "Ignore" },
+				`Version ${update.version} of Zensloom is available, would you like to install it?`,
+				{ title: "Update Zensloom", okLabel: "Update", cancelLabel: "Ignore" },
 			);
 
 			if (shouldUpdate) navigate("/update");

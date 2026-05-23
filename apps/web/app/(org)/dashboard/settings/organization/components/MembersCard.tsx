@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { buildEnv } from "@cap/env";
+import { buildEnv } from "@zensloom/env";
 import {
 	Button,
 	Card,
@@ -15,7 +15,7 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@cap/ui";
+} from "@zensloom/ui";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMutation } from "@tanstack/react-query";

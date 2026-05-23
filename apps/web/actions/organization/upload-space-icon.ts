@@ -1,10 +1,10 @@
-"use server";
+﻿"use server";
 
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
-import { spaces } from "@cap/database/schema";
-import { S3Buckets } from "@cap/web-backend";
-import { ImageUpload, type Space } from "@cap/web-domain";
+import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
+import { spaces } from "@zensloom/database/schema";
+import { S3Buckets } from "@zensloom/web-backend";
+import { ImageUpload, type Space } from "@zensloom/web-domain";
 import { eq } from "drizzle-orm";
 import { Option } from "effect";
 import { revalidatePath } from "next/cache";

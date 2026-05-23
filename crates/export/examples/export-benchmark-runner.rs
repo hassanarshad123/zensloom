@@ -1,9 +1,9 @@
-use cap_export::{
+﻿use zensloom_export::{
     ExporterBase,
     gif::GifExportSettings,
     mp4::{ExportCompression, Mp4ExportSettings},
 };
-use cap_project::XY;
+use zensloom_project::XY;
 use chrono::{Local, Utc};
 use clap::{Parser, Subcommand};
 use std::{
@@ -352,7 +352,7 @@ fn generate_test_video(
     Ok(())
 }
 
-fn create_cap_project(project_dir: &Path, duration_secs: u32, fps: u32) -> Result<(), String> {
+fn create_zensloom_project(project_dir: &Path, duration_secs: u32, fps: u32) -> Result<(), String> {
     let content_dir = project_dir.join("content");
     fs::create_dir_all(&content_dir).map_err(|e| format!("Failed to create content dir: {e}"))?;
 
@@ -1024,7 +1024,7 @@ async fn main() {
 
         println!("Setting up test project in {project_dir:?}");
 
-        create_cap_project(&project_dir, duration_secs, SOURCE_VIDEO_FPS)
+        create_zensloom_project(&project_dir, duration_secs, SOURCE_VIDEO_FPS)
             .expect("Failed to create cap project");
 
         let video_path = project_dir.join("content/display.mp4");

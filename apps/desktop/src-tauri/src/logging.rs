@@ -1,5 +1,5 @@
-use crate::{ArcLock, feeds::microphone::MicrophoneFeed, permissions, web_api::ManagerExt};
-use cap_recording::diagnostics::{
+﻿use crate::{ArcLock, feeds::microphone::MicrophoneFeed, permissions, web_api::ManagerExt};
+use zensloom_recording::diagnostics::{
     CameraDiagnostics, CameraFormatInfo, DisplayDiagnostics, HardwareInfo, MicrophoneDiagnostics,
     StorageInfo,
 };
@@ -38,7 +38,7 @@ async fn get_latest_log_file(app: &AppHandle) -> Option<PathBuf> {
 #[serde(rename_all = "camelCase")]
 struct LogUploadDiagnostics {
     hardware: HardwareInfo,
-    system: cap_recording::diagnostics::SystemDiagnostics,
+    system: zensloom_recording::diagnostics::SystemDiagnostics,
     displays: Vec<DisplayDiagnostics>,
     cameras: Vec<CameraDiagnostics>,
     microphones: Vec<MicrophoneDiagnostics>,
@@ -68,7 +68,7 @@ fn collect_cameras(has_permission: bool) -> Vec<CameraDiagnostics> {
         return vec![];
     }
 
-    cap_camera::list_cameras()
+    zensloom_camera::list_cameras()
         .map(|camera| {
             let formats = camera
                 .formats()
@@ -135,9 +135,9 @@ fn collect_diagnostics_for_upload(
     app_data_dir: &std::path::Path,
     is_recording: bool,
 ) -> LogUploadDiagnostics {
-    let hardware = cap_recording::diagnostics::collect_hardware_info();
-    let system = cap_recording::diagnostics::collect_diagnostics();
-    let displays = cap_recording::diagnostics::collect_displays();
+    let hardware = zensloom_recording::diagnostics::collect_hardware_info();
+    let system = zensloom_recording::diagnostics::collect_diagnostics();
+    let displays = zensloom_recording::diagnostics::collect_displays();
     let permissions = permissions::do_permissions_check(false);
 
     let cameras = collect_cameras(permissions.camera.permitted());

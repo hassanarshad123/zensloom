@@ -1,6 +1,6 @@
-use std::{thread, time::Duration};
+﻿use std::{thread, time::Duration};
 
-use cap_media_info::{RawVideoFormat, VideoInfo};
+use zensloom_media_info::{RawVideoFormat, VideoInfo};
 use ffmpeg::{
     Dictionary,
     codec::{context, encoder},

@@ -1,4 +1,4 @@
-import { Input } from "@cap/ui";
+﻿import { Input } from "@zensloom/ui";
 import clsx from "clsx";
 import { useDashboardContext } from "@/app/(org)/dashboard/Contexts";
 

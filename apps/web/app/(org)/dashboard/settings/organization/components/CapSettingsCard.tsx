@@ -1,13 +1,13 @@
-"use client";
+﻿"use client";
 
-import { Card, CardDescription, CardHeader, CardTitle, Switch } from "@cap/ui";
+import { Card, CardDescription, CardHeader, CardTitle, Switch } from "@zensloom/ui";
 import {
 	AI_GENERATION_LANGUAGE_AUTO,
 	AI_GENERATION_LANGUAGES,
 	type AiGenerationLanguage,
 	getAiGenerationLanguageName,
 	isAiGenerationLanguage,
-} from "@cap/web-domain";
+} from "@zensloom/web-domain";
 import { useDebounce } from "@uidotdev/usehooks";
 import clsx from "clsx";
 import { ChevronDown, Globe } from "lucide-react";

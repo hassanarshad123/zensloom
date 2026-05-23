@@ -1,4 +1,18 @@
 {
-	"rust-analyzer.cargo.targetDir": "target/rust-analyzer",
-	"rust-analyzer.check.allTargets": false
+  "rust-analyzer.cargo.targetDir": "target/rust-analyzer",
+  "rust-analyzer.check.allTargets": false,
+  "rust-analyzer.check.command": "clippy",
+  "editor.formatOnSave": true,
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer"
+  },
+  "[typescript][typescriptreact][javascript][javascriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/target": true,
+    "**/.turbo": true
+  },
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

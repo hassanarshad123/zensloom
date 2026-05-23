@@ -1,10 +1,10 @@
 "use client";
 
-import type { userSelectProps } from "@cap/database/auth/session";
-import type { comments as commentsSchema, videos } from "@cap/database/schema";
-import { NODE_ENV } from "@cap/env";
-import { Avatar, Logo } from "@cap/ui";
-import type { ViewerSettings } from "@cap/web-backend";
+import type { userSelectProps } from "@zensloom/database/auth/session";
+import type { comments as commentsSchema, videos } from "@zensloom/database/schema";
+import { NODE_ENV } from "@zensloom/env";
+import { Avatar, Logo } from "@zensloom/ui";
+import type { ViewerSettings } from "@zensloom/web-backend";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranscript } from "hooks/use-transcript";
 import {

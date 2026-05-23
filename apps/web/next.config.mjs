@@ -1,4 +1,4 @@
-import("dotenv").then(({ config }) => config({ path: "../../.env" }));
+﻿import("dotenv").then(({ config }) => config({ path: "../../.env" }));
 
 import fs from "node:fs";
 import path from "node:path";
@@ -24,12 +24,12 @@ const nextConfig = {
 		"/api/tools/loom-download": ffmpegTracingIncludes,
 	},
 	transpilePackages: [
-		"@cap/ui",
-		"@cap/utils",
-		"@cap/web-api-contract",
-		"@cap/web-domain",
-		"@cap/env",
-		"@cap/database",
+		"@zensloom/ui",
+		"@zensloom/utils",
+		"@zensloom/web-api-contract",
+		"@zensloom/web-domain",
+		"@zensloom/env",
+		"@zensloom/database",
 		"next-mdx-remote",
 	],
 	typescript: {
@@ -37,8 +37,8 @@ const nextConfig = {
 	},
 	experimental: {
 		optimizePackageImports: [
-			"@cap/ui",
-			"@cap/utils",
+			"@zensloom/ui",
+			"@zensloom/utils",
 			"lucide-react",
 			"framer-motion",
 			"motion",

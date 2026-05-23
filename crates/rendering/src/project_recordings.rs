@@ -1,9 +1,9 @@
-use std::{
+﻿use std::{
     cell::RefCell,
     path::{Path, PathBuf},
 };
 
-use cap_project::{AudioMeta, StudioRecordingMeta, VideoMeta};
+use zensloom_project::{AudioMeta, StudioRecordingMeta, VideoMeta};
 use serde::Serialize;
 use specta::Type;
 

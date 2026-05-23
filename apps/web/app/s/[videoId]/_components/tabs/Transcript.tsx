@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@cap/ui";
+import { Button } from "@zensloom/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useInvalidateTranscript, useTranscript } from "hooks/use-transcript";
 import {

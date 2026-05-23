@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { Button } from "@cap/ui";
+import { Button } from "@zensloom/ui";
 import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { clsx } from "clsx";

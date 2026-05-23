@@ -1,13 +1,13 @@
-import type * as S3 from "@aws-sdk/client-s3";
-import type * as Db from "@cap/database/schema";
-import { serverEnv } from "@cap/env";
+﻿import type * as S3 from "@aws-sdk/client-s3";
+import type * as Db from "@zensloom/database/schema";
+import { serverEnv } from "@zensloom/env";
 import {
 	type Organisation,
 	type S3Bucket,
 	Storage as StorageDomain,
 	type User,
 	type Video,
-} from "@cap/web-domain";
+} from "@zensloom/web-domain";
 import { Effect, Option } from "effect";
 
 import { S3Buckets } from "../S3Buckets/index.ts";

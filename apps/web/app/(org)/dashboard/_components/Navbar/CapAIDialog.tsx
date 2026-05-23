@@ -1,10 +1,10 @@
-import {
+﻿import {
 	Button,
 	DialogContent,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@cap/ui";
+} from "@zensloom/ui";
 import {
 	faInfoCircle,
 	faWandMagicSparkles,

@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
-import { Button, Input, LogoBadge } from "@cap/ui";
-import { Organisation } from "@cap/web-domain";
+import { Button, Input, LogoBadge } from "@zensloom/ui";
+import { Organisation } from "@zensloom/web-domain";
 import {
 	faArrowLeft,
 	faEnvelope,

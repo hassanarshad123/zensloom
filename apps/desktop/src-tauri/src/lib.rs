@@ -1,4 +1,4 @@
-#![recursion_limit = "256"]
+﻿#![recursion_limit = "256"]
 
 mod api;
 mod audio;
@@ -44,12 +44,12 @@ mod windows;
 use audio::AppSounds;
 use auth::{AuthStore, Plan};
 use camera::{CameraPreviewManager, CameraPreviewState};
-use cap_editor::{EditorInstance, EditorState};
-use cap_project::{
+use zensloom_editor::{EditorInstance, EditorState};
+use zensloom_project::{
     InstantRecordingMeta, ProjectConfiguration, RecordingMeta, RecordingMetaInner, SharingMeta,
     StudioRecordingMeta, StudioRecordingStatus, UploadMeta, VideoUploadInfo, XY, ZoomSegment,
 };
-use cap_recording::{
+use zensloom_recording::{
     RecordingMode,
     feeds::{
         self,
@@ -58,7 +58,7 @@ use cap_recording::{
     },
     sources::screen_capture::ScreenCaptureTarget,
 };
-use cap_rendering::ProjectRecordingsMeta;
+use zensloom_rendering::ProjectRecordingsMeta;
 use clipboard_rs::common::RustImage;
 use clipboard_rs::{Clipboard, ClipboardContext};
 use cpal::StreamError;
@@ -379,9 +379,9 @@ pub struct App {
     #[deprecated = "can be removed when native camera preview is ready"]
     camera_ws_port: u16,
     #[deprecated = "can be removed when native camera preview is ready"]
-    camera_ws_sender: flume::Sender<cap_recording::FFmpegVideoFrame>,
+    camera_ws_sender: flume::Sender<zensloom_recording::FFmpegVideoFrame>,
     camera_preview: CameraPreviewManager,
-    camera_blur_tx: tokio::sync::watch::Sender<cap_project::BackgroundBlurMode>,
+    camera_blur_tx: tokio::sync::watch::Sender<zensloom_project::BackgroundBlurMode>,
     handle: AppHandle,
     recording_state: RecordingState,
     recording_logging_handle: LoggingHandle,
@@ -467,14 +467,14 @@ fn emit_camera_preview_clear(app_handle: &AppHandle) {
 
 async fn add_camera_preview_ws_sender(
     camera_feed: &ActorRef<CameraFeed>,
-    sender: flume::Sender<cap_recording::FFmpegVideoFrame>,
+    sender: flume::Sender<zensloom_recording::FFmpegVideoFrame>,
 ) {
     add_camera_preview_sender(camera_feed, sender, "WebSocket").await;
 }
 
 async fn add_camera_preview_sender(
     camera_feed: &ActorRef<CameraFeed>,
-    sender: flume::Sender<cap_recording::FFmpegVideoFrame>,
+    sender: flume::Sender<zensloom_recording::FFmpegVideoFrame>,
     label: &str,
 ) {
     let result = camera_feed.ask(feeds::camera::AddSender(sender)).await;
@@ -485,7 +485,7 @@ async fn add_camera_preview_sender(
 
 async fn remove_camera_preview_sender(
     camera_feed: &ActorRef<CameraFeed>,
-    sender: flume::Sender<cap_recording::FFmpegVideoFrame>,
+    sender: flume::Sender<zensloom_recording::FFmpegVideoFrame>,
     label: &str,
 ) {
     let result = camera_feed.ask(feeds::camera::RemoveSender(sender)).await;
@@ -496,8 +496,8 @@ async fn remove_camera_preview_sender(
 
 async fn sync_camera_preview_sender(
     camera_feed: &ActorRef<CameraFeed>,
-    camera_ws_sender: flume::Sender<cap_recording::FFmpegVideoFrame>,
-    camera_preview_sender: Option<flume::Sender<cap_recording::FFmpegVideoFrame>>,
+    camera_ws_sender: flume::Sender<zensloom_recording::FFmpegVideoFrame>,
+    camera_preview_sender: Option<flume::Sender<zensloom_recording::FFmpegVideoFrame>>,
     use_ws_preview: bool,
 ) {
     if use_ws_preview {
@@ -850,8 +850,8 @@ async fn upload_logs(app_handle: AppHandle) -> Result<(), String> {
 
 #[tauri::command]
 #[specta::specta]
-fn get_system_diagnostics() -> cap_recording::diagnostics::SystemDiagnostics {
-    cap_recording::diagnostics::collect_diagnostics()
+fn get_system_diagnostics() -> zensloom_recording::diagnostics::SystemDiagnostics {
+    zensloom_recording::diagnostics::collect_diagnostics()
 }
 
 #[tauri::command]
@@ -1269,7 +1269,7 @@ fn spawn_device_watchers(app_handle: AppHandle) {
 
 #[derive(Serialize, Type, tauri_specta::Event, Debug, Clone)]
 pub struct DevicesUpdated {
-    cameras: Vec<cap_camera::CameraInfo>,
+    cameras: Vec<zensloom_camera::CameraInfo>,
     microphones: Vec<String>,
     permissions: permissions::OSPermissionsCheck,
 }
@@ -1279,7 +1279,7 @@ pub struct DevicesUpdated {
 async fn get_devices_snapshot() -> DevicesUpdated {
     let permissions = permissions::do_permissions_check(false);
     let cameras = if permissions.camera.permitted() {
-        cap_camera::list_cameras().collect()
+        zensloom_camera::list_cameras().collect()
     } else {
         Vec::new()
     };
@@ -1316,7 +1316,7 @@ fn spawn_devices_snapshot_emitter(app_handle: AppHandle) {
                 || app_is_exiting(&app_handle),
                 permissions.camera.permitted(),
                 permissions.microphone.permitted(),
-                || cap_camera::list_cameras().collect::<Vec<_>>(),
+                || zensloom_camera::list_cameras().collect::<Vec<_>>(),
                 || MicrophoneFeed::list().keys().cloned().collect::<Vec<_>>(),
             ) else {
                 break;
@@ -1700,11 +1700,7 @@ async fn cleanup_app_resources_for_exit(app: &AppHandle) {
 #[cfg(target_os = "macos")]
 fn finalize_app_exit(app: &AppHandle, exit_code: i32) -> ! {
     let _ = app;
-    sentry::Hub::with(|hub| {
-        if let Some(client) = hub.client() {
-            let _ = client.flush(Some(Duration::from_millis(250)));
-        }
-    });
+    // sentry flush removed - zero telemetry
     match app_exit_action(exit_code) {
         AppExitAction::Process(code) => force_exit(code),
     }
@@ -1904,7 +1900,7 @@ fn spawn_camera_watcher(app_handle: AppHandle) {
 }
 
 fn is_camera_available(id: &DeviceOrModelID) -> bool {
-    let cameras: Vec<_> = cap_camera::list_cameras().collect();
+    let cameras: Vec<_> = zensloom_camera::list_cameras().collect();
     debug!(
         "is_camera_available: looking for {:?} in {} cameras",
         id,
@@ -2887,7 +2883,7 @@ async fn generate_keyboard_segments(
     linger_duration_ms: f64,
     show_modifiers: bool,
     show_special_keys: bool,
-) -> Result<Vec<cap_project::KeyboardTrackSegment>, String> {
+) -> Result<Vec<zensloom_project::KeyboardTrackSegment>, String> {
     let meta = editor_instance.meta();
 
     let RecordingMetaInner::Studio(studio_meta) = &meta.inner else {
@@ -2899,7 +2895,7 @@ async fn generate_keyboard_segments(
         _ => return Ok(vec![]),
     };
 
-    let mut all_events = cap_project::KeyboardEvents { presses: vec![] };
+    let mut all_events = zensloom_project::KeyboardEvents { presses: vec![] };
 
     for segment in segments {
         let events = segment.keyboard_events(meta);
@@ -2912,7 +2908,7 @@ async fn generate_keyboard_segments(
             .unwrap_or(std::cmp::Ordering::Equal)
     });
 
-    let grouped = cap_project::group_key_events(
+    let grouped = zensloom_project::group_key_events(
         &all_events,
         grouping_threshold_ms,
         linger_duration_ms,
@@ -3512,8 +3508,8 @@ async fn get_display_frame_for_cropping(
     editor_instance: WindowEditorInstance,
     fps: u32,
 ) -> Result<Vec<u8>, String> {
-    use cap_project::ClipOffsets;
-    use cap_rendering::{PixelFormat, cpu_yuv};
+    use zensloom_project::ClipOffsets;
+    use zensloom_rendering::{PixelFormat, cpu_yuv};
     use image::{ImageEncoder, codecs::png::PngEncoder};
     use std::io::Cursor;
     use std::time::Instant;
@@ -3700,14 +3696,14 @@ async fn show_window(app: AppHandle, window: ShowCapWindow) -> Result<(), String
 #[specta::specta]
 #[instrument]
 fn list_fails() -> Result<BTreeMap<String, bool>, ()> {
-    Ok(cap_fail::get_state())
+    Ok(zensloom_fail::get_state())
 }
 
 #[tauri::command(async)]
 #[specta::specta]
 #[instrument]
 fn set_fail(name: String, value: bool) {
-    cap_fail::set_fail(&name, value)
+    zensloom_fail::set_fail(&name, value)
 }
 
 async fn check_notification_permissions(app: AppHandle) {
@@ -4132,7 +4128,7 @@ pub async fn run(recording_logging_handle: LoggingHandle, logs_dir: PathBuf) {
         .typ::<hotkeys::HotkeysStore>()
         .typ::<general_settings::GeneralSettingsStore>()
         .typ::<recording_settings::RecordingSettingsStore>()
-        .typ::<cap_flags::Flags>()
+        .typ::<zensloom_flags::Flags>()
         .typ::<crate::window_exclusion::WindowExclusion>();
 
     #[cfg(debug_assertions)]
@@ -4144,7 +4140,7 @@ pub async fn run(recording_logging_handle: LoggingHandle, logs_dir: PathBuf) {
         .expect("Failed to export typescript bindings");
 
     let (camera_blur_tx, camera_blur_rx) =
-        tokio::sync::watch::channel(cap_project::BackgroundBlurMode::Off);
+        tokio::sync::watch::channel(zensloom_project::BackgroundBlurMode::Off);
     let (camera_tx, camera_ws_port, _shutdown) =
         camera_legacy::create_camera_preview_ws(camera_blur_rx).await;
     let camera_ws_sender = camera_tx.clone();
@@ -4208,7 +4204,7 @@ pub async fn run(recording_logging_handle: LoggingHandle, logs_dir: PathBuf) {
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_process::init())
-        .plugin(tauri_plugin_oauth::init())
+        // .plugin(tauri_plugin_oauth::init()) // removed - no auth in v1.0
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_notification::init())
@@ -4324,12 +4320,8 @@ pub async fn run(recording_logging_handle: LoggingHandle, logs_dir: PathBuf) {
             });
 
             if let Ok(Some(auth)) = AuthStore::load(&app) {
-                sentry::configure_scope(|scope| {
-                    scope.set_user(auth.user_id.map(|id| sentry::User {
-                        id: Some(id),
-                        ..Default::default()
-                    }));
-                });
+                // sentry::configure_scope removed - zero telemetry
+                // scope.set_user({ id: Some(id), ..Default::default() });
             }
 
             {
@@ -4908,10 +4900,7 @@ pub async fn run(recording_logging_handle: LoggingHandle, logs_dir: PathBuf) {
             if let Err(panic) = result {
                 let message = panic_payload_message(&panic);
                 tracing::error!(panic = %message, "Suppressed panic in Tauri WindowEvent handler");
-                sentry::capture_message(
-                    &format!("Tauri WindowEvent panic suppressed: {message}"),
-                    sentry::Level::Error,
-                );
+                // sentry::capture_message removed - zero telemetry
             }
         })
         .build(tauri_context)
@@ -4924,10 +4913,7 @@ pub async fn run(recording_logging_handle: LoggingHandle, logs_dir: PathBuf) {
             if let Err(panic) = result {
                 let message = panic_payload_message(&panic);
                 tracing::error!(panic = %message, "Suppressed panic in Tauri RunEvent handler");
-                sentry::capture_message(
-                    &format!("Tauri RunEvent panic suppressed: {message}"),
-                    sentry::Level::Error,
-                );
+                // sentry::capture_message removed - zero telemetry
             }
         });
 }
@@ -4959,10 +4945,7 @@ where
                 panic = %message,
                 "Suppressed panic in Tauri command"
             );
-            sentry::capture_message(
-                &format!("Tauri command '{command_name}' panicked: {message}"),
-                sentry::Level::Error,
-            );
+            // sentry::capture_message removed - zero telemetry
             Err(format!("{command_name} failed unexpectedly"))
         }
     }
@@ -5319,10 +5302,10 @@ async fn resume_uploads(app: AppHandle) -> Result<(), String> {
                             let audio_dir = content_dir.join("audio");
 
                             let (segment_tx, segment_rx) = std::sync::mpsc::channel::<
-                                cap_enc_ffmpeg::segmented_stream::SegmentCompletedEvent,
+                                zensloom_enc_ffmpeg::segmented_stream::SegmentCompletedEvent,
                             >();
 
-                            use cap_enc_ffmpeg::segmented_stream::{
+                            use zensloom_enc_ffmpeg::segmented_stream::{
                                 SegmentCompletedEvent, SegmentMediaType,
                             };
 
@@ -5436,7 +5419,7 @@ async fn resume_uploads(app: AppHandle) -> Result<(), String> {
 async fn create_editor_instance_impl(
     app: &AppHandle,
     path: PathBuf,
-    frame_cb: Box<dyn FnMut(cap_editor::EditorFrameOutput) + Send>,
+    frame_cb: Box<dyn FnMut(zensloom_editor::EditorFrameOutput) + Send>,
 ) -> Result<(Arc<EditorInstance>, tauri::EventId), String> {
     let app = app.clone();
 
@@ -5445,7 +5428,7 @@ async fn create_editor_instance_impl(
     let shared_device =
         gpu_context::get_shared_gpu()
             .await
-            .map(|shared| cap_rendering::SharedWgpuDevice {
+            .map(|shared| zensloom_rendering::SharedWgpuDevice {
                 instance: (*shared.instance).clone(),
                 adapter: (*shared.adapter).clone(),
                 device: (*shared.device).clone(),

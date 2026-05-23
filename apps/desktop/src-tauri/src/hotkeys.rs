@@ -1,10 +1,10 @@
-use crate::{
+﻿use crate::{
     RequestOpenRecordingPicker, RequestStartRecording, recording,
     recording_settings::{RecordingSettingsStore, RecordingTargetMode},
     tray,
     windows::ShowCapWindow,
 };
-use cap_recording::screen_capture::ScreenCaptureTarget;
+use zensloom_recording::screen_capture::ScreenCaptureTarget;
 use global_hotkey::HotKeyState;
 use serde::{Deserialize, Serialize};
 use specta::Type;
@@ -140,14 +140,14 @@ async fn handle_hotkey(app: AppHandle, action: HotkeyAction) -> Result<(), Strin
     match action {
         HotkeyAction::StartStudioRecording => {
             let _ = RequestStartRecording {
-                mode: cap_recording::RecordingMode::Studio,
+                mode: zensloom_recording::RecordingMode::Studio,
             }
             .emit(&app);
             Ok(())
         }
         HotkeyAction::StartInstantRecording => {
             let _ = RequestStartRecording {
-                mode: cap_recording::RecordingMode::Instant,
+                mode: zensloom_recording::RecordingMode::Instant,
             }
             .emit(&app);
             Ok(())
@@ -167,9 +167,9 @@ async fn handle_hotkey(app: AppHandle, action: HotkeyAction) -> Result<(), Strin
                 .unwrap_or_default();
 
             let next = match current {
-                cap_recording::RecordingMode::Studio => cap_recording::RecordingMode::Instant,
-                cap_recording::RecordingMode::Instant => cap_recording::RecordingMode::Screenshot,
-                cap_recording::RecordingMode::Screenshot => cap_recording::RecordingMode::Studio,
+                zensloom_recording::RecordingMode::Studio => zensloom_recording::RecordingMode::Instant,
+                zensloom_recording::RecordingMode::Instant => zensloom_recording::RecordingMode::Screenshot,
+                zensloom_recording::RecordingMode::Screenshot => zensloom_recording::RecordingMode::Studio,
             };
 
             RecordingSettingsStore::set_mode(&app, next)
@@ -236,10 +236,10 @@ async fn handle_hotkey(app: AppHandle, action: HotkeyAction) -> Result<(), Strin
             }
         }
         HotkeyAction::ScreenshotArea => {
-            RecordingSettingsStore::set_mode(&app, cap_recording::RecordingMode::Screenshot)
+            RecordingSettingsStore::set_mode(&app, zensloom_recording::RecordingMode::Screenshot)
                 .map_err(|e| format!("Failed to set screenshot mode: {e}"))?;
 
-            tray::update_tray_icon_for_mode(&app, cap_recording::RecordingMode::Screenshot);
+            tray::update_tray_icon_for_mode(&app, zensloom_recording::RecordingMode::Screenshot);
 
             let _ = RequestOpenRecordingPicker {
                 target_mode: Some(RecordingTargetMode::Area),

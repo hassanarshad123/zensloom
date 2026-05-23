@@ -1,13 +1,13 @@
-import { timingSafeEqual } from "node:crypto";
-import { db } from "@cap/database";
-import { nanoId } from "@cap/database/helpers";
+﻿import { timingSafeEqual } from "node:crypto";
+import { db } from "@zensloom/database";
+import { nanoId } from "@zensloom/database/helpers";
 import {
 	developerApps,
 	developerCreditAccounts,
 	developerCreditTransactions,
 	developerDailyStorageSnapshots,
 	developerVideos,
-} from "@cap/database/schema";
+} from "@zensloom/database/schema";
 import { and, eq, inArray, isNull, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 

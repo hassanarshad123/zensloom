@@ -1,16 +1,16 @@
-import { db } from "@cap/database";
-import { sendEmail } from "@cap/database/emails/config";
-import { Feedback } from "@cap/database/emails/feedback";
+import { db } from "@zensloom/database";
+import { sendEmail } from "@zensloom/database/emails/config";
+import { Feedback } from "@zensloom/database/emails/feedback";
 import {
 	organizationMembers,
 	organizations,
 	users,
-} from "@cap/database/schema";
-import { buildEnv, serverEnv } from "@cap/env";
-import { stripe, userIsPro } from "@cap/utils";
-import { OrganizationBrandingPatchBody } from "@cap/web-api-contract";
-import { ImageUploads } from "@cap/web-backend";
-import { type ImageUpload, Organisation } from "@cap/web-domain";
+} from "@zensloom/database/schema";
+import { buildEnv, serverEnv } from "@zensloom/env";
+import { stripe, userIsPro } from "@zensloom/utils";
+import { OrganizationBrandingPatchBody } from "@zensloom/web-api-contract";
+import { ImageUploads } from "@zensloom/web-backend";
+import { type ImageUpload, Organisation } from "@zensloom/web-domain";
 import { zValidator } from "@hono/zod-validator";
 import { and, eq, isNull, or } from "drizzle-orm";
 import { Effect, Option } from "effect";

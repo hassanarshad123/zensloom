@@ -1,5 +1,5 @@
-import { getCurrentUser } from "@cap/database/auth/session";
-import { Card, CardDescription, CardHeader, CardTitle } from "@cap/ui";
+﻿import { getCurrentUser } from "@zensloom/database/auth/session";
+import { Card, CardDescription, CardHeader, CardTitle } from "@zensloom/ui";
 import { redirect } from "next/navigation";
 import { getOrganizationAccess } from "@/actions/organization/authorization";
 import { canViewOrganizationSettings } from "@/lib/permissions/roles";

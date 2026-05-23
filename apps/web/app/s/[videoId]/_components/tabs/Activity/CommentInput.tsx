@@ -1,4 +1,4 @@
-import { Button } from "@cap/ui";
+import { Button } from "@zensloom/ui";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 

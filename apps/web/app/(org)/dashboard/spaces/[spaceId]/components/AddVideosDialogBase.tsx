@@ -8,8 +8,8 @@ import {
 	DialogTitle,
 	Input,
 	LoadingSpinner,
-} from "@cap/ui";
-import type { Video } from "@cap/web-domain";
+} from "@zensloom/ui";
+import type { Video } from "@zensloom/web-domain";
 import { faVideo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";

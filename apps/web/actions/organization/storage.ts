@@ -1,28 +1,28 @@
-"use server";
+﻿"use server";
 
 import { createHmac } from "node:crypto";
 import { HeadBucketCommand, S3Client } from "@aws-sdk/client-s3";
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
-import { decrypt, encrypt } from "@cap/database/crypto";
-import { nanoId } from "@cap/database/helpers";
+import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
+import { decrypt, encrypt } from "@zensloom/database/crypto";
+import { nanoId } from "@zensloom/database/helpers";
 import {
 	organizations,
 	s3Buckets,
 	storageIntegrations,
 	storageObjects,
 	videos,
-} from "@cap/database/schema";
-import { serverEnv } from "@cap/env";
-import { userIsPro } from "@cap/utils";
+} from "@zensloom/database/schema";
+import { serverEnv } from "@zensloom/env";
+import { userIsPro } from "@zensloom/utils";
 import {
 	type GoogleDriveIntegrationConfig,
 	getGoogleDriveAccessToken,
 	getGoogleDriveAuthUrl,
 	getGoogleDriveFolderLocation,
 	getGoogleDriveUserEmail,
-} from "@cap/web-backend";
-import { type Organisation, S3Bucket, Storage } from "@cap/web-domain";
+} from "@zensloom/web-backend";
+import { type Organisation, S3Bucket, Storage } from "@zensloom/web-domain";
 import { and, desc, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { runPromise } from "@/lib/server";

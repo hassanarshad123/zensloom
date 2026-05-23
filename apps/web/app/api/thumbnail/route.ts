@@ -1,7 +1,7 @@
-import { db } from "@cap/database";
-import { videos } from "@cap/database/schema";
-import { Storage } from "@cap/web-backend";
-import { Video } from "@cap/web-domain";
+﻿import { db } from "@zensloom/database";
+import { videos } from "@zensloom/database/schema";
+import { Storage } from "@zensloom/web-backend";
+import { Video } from "@zensloom/web-domain";
 import { eq } from "drizzle-orm";
 import type { NextRequest } from "next/server";
 import { runPromise } from "@/lib/server";

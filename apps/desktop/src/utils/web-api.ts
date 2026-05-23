@@ -1,8 +1,8 @@
-import {
+﻿import {
 	contract,
 	licenseContract,
 	orgCustomDomainContract,
-} from "@cap/web-api-contract";
+} from "@zensloom/web-api-contract";
 import { fetch } from "@tauri-apps/plugin-http";
 import { type ApiFetcher, initClient } from "@ts-rest/core";
 

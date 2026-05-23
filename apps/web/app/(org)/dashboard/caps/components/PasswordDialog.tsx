@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
 	Button,
@@ -8,8 +8,8 @@ import {
 	DialogHeader,
 	DialogTitle,
 	Input,
-} from "@cap/ui";
-import type { Video } from "@cap/web-domain";
+} from "@zensloom/ui";
+import type { Video } from "@zensloom/web-domain";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMutation } from "@tanstack/react-query";

@@ -1,4 +1,4 @@
-use directories::*;
+﻿use directories::*;
 use std::{
     fs,
     path::PathBuf,
@@ -9,11 +9,11 @@ use std::{
     time::{Duration, Instant, SystemTime},
 };
 
-use cap_export::{
+use zensloom_export::{
     ExporterBase,
     mp4::{ExportCompression, Mp4ExportSettings},
 };
-use cap_project::XY;
+use zensloom_project::XY;
 
 async fn run_export(project_path: PathBuf) -> Result<(PathBuf, Duration, u32), String> {
     let exporter_base = ExporterBase::builder(project_path.clone())

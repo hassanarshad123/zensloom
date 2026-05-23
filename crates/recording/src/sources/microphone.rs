@@ -1,9 +1,9 @@
-use crate::{
+﻿use crate::{
     feeds::microphone::{self, MicrophoneFeedLock},
     output_pipeline::{AudioFrame, AudioSource, PipelineHealthEvent, emit_health},
     sources::audio_mixer::AudioMixer,
 };
-use cap_media_info::{AudioInfo, ffmpeg_sample_format_for};
+use zensloom_media_info::{AudioInfo, ffmpeg_sample_format_for};
 use cpal::SampleFormat;
 use futures::{SinkExt, channel::mpsc};
 use kameo::error::SendError;
@@ -93,7 +93,7 @@ impl MicResampler {
         source_rate: u32,
         source_channels: u16,
         source_format: SampleFormat,
-        timestamp: cap_timestamp::Timestamp,
+        timestamp: zensloom_timestamp::Timestamp,
     ) -> Option<AudioFrame> {
         let ffmpeg_fmt = ffmpeg_sample_format_for(source_format)?;
         let source_info = AudioInfo::new_raw(
@@ -221,7 +221,7 @@ impl AudioSource for Microphone {
                     let reconnect_in_flight = Arc::new(AtomicBool::new(false));
                     let mut reconnect_attempts: u32 = 0;
                     let mut next_reconnect_after = MIC_RECONNECT_AFTER;
-                    let mut last_timestamp: Option<cap_timestamp::Timestamp> = None;
+                    let mut last_timestamp: Option<zensloom_timestamp::Timestamp> = None;
                     let mut last_frame_duration = SILENCE_CHUNK_DURATION;
                     let mut logged_current_source: Option<(u32, u16, SampleFormat)> = None;
 
@@ -527,7 +527,7 @@ fn create_silence_frame(info: &AudioInfo, sample_count: usize) -> ffmpeg::frame:
 #[cfg(test)]
 mod tests {
     use super::*;
-    use cap_media_info::{Sample, Type};
+    use zensloom_media_info::{Sample, Type};
 
     #[test]
     fn target_info_uses_output_rate_and_mono() {
@@ -535,7 +535,7 @@ mod tests {
             sample_format: Sample::F32(Type::Packed),
             sample_rate: 32000,
             channels: 2,
-            time_base: cap_media_info::FFRational(1, 1_000_000),
+            time_base: zensloom_media_info::FFRational(1, 1_000_000),
             buffer_size: 1024,
             is_wireless_transport: false,
         };
@@ -573,7 +573,7 @@ mod tests {
 
     #[test]
     fn upsampling_preserves_total_duration() {
-        use cap_timestamp::Timestamp;
+        use zensloom_timestamp::Timestamp;
         use std::time::Instant;
 
         let target = AudioInfo::new_raw(Sample::F32(Type::Packed), 48000, 1);
@@ -609,7 +609,7 @@ mod tests {
 
     #[test]
     fn downsampling_preserves_total_duration() {
-        use cap_timestamp::Timestamp;
+        use zensloom_timestamp::Timestamp;
         use std::time::Instant;
 
         let target = AudioInfo::new_raw(Sample::F32(Type::Packed), 48000, 1);

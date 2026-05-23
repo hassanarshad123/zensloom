@@ -1,4 +1,4 @@
-import { Button, Switch } from "@cap/ui";
+﻿import { Button, Switch } from "@zensloom/ui";
 import {
 	faCloud,
 	faCreditCard,

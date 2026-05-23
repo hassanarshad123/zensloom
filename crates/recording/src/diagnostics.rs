@@ -1,4 +1,4 @@
-use serde::Serialize;
+﻿use serde::Serialize;
 use specta::Type;
 
 #[derive(Debug, Clone, Serialize, Type)]
@@ -232,7 +232,7 @@ mod windows_impl {
         })
     }
 
-    fn gpu_info_to_diag(info: &cap_frame_converter::GpuInfo) -> GpuInfoDiag {
+    fn gpu_info_to_diag(info: &zensloom_frame_converter::GpuInfo) -> GpuInfoDiag {
         GpuInfoDiag {
             vendor: info.vendor_name().to_string(),
             description: info.description.clone(),
@@ -245,11 +245,11 @@ mod windows_impl {
     }
 
     fn get_gpu_info() -> Option<GpuInfoDiag> {
-        cap_frame_converter::detect_primary_gpu().map(gpu_info_to_diag)
+        zensloom_frame_converter::detect_primary_gpu().map(gpu_info_to_diag)
     }
 
     fn get_all_gpus_info() -> Option<AllGpusInfo> {
-        let all_gpus = cap_frame_converter::get_all_gpus();
+        let all_gpus = zensloom_frame_converter::get_all_gpus();
 
         if all_gpus.is_empty() {
             return None;
@@ -257,7 +257,7 @@ mod windows_impl {
 
         let gpus: Vec<GpuInfoDiag> = all_gpus.iter().map(gpu_info_to_diag).collect();
 
-        let primary_gpu = cap_frame_converter::detect_primary_gpu();
+        let primary_gpu = zensloom_frame_converter::detect_primary_gpu();
         let primary_gpu_index = primary_gpu.and_then(|primary| {
             all_gpus
                 .iter()
@@ -268,10 +268,10 @@ mod windows_impl {
         let has_discrete = all_gpus.iter().any(|g| {
             matches!(
                 g.vendor,
-                cap_frame_converter::GpuVendor::Nvidia
-                    | cap_frame_converter::GpuVendor::Amd
-                    | cap_frame_converter::GpuVendor::Qualcomm
-                    | cap_frame_converter::GpuVendor::Arm
+                zensloom_frame_converter::GpuVendor::Nvidia
+                    | zensloom_frame_converter::GpuVendor::Amd
+                    | zensloom_frame_converter::GpuVendor::Qualcomm
+                    | zensloom_frame_converter::GpuVendor::Arm
             ) && !g.is_software_adapter
         });
 
@@ -353,7 +353,7 @@ mod windows_impl {
     }
 
     fn check_d3d11_video_processor() -> bool {
-        use cap_frame_converter::ConversionConfig;
+        use zensloom_frame_converter::ConversionConfig;
 
         let test_config = ConversionConfig::new(
             ffmpeg::format::Pixel::BGRA,
@@ -364,7 +364,7 @@ mod windows_impl {
             1080,
         );
 
-        match cap_frame_converter::D3D11Converter::new(test_config) {
+        match zensloom_frame_converter::D3D11Converter::new(test_config) {
             Ok(converter) => {
                 tracing::debug!(
                     "D3D11 video processor check passed: {} ({})",

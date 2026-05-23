@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+﻿use anyhow::{Context, Result};
 use chrono::Utc;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
@@ -142,9 +142,9 @@ async fn run_single_kill9(
     std::fs::create_dir_all(&project_path)?;
 
     let ready_file = temp_dir.path().join("harness-ready.flag");
-    let cap_test_bin = std::env::current_exe().context("failed to resolve current exe path")?;
+    let zensloom_test_bin = std::env::current_exe().context("failed to resolve current exe path")?;
 
-    let mut child = Command::new(&cap_test_bin)
+    let mut child = Command::new(&zensloom_test_bin)
         .arg("record-harness")
         .arg("--output")
         .arg(&project_path)

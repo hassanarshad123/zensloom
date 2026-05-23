@@ -1,15 +1,15 @@
-"use server";
+﻿"use server";
 
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
+import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
 import {
 	authApiKeys,
 	organizationMembers,
 	organizations,
 	sessions,
 	users,
-} from "@cap/database/schema";
-import type { Organisation } from "@cap/web-domain";
+} from "@zensloom/database/schema";
+import type { Organisation } from "@zensloom/web-domain";
 import { eq, or, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 

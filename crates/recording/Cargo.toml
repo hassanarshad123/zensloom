@@ -1,5 +1,5 @@
-[package]
-name = "cap-recording"
+﻿[package]
+name = "zensloom-recording"
 version = "0.1.0"
 edition = "2024"
 
@@ -12,23 +12,23 @@ test-utils = []
 memory-profiling = ["dep:dhat"]
 
 [dependencies]
-cap-audio = { path = "../audio" }
-cap-fail = { path = "../fail" }
-cap-project = { path = "../project" }
-cap-media = { path = "../media" }
-cap-rendering = { path = "../rendering" }
-cap-flags = { path = "../flags" }
-cap-utils = { path = "../utils" }
+zensloom-audio = { path = "../audio" }
+zensloom-fail = { path = "../fail" }
+zensloom-project = { path = "../project" }
+zensloom-media = { path = "../media" }
+zensloom-rendering = { path = "../rendering" }
+zensloom-flags = { path = "../flags" }
+zensloom-utils = { path = "../utils" }
 scap-targets = { path = "../scap-targets" }
-cap-cursor-capture = { path = "../cursor-capture" }
-cap-media-info = { path = "../media-info" }
-cap-cursor-info = { path = "../cursor-info" }
-cap-camera = { path = "../camera", features = ["serde", "specta"] }
-cap-camera-ffmpeg = { path = "../camera-ffmpeg" }
-cap-enc-ffmpeg = { path = "../enc-ffmpeg" }
-cap-frame-converter = { path = "../frame-converter" }
-cap-timestamp = { path = "../timestamp" }
-cap-muxer-protocol = { path = "../cap-muxer-protocol" }
+zensloom-cursor-capture = { path = "../cursor-capture" }
+zensloom-media-info = { path = "../media-info" }
+zensloom-cursor-info = { path = "../cursor-info" }
+zensloom-camera = { path = "../camera", features = ["serde", "specta"] }
+zensloom-camera-ffmpeg = { path = "../camera-ffmpeg" }
+zensloom-enc-ffmpeg = { path = "../enc-ffmpeg" }
+zensloom-frame-converter = { path = "../frame-converter" }
+zensloom-timestamp = { path = "../timestamp" }
+zensloom-muxer-protocol = { path = "../cap-muxer-protocol" }
 scap-ffmpeg = { path = "../scap-ffmpeg" }
 
 specta = { workspace = true }
@@ -76,7 +76,7 @@ foreign-types-shared = "0.3"
 libc = "0.2"
 
 scap-screencapturekit = { path = "../scap-screencapturekit" }
-cap-enc-avfoundation = { path = "../enc-avfoundation" }
+zensloom-enc-avfoundation = { path = "../enc-avfoundation" }
 
 [target.'cfg(target_os = "windows")'.dependencies]
 windows = { workspace = true, features = [
@@ -89,11 +89,11 @@ windows = { workspace = true, features = [
     "Win32_Storage_Xps",
 ] }
 
-cap-d3d-adapter = { path = "../d3d-adapter" }
-cap-enc-mediafoundation = { path = "../enc-mediafoundation" }
-cap-mediafoundation-ffmpeg = { path = "../mediafoundation-ffmpeg" }
-cap-mediafoundation-utils = { path = "../mediafoundation-utils" }
-cap-camera-windows = { path = "../camera-windows" }
+zensloom-d3d-adapter = { path = "../d3d-adapter" }
+zensloom-enc-mediafoundation = { path = "../enc-mediafoundation" }
+zensloom-mediafoundation-ffmpeg = { path = "../mediafoundation-ffmpeg" }
+zensloom-mediafoundation-utils = { path = "../mediafoundation-utils" }
+zensloom-camera-windows = { path = "../camera-windows" }
 scap-direct3d = { path = "../scap-direct3d" }
 scap-cpal = { path = "../scap-cpal" }
 

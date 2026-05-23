@@ -1,10 +1,10 @@
-use cap_audio::FromSampleBytes;
+﻿use zensloom_audio::FromSampleBytes;
 #[cfg(not(target_os = "windows"))]
-use cap_audio::{LatencyCorrectionConfig, LatencyCorrector, default_output_latency_hint};
-use cap_media::MediaError;
-use cap_media_info::AudioInfo;
-use cap_project::{ProjectConfiguration, XY};
-use cap_rendering::{
+use zensloom_audio::{LatencyCorrectionConfig, LatencyCorrector, default_output_latency_hint};
+use zensloom_media::MediaError;
+use zensloom_media_info::AudioInfo;
+use zensloom_project::{ProjectConfiguration, XY};
+use zensloom_rendering::{
     DecodedSegmentFrames, PrecomputedCursorTimeline, ProjectUniforms, RenderVideoConstants,
     ZoomFocusInterpolator, spring_mass_damper::SpringMassDamperSimulationConfig,
 };
@@ -1442,7 +1442,7 @@ impl AudioPlayback {
                 && hint.latency_secs > 0.0
             {
                 match hint.transport {
-                    cap_audio::OutputTransportKind::Airplay => info!(
+                    zensloom_audio::OutputTransportKind::Airplay => info!(
                         "Applying AirPlay output latency hint: {:.1} ms",
                         hint.latency_secs * 1_000.0
                     ),

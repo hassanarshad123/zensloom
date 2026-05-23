@@ -1,9 +1,9 @@
-use cap_cursor_capture::CursorCropBounds;
-use cap_cursor_info::CursorShape;
-use cap_project::{
+﻿use zensloom_cursor_capture::CursorCropBounds;
+use zensloom_cursor_info::CursorShape;
+use zensloom_project::{
     CursorClickEvent, CursorEvents, CursorMoveEvent, KeyPressEvent, KeyboardEvents, XY,
 };
-use cap_timestamp::Timestamps;
+use zensloom_timestamp::Timestamps;
 use futures::{FutureExt, future::Shared};
 use std::{
     collections::HashMap,
@@ -196,7 +196,7 @@ pub fn spawn_cursor_recorder(
     start_time: Timestamps,
     incremental_outputs: IncrementalCaptureOutputs,
 ) -> CursorActor {
-    use cap_utils::spawn_actor;
+    use zensloom_utils::spawn_actor;
     use device_query::{DeviceQuery, DeviceState};
     use futures::future::Either;
     use sha2::{Digest, Sha256};
@@ -212,7 +212,7 @@ pub fn spawn_cursor_recorder(
         let mut last_mouse_state = device_state.get_mouse();
         let mut last_keys: Vec<device_query::Keycode> = device_state.get_keys();
 
-        let mut last_position = cap_cursor_capture::RawCursorPosition::get();
+        let mut last_position = zensloom_cursor_capture::RawCursorPosition::get();
 
         std::fs::create_dir_all(&cursors_dir).unwrap();
 
@@ -239,7 +239,7 @@ pub fn spawn_cursor_recorder(
             let elapsed = start_time.instant().elapsed().as_secs_f64() * 1000.0;
             let mouse_state = device_state.get_mouse();
 
-            let position = cap_cursor_capture::RawCursorPosition::get();
+            let position = zensloom_cursor_capture::RawCursorPosition::get();
             let position_changed = position != last_position;
 
             if position_changed {
@@ -415,7 +415,7 @@ fn get_cursor_data() -> Option<CursorData> {
         let image = image_data.as_bytes_unchecked().to_vec();
 
         let shape =
-            cap_cursor_info::CursorShapeMacOS::from_hash(&hex::encode(Sha256::digest(&image)));
+            zensloom_cursor_info::CursorShapeMacOS::from_hash(&hex::encode(Sha256::digest(&image)));
 
         Some(CursorData {
             image,

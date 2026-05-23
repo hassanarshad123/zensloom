@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { LogoBadge } from "@cap/ui";
+import { LogoBadge } from "@zensloom/ui";
 import { useClickAway } from "@uidotdev/usehooks";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";

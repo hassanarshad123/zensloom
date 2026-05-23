@@ -1,6 +1,6 @@
 "use client";
 
-import { LogoSpinner } from "@cap/ui";
+import { LogoSpinner } from "@zensloom/ui";
 
 export function RecordingInProgressOverlay({
 	onConfirmStopped,

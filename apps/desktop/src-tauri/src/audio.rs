@@ -1,4 +1,4 @@
-use cap_audio::AudioData;
+﻿use zensloom_audio::AudioData;
 
 fn play_audio(bytes: &'static [u8]) {
     use rodio::{Decoder, OutputStream, Sink};
@@ -40,7 +40,7 @@ impl AppSounds {
 }
 
 pub fn get_waveform(audio: &AudioData) -> Vec<f32> {
-    const CHUNK_SIZE: usize = (cap_audio::AudioData::SAMPLE_RATE as usize) / 10; // ~100ms
+    const CHUNK_SIZE: usize = (zensloom_audio::AudioData::SAMPLE_RATE as usize) / 10; // ~100ms
 
     let channels = audio.channels() as usize;
     let samples = audio.samples();

@@ -1,23 +1,23 @@
-import { createHash } from "node:crypto";
+﻿import { createHash } from "node:crypto";
 import {
 	CloudFrontClient,
 	CreateInvalidationCommand,
 } from "@aws-sdk/client-cloudfront";
-import { db } from "@cap/database";
+import { db } from "@zensloom/database";
 import {
 	comments,
 	videoEdits,
 	videos,
 	videoUploads,
-} from "@cap/database/schema";
+} from "@zensloom/database/schema";
 import type {
 	VideoEditRange,
 	VideoEditSpec,
 	VideoMetadata,
-} from "@cap/database/types";
-import { serverEnv } from "@cap/env";
-import { AwsCredentials, Storage } from "@cap/web-backend";
-import { Video } from "@cap/web-domain";
+} from "@zensloom/database/types";
+import { serverEnv } from "@zensloom/env";
+import { AwsCredentials, Storage } from "@zensloom/web-backend";
+import { Video } from "@zensloom/web-domain";
 import { and, eq } from "drizzle-orm";
 import { Effect } from "effect";
 import { FatalError } from "workflow";

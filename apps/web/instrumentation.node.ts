@@ -1,4 +1,4 @@
-// This file is used to run database migrations in the docker builds or other self hosting environments.
+﻿// This file is used to run database migrations in the docker builds or other self hosting environments.
 // It is not suitable (a.k.a DEADLY) for serverless environments where the server will be restarted on each request.
 //
 
@@ -8,8 +8,8 @@ import {
 	PutBucketPolicyCommand,
 	S3Client,
 } from "@aws-sdk/client-s3";
-import { migrateDb } from "@cap/database/migrate";
-import { buildEnv, serverEnv } from "@cap/env";
+import { migrateDb } from "@zensloom/database/migrate";
+import { buildEnv, serverEnv } from "@zensloom/env";
 
 export async function register() {
 	if (process.env.NEXT_PUBLIC_IS_CAP) return;

@@ -1,15 +1,15 @@
-"use server";
+﻿"use server";
 
 import {
 	CloudFrontClient,
 	CreateInvalidationCommand,
 } from "@aws-sdk/client-cloudfront";
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
-import { videos } from "@cap/database/schema";
-import { serverEnv } from "@cap/env";
-import { AwsCredentials, S3Buckets } from "@cap/web-backend";
-import { S3Bucket, Video } from "@cap/web-domain";
+import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
+import { videos } from "@zensloom/database/schema";
+import { serverEnv } from "@zensloom/env";
+import { AwsCredentials, S3Buckets } from "@zensloom/web-backend";
+import { S3Bucket, Video } from "@zensloom/web-domain";
 import { eq } from "drizzle-orm";
 import { Effect, Option } from "effect";
 

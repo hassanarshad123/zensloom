@@ -1,22 +1,22 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { db } from "@cap/database";
-import { decrypt, encrypt } from "@cap/database/crypto";
-import { nanoId } from "@cap/database/helpers";
+import { db } from "@zensloom/database";
+import { decrypt, encrypt } from "@zensloom/database/crypto";
+import { nanoId } from "@zensloom/database/helpers";
 import {
 	storageIntegrations,
 	storageObjects,
 	videos,
-} from "@cap/database/schema";
-import { serverEnv } from "@cap/env";
-import { userIsPro } from "@cap/utils";
+} from "@zensloom/database/schema";
+import { serverEnv } from "@zensloom/env";
+import { userIsPro } from "@zensloom/utils";
 import {
 	ensureGoogleDriveFolder,
 	exchangeGoogleDriveCode,
 	type GoogleDriveIntegrationConfig,
 	getGoogleDriveAuthUrl,
 	getGoogleDriveUserEmail,
-} from "@cap/web-backend";
-import { Organisation, Storage, User } from "@cap/web-domain";
+} from "@zensloom/web-backend";
+import { Organisation, Storage, User } from "@zensloom/web-domain";
 import { zValidator } from "@hono/zod-validator";
 import { and, desc, eq, isNull } from "drizzle-orm";
 import { Hono } from "hono";

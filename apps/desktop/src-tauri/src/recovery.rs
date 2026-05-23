@@ -1,5 +1,5 @@
-use cap_project::StudioRecordingMeta;
-use cap_recording::recovery::RecoveryManager;
+﻿use zensloom_project::StudioRecordingMeta;
+use zensloom_recording::recovery::RecoveryManager;
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 use specta::Type;
@@ -12,7 +12,7 @@ use crate::create_screenshot;
 const RECOVERY_CUTOFF_DATE: (i32, u32, u32) = (2025, 12, 31);
 
 fn parse_recording_date(pretty_name: &str) -> Option<NaiveDate> {
-    let date_part = pretty_name.strip_prefix("Cap ")?;
+    let date_part = pretty_name.strip_prefix("Zensloom ")?;
     let date_str = date_part.split(" at ").next()?;
     NaiveDate::parse_from_str(date_str, "%Y-%m-%d").ok()
 }

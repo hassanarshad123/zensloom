@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
 	Button,
@@ -6,7 +6,7 @@ import {
 	DialogContent,
 	DialogTitle,
 	DialogTrigger,
-} from "@cap/ui";
+} from "@zensloom/ui";
 import { AnimatePresence, motion } from "framer-motion";
 import { MonitorIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";

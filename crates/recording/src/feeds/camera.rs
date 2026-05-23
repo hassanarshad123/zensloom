@@ -1,8 +1,8 @@
-use cap_camera::CameraInfo;
-use cap_camera_ffmpeg::*;
-use cap_fail::fail_err;
-use cap_media_info::VideoInfo;
-use cap_timestamp::Timestamp;
+﻿use zensloom_camera::CameraInfo;
+use zensloom_camera_ffmpeg::*;
+use zensloom_fail::fail_err;
+use zensloom_media_info::VideoInfo;
+use zensloom_timestamp::Timestamp;
 use futures::{
     FutureExt,
     future::{BoxFuture, Shared},
@@ -123,7 +123,7 @@ struct ConnectingState {
 struct AttachedState {
     #[allow(dead_code)]
     id: DeviceOrModelID,
-    camera_info: cap_camera::CameraInfo,
+    camera_info: zensloom_camera::CameraInfo,
     video_info: VideoInfo,
     done_tx: mpsc::SyncSender<()>,
     pending_release: Option<mpsc::SyncSender<()>>,
@@ -205,14 +205,14 @@ impl CameraFeed {
 #[derive(Reply)]
 pub struct CameraFeedLock {
     actor: ActorRef<CameraFeed>,
-    camera_info: cap_camera::CameraInfo,
+    camera_info: zensloom_camera::CameraInfo,
     video_info: VideoInfo,
     drop_tx: Option<oneshot::Sender<()>>,
     _token: Arc<()>,
 }
 
 impl CameraFeedLock {
-    pub fn camera_info(&self) -> &cap_camera::CameraInfo {
+    pub fn camera_info(&self) -> &zensloom_camera::CameraInfo {
         &self.camera_info
     }
 
@@ -240,11 +240,11 @@ impl Drop for CameraFeedLock {
 #[derive(serde::Serialize, serde::Deserialize, specta::Type, Clone, Debug, PartialEq)]
 pub enum DeviceOrModelID {
     DeviceID(String),
-    ModelID(cap_camera::ModelID),
+    ModelID(zensloom_camera::ModelID),
 }
 
 impl DeviceOrModelID {
-    pub fn from_info(info: &cap_camera::CameraInfo) -> Self {
+    pub fn from_info(info: &zensloom_camera::CameraInfo) -> Self {
         info.model_id()
             .map(|v| Self::ModelID(v.clone()))
             .unwrap_or_else(|| Self::DeviceID(info.device_id().to_string()))
@@ -291,7 +291,7 @@ struct InputConnected {
     generation: u64,
     id: DeviceOrModelID,
     done_tx: SyncSender<()>,
-    camera_info: cap_camera::CameraInfo,
+    camera_info: zensloom_camera::CameraInfo,
     video_info: VideoInfo,
 }
 
@@ -310,7 +310,7 @@ struct InputConnectFailed {
 
 struct LockedCameraInputReconnected {
     id: DeviceOrModelID,
-    camera_info: cap_camera::CameraInfo,
+    camera_info: zensloom_camera::CameraInfo,
     video_info: VideoInfo,
     done_tx: SyncSender<()>,
 }
@@ -562,16 +562,16 @@ pub enum SetInputError {
     Initialisation,
 }
 
-fn find_camera(selected_camera: &DeviceOrModelID) -> Option<cap_camera::CameraInfo> {
-    cap_camera::list_cameras().find(|c| match selected_camera {
+fn find_camera(selected_camera: &DeviceOrModelID) -> Option<zensloom_camera::CameraInfo> {
+    zensloom_camera::list_cameras().find(|c| match selected_camera {
         DeviceOrModelID::DeviceID(device_id) => c.device_id() == device_id,
         DeviceOrModelID::ModelID(model_id) => c.model_id() == Some(model_id),
     })
 }
 
 struct SetupCameraResult {
-    handle: cap_camera::CaptureHandle,
-    camera_info: cap_camera::CameraInfo,
+    handle: zensloom_camera::CaptureHandle,
+    camera_info: zensloom_camera::CameraInfo,
     video_info: VideoInfo,
 }
 
@@ -583,9 +583,9 @@ const PREFERRED_CAMERA_FRAME_RATE: f32 = 29.0;
 const MIN_CAMERA_FRAME_RATE: f32 = 24.0;
 
 fn select_preferred_camera_format(
-    formats: &[cap_camera::Format],
+    formats: &[zensloom_camera::Format],
     settings: CameraDeviceSettings,
-) -> Option<cap_camera::Format> {
+) -> Option<zensloom_camera::Format> {
     let mut matches = formats
         .iter()
         .filter(|format| {
@@ -627,9 +627,9 @@ fn select_preferred_camera_format(
 }
 
 fn select_camera_format(
-    camera: &cap_camera::CameraInfo,
+    camera: &zensloom_camera::CameraInfo,
     settings: Option<CameraDeviceSettings>,
-) -> Result<cap_camera::Format, SetInputError> {
+) -> Result<zensloom_camera::Format, SetInputError> {
     let formats = camera.formats().ok_or(SetInputError::InvalidFormat)?;
     if formats.is_empty() {
         return Err(SetInputError::InvalidFormat);
@@ -761,7 +761,7 @@ async fn setup_camera(
             let callback_num =
                 CAMERA_CALLBACK_COUNTER.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
 
-            let timestamp = Timestamp::MachAbsoluteTime(cap_timestamp::MachAbsoluteTimestamp::new(
+            let timestamp = Timestamp::MachAbsoluteTime(zensloom_timestamp::MachAbsoluteTimestamp::new(
                 cidre::cm::Clock::convert_host_time_to_sys_units(frame.native().sample_buf().pts()),
             ));
 
@@ -840,13 +840,13 @@ async fn setup_camera(
                 CAMERA_CALLBACK_COUNTER.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
 
             let timestamp = Timestamp::PerformanceCounter(
-                cap_timestamp::PerformanceCounterTimestamp::new(frame.native().perf_counter),
+                zensloom_timestamp::PerformanceCounterTimestamp::new(frame.native().perf_counter),
             );
 
             if native_sender_count.load(std::sync::atomic::Ordering::Relaxed) > 0
                 && let Ok(bytes) = frame.native().bytes()
             {
-                use cap_mediafoundation_utils::IMFMediaBufferExt;
+                use zensloom_mediafoundation_utils::IMFMediaBufferExt;
                 use windows::Win32::Media::MediaFoundation::MFCreateMemoryBuffer;
 
                 let data_len = bytes.len();

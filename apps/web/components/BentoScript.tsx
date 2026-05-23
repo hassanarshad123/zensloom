@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import type { users } from "@cap/database/schema";
+import type { users } from "@zensloom/database/schema";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { useEffect } from "react";

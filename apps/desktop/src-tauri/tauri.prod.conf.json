@@ -1,28 +1,21 @@
 {
 	"$schema": "https://schema.tauri.app/config/2",
-	"productName": "Cap",
-	"mainBinaryName": "Cap",
-	"identifier": "so.cap.desktop",
+	"productName": "Zensloom",
+	"mainBinaryName": "Zensloom",
+	"identifier": "com.zensloom.app",
 	"build": {
 		"beforeBundleCommand": "node scripts/prodBeforeBundle.js"
 	},
 	"plugins": {
 		"updater": {
-			"active": true,
-			"endpoints": [
-				"https://cdn.crabnebula.app/update/cap/cap/{{target}}-{{arch}}/{{current_version}}"
-			],
-			"dialog": true,
-			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEUyOTAzOTdFNzJFQkRFOTMKUldTVDN1dHlmam1RNHFXb1VYTXlrQk1iMFFkcjN0YitqZlA5WnZNY0ZtQ1dvM1dxK211M3VIYUQK"
+			"active": false,
+			"pubkey": ""
 		}
 	},
 	"bundle": {
-		"macOS": {
-			"entitlements": "Entitlements.plist"
-		},
 		"windows": {
 			"wix": {
-				"upgradeCode": "a765d9de-0ecc-55d0-b8a0-61e9d3276664"
+				"upgradeCode": "b8f4e2c3-d567-4a90-ae23-4g5b6c7d8e9f"
 			}
 		}
 	}

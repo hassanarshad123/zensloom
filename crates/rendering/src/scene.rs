@@ -1,4 +1,4 @@
-use cap_project::{SceneMode, SceneSegment};
+﻿use zensloom_project::{SceneMode, SceneSegment};
 
 pub const SCENE_TRANSITION_DURATION: f64 = 0.3;
 pub const MIN_GAP_FOR_TRANSITION: f64 = 0.5;

@@ -1,20 +1,20 @@
-use std::{
+﻿use std::{
     collections::HashMap,
     path::{Path, PathBuf},
     sync::Arc,
     time::{Duration, Instant},
 };
 
-use cap_desktop_lib::frame_ws::{WSFrame, WSFrameFormat, create_watch_frame_ws};
-use cap_editor::{
+use zensloom_desktop_lib::frame_ws::{WSFrame, WSFrameFormat, create_watch_frame_ws};
+use zensloom_editor::{
     EditorFrameOutput, Playback, PlaybackRenderOutputFormat, PlaybackSkipReason, PlaybackTelemetry,
     PlaybackTelemetryEvent, Renderer, start_renderer_layers_creation,
 };
-use cap_project::{
+use zensloom_project::{
     ProjectConfiguration, RecordingMeta, RecordingMetaInner, StudioRecordingMeta,
     TimelineConfiguration, TimelineSegment, XY,
 };
-use cap_rendering::{GpuOutputFormat, ProjectRecordingsMeta, RenderVideoConstants, Video};
+use zensloom_rendering::{GpuOutputFormat, ProjectRecordingsMeta, RenderVideoConstants, Video};
 use tokio::sync::{mpsc, watch};
 
 #[derive(Default)]
@@ -231,7 +231,7 @@ async fn main() {
 
     let layers_rx = start_renderer_layers_creation(&render_constants);
     let segment_medias =
-        match cap_editor::create_segments(&recording_meta, meta.as_ref(), false).await {
+        match zensloom_editor::create_segments(&recording_meta, meta.as_ref(), false).await {
             Ok(segments) => Arc::new(segments),
             Err(e) => {
                 eprintln!("Failed to create segments: {e}");

@@ -1,10 +1,10 @@
-use anyhow::{Context, anyhow};
-use cap_recording::{
+﻿use anyhow::{Context, anyhow};
+use zensloom_recording::{
     FFmpegVideoFrame,
     feeds::{self, camera::CameraFeed},
 };
 #[cfg(target_os = "macos")]
-use cap_utils::macos_qos::{MacOsQosClass, set_current_thread_qos};
+use zensloom_utils::macos_qos::{MacOsQosClass, set_current_thread_qos};
 use ffmpeg::{
     format::{self, Pixel},
     frame,
@@ -56,7 +56,7 @@ pub struct CameraPreviewState {
     pub shape: CameraPreviewShape,
     pub mirrored: bool,
     #[serde(default)]
-    pub background_blur: cap_project::BackgroundBlurMode,
+    pub background_blur: zensloom_project::BackgroundBlurMode,
 }
 
 impl Default for CameraPreviewState {
@@ -65,7 +65,7 @@ impl Default for CameraPreviewState {
             size: DEFAULT_CAMERA_SIZE,
             shape: CameraPreviewShape::default(),
             mirrored: false,
-            background_blur: cap_project::BackgroundBlurMode::Off,
+            background_blur: zensloom_project::BackgroundBlurMode::Off,
         }
     }
 }
@@ -633,7 +633,7 @@ struct Renderer {
     uniform_bind_group: wgpu::BindGroup,
     texture: Cached<(u32, u32), PreparedTexture>,
     aspect_ratio: Cached<f32>,
-    blur_processor: Option<cap_camera_effects::BlurProcessor>,
+    blur_processor: Option<zensloom_segment::BlurProcessor>,
     blur_processor_init_attempted: bool,
     blur_source_texture: Option<wgpu::Texture>,
 }
@@ -992,7 +992,7 @@ impl Renderer {
         frame_stride: u32,
         width: u32,
         height: u32,
-        mode: cap_camera_effects::BlurMode,
+        mode: zensloom_segment::BlurMode,
     ) -> bool {
         if !self.ensure_blur_processor() {
             return false;
@@ -1041,7 +1041,7 @@ impl Renderer {
         }
 
         self.blur_processor_init_attempted = true;
-        match cap_camera_effects::BlurProcessor::new(&self.device, wgpu::TextureFormat::Rgba8Unorm)
+        match zensloom_segment::BlurProcessor::new(&self.device, wgpu::TextureFormat::Rgba8Unorm)
         {
             Ok(processor) => {
                 let mut processor = processor;
@@ -1377,12 +1377,12 @@ mod tests {
 }
 
 fn blur_mode_from_project(
-    mode: cap_project::BackgroundBlurMode,
-) -> Option<cap_camera_effects::BlurMode> {
+    mode: zensloom_project::BackgroundBlurMode,
+) -> Option<zensloom_segment::BlurMode> {
     match mode {
-        cap_project::BackgroundBlurMode::Off => None,
-        cap_project::BackgroundBlurMode::Light => Some(cap_camera_effects::BlurMode::Light),
-        cap_project::BackgroundBlurMode::Heavy => Some(cap_camera_effects::BlurMode::Heavy),
+        zensloom_project::BackgroundBlurMode::Off => None,
+        zensloom_project::BackgroundBlurMode::Light => Some(zensloom_segment::BlurMode::Light),
+        zensloom_project::BackgroundBlurMode::Heavy => Some(zensloom_segment::BlurMode::Heavy),
     }
 }
 

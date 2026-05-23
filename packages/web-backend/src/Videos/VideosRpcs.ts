@@ -1,4 +1,4 @@
-import { InternalError, Policy, Video } from "@cap/web-domain";
+﻿import { InternalError, Policy, Video } from "@zensloom/web-domain";
 import { Effect, Exit, Schema, Unify } from "effect";
 
 import { provideOptionalAuth } from "../Auth.ts";

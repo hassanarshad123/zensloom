@@ -1,4 +1,4 @@
-import { Button } from "@cap/ui";
+﻿import { Button } from "@zensloom/ui";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Fit, Layout, useRive } from "@rive-app/react-canvas";

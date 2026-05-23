@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
 	Button,
@@ -7,7 +7,7 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@cap/ui";
+} from "@zensloom/ui";
 
 interface ConfirmationDialogProps {
 	open: boolean;

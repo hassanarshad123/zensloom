@@ -1,6 +1,6 @@
-use std::collections::VecDeque;
+﻿use std::collections::VecDeque;
 
-use cap_media_info::AudioInfo;
+use zensloom_media_info::AudioInfo;
 use ffmpeg::software::resampling;
 
 /// Consumes audio frames, resmaples them, buffers the results,
@@ -280,9 +280,9 @@ mod test {
 
     fn create_resampler(out_rate: u32) -> BufferedResampler {
         BufferedResampler::new(
-            AudioInfo::new_raw(format::Sample::U8(cap_media_info::Type::Packed), IN_RATE, 1),
+            AudioInfo::new_raw(format::Sample::U8(zensloom_media_info::Type::Packed), IN_RATE, 1),
             AudioInfo::new_raw(
-                format::Sample::U8(cap_media_info::Type::Packed),
+                format::Sample::U8(zensloom_media_info::Type::Packed),
                 out_rate,
                 1,
             ),
@@ -292,7 +292,7 @@ mod test {
 
     fn make_input_frame(samples: usize, pts: i64) -> ffmpeg::frame::Audio {
         let mut frame = ffmpeg::frame::Audio::new(
-            cap_media_info::Sample::U8(cap_media_info::Type::Packed),
+            zensloom_media_info::Sample::U8(zensloom_media_info::Type::Packed),
             samples,
             ChannelLayout::MONO,
         );

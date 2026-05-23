@@ -1,8 +1,8 @@
-"use server";
+﻿"use server";
 
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
-import { nanoId } from "@cap/database/helpers";
+import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
+import { nanoId } from "@zensloom/database/helpers";
 import {
 	organizationMembers,
 	organizations,
@@ -10,8 +10,8 @@ import {
 	spaces,
 	spaceVideos,
 	videos,
-} from "@cap/database/schema";
-import type { Organisation, Space, Video } from "@cap/web-domain";
+} from "@zensloom/database/schema";
+import type { Organisation, Space, Video } from "@zensloom/web-domain";
 import { and, eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 

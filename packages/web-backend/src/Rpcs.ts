@@ -1,8 +1,8 @@
-import {
+﻿import {
 	InternalError,
 	RpcAuthMiddleware,
 	UnauthenticatedError,
-} from "@cap/web-domain";
+} from "@zensloom/web-domain";
 import { Effect, Layer, Option } from "effect";
 
 import { getCurrentUser, makeCurrentUser } from "./Auth.ts";

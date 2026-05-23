@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
 	Button,
@@ -10,8 +10,8 @@ import {
 	NavigationMenuList,
 	NavigationMenuTrigger,
 	navigationMenuTriggerStyle,
-} from "@cap/ui";
-import { classNames } from "@cap/utils";
+} from "@zensloom/ui";
+import { classNames } from "@zensloom/utils";
 import { Clapperboard, Zap } from "lucide-react";
 import { motion } from "motion/react";
 import Image from "next/image";

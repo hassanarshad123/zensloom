@@ -1,5 +1,5 @@
-[package]
-name = "cap-rendering"
+﻿[package]
+name = "zensloom-rendering"
 version = "0.1.0"
 edition = "2024"
 
@@ -9,11 +9,11 @@ workspace = true
 [dependencies]
 anyhow.workspace = true
 bytemuck = { version = "1.7", features = ["derive"] }
-cap-camera-effects = { path = "../camera-effects" }
-cap-flags = { path = "../flags" }
-cap-project = { path = "../project" }
-cap-video-decode = { path = "../video-decode" }
-cap-cursor-info = { path = "../cursor-info" }
+zensloom-segment = { path = "../camera-effects" }
+zensloom-flags = { path = "../flags" }
+zensloom-project = { path = "../project" }
+zensloom-video-decode = { path = "../video-decode" }
+zensloom-cursor-info = { path = "../cursor-info" }
 ffmpeg-hw-device = { path = "../ffmpeg-hw-device" }
 tokio.workspace = true
 ffmpeg.workspace = true

@@ -1,12 +1,12 @@
-import {
+﻿import {
 	Button,
 	Dialog,
 	DialogContent,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@cap/ui";
-import { Organisation } from "@cap/web-domain";
+} from "@zensloom/ui";
+import { Organisation } from "@zensloom/web-domain";
 import { faGlobe, faRefresh } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMutation } from "@tanstack/react-query";

@@ -1,7 +1,7 @@
-use std::{cell::RefCell, collections::VecDeque};
+﻿use std::{cell::RefCell, collections::VecDeque};
 
-use cap_camera::CapturedFrame;
-use cap_camera_windows::PixelFormat;
+use zensloom_camera::CapturedFrame;
+use zensloom_camera_windows::PixelFormat;
 use ffmpeg::{Packet, format::Pixel, frame::Video as FFVideo};
 
 use crate::CapturedFrameExt;

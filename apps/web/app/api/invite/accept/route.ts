@@ -1,12 +1,12 @@
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
-import { nanoId } from "@cap/database/helpers";
+﻿import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
+import { nanoId } from "@zensloom/database/helpers";
 import {
 	organizationInvites,
 	organizationMembers,
 	organizations,
 	users,
-} from "@cap/database/schema";
+} from "@zensloom/database/schema";
 import { and, eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import { normalizeAssignableOrganizationRole } from "@/lib/permissions/roles";

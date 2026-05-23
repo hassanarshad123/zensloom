@@ -1,4 +1,4 @@
-#[cfg(target_os = "macos")]
+﻿#[cfg(target_os = "macos")]
 use crate::SendableShareableContent;
 use crate::{
     RecordingBaseInputs,
@@ -11,10 +11,10 @@ use crate::{
     sources::screen_capture::{ScreenCaptureConfig, ScreenCaptureTarget},
 };
 use anyhow::Context as _;
-use cap_media_info::VideoInfo;
-use cap_project::InstantRecordingMeta;
-use cap_timestamp::Timestamps;
-use cap_utils::ensure_dir;
+use zensloom_media_info::VideoInfo;
+use zensloom_project::InstantRecordingMeta;
+use zensloom_timestamp::Timestamps;
+use zensloom_utils::ensure_dir;
 use kameo::{Actor as _, prelude::*};
 use std::{
     path::PathBuf,
@@ -29,7 +29,7 @@ struct Pipeline {
     video_info: VideoInfo,
     segments_dir: PathBuf,
     segment_rx:
-        Option<std::sync::mpsc::Receiver<cap_enc_ffmpeg::segmented_stream::SegmentCompletedEvent>>,
+        Option<std::sync::mpsc::Receiver<zensloom_enc_ffmpeg::segmented_stream::SegmentCompletedEvent>>,
 }
 
 enum ActorState {
@@ -54,7 +54,7 @@ pub struct ActorHandle {
     segment_rx: Option<
         std::sync::Mutex<
             Option<
-                std::sync::mpsc::Receiver<cap_enc_ffmpeg::segmented_stream::SegmentCompletedEvent>,
+                std::sync::mpsc::Receiver<zensloom_enc_ffmpeg::segmented_stream::SegmentCompletedEvent>,
             >,
         >,
     >,
@@ -91,7 +91,7 @@ impl ActorHandle {
 
     pub fn take_segment_rx(
         &self,
-    ) -> Option<std::sync::mpsc::Receiver<cap_enc_ffmpeg::segmented_stream::SegmentCompletedEvent>>
+    ) -> Option<std::sync::mpsc::Receiver<zensloom_enc_ffmpeg::segmented_stream::SegmentCompletedEvent>>
     {
         self.segment_rx
             .as_ref()
@@ -310,7 +310,7 @@ pub struct CompletedRecording {
 async fn create_pipeline(
     content_dir: PathBuf,
     screen_capture: crate::sources::screen_capture::VideoSourceConfig,
-    screen_info: cap_media_info::VideoInfo,
+    screen_info: zensloom_media_info::VideoInfo,
     mic_feed: Option<Arc<MicrophoneFeedLock>>,
     system_audio_source: Option<crate::sources::screen_capture::SystemAudioSourceConfig>,
     max_output_size: Option<u32>,
@@ -337,7 +337,7 @@ async fn create_pipeline(
 
     let segment_channel = {
         let (tx, rx) =
-            std::sync::mpsc::channel::<cap_enc_ffmpeg::segmented_stream::SegmentCompletedEvent>();
+            std::sync::mpsc::channel::<zensloom_enc_ffmpeg::segmented_stream::SegmentCompletedEvent>();
         Some((tx, rx))
     };
 
@@ -498,7 +498,7 @@ pub async fn spawn_instant_recording_actor(
     let content_dir = ensure_dir(&recording_dir.join("content"))?;
 
     #[cfg(windows)]
-    cap_mediafoundation_utils::thread_init();
+    zensloom_mediafoundation_utils::thread_init();
 
     let (mut pipeline, video_info) = match inputs.capture_target {
         ScreenCaptureTarget::CameraOnly => {

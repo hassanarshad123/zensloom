@@ -1,11 +1,11 @@
-fn main() {
+﻿fn main() {
     #[cfg(target_os = "macos")]
     macos::main();
 }
 
 #[cfg(target_os = "macos")]
 mod macos {
-    use cap_camera_avfoundation::{
+    use zensloom_camera_avfoundation::{
         CallbackOutputDelegate, CallbackOutputDelegateInner, YCbCrMatrix, list_video_devices,
     };
     use cidre::*;

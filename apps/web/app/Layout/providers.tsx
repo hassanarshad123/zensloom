@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { buildEnv } from "@cap/env";
+import { buildEnv } from "@zensloom/env";
 import {
 	TanStackDevtools,
 	type TanStackDevtoolsReactInit,

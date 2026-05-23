@@ -1,7 +1,7 @@
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
-import { comments } from "@cap/database/schema";
-import { Comment } from "@cap/web-domain";
+﻿import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
+import { comments } from "@zensloom/database/schema";
+import { Comment } from "@zensloom/web-domain";
 import { and, eq, or } from "drizzle-orm";
 import { Option } from "effect";
 import type { NextRequest } from "next/server";

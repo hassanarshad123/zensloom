@@ -1,4 +1,4 @@
-use cap_recording::{
+﻿use zensloom_recording::{
     CameraFeed, MicrophoneFeed,
     feeds::{
         camera::{self, DeviceOrModelID},
@@ -191,7 +191,7 @@ async fn run_memory_test(
     let dir = tempfile::tempdir()?;
     info!("Recording to: {}", dir.path().display());
 
-    let mut builder = cap_recording::studio_recording::Actor::builder(
+    let mut builder = zensloom_recording::studio_recording::Actor::builder(
         dir.path().into(),
         ScreenCaptureTarget::Display {
             id: Display::primary().id(),
@@ -201,7 +201,7 @@ async fn run_memory_test(
     .with_system_audio(true);
 
     if include_camera {
-        if let Some(camera_info) = cap_camera::list_cameras().next() {
+        if let Some(camera_info) = zensloom_camera::list_cameras().next() {
             println!("Using camera: {}", camera_info.display_name());
 
             let feed = CameraFeed::spawn(CameraFeed::default());
@@ -253,7 +253,7 @@ async fn run_memory_test(
     let handle = builder
         .build(
             #[cfg(target_os = "macos")]
-            Some(cap_recording::SendableShareableContent::from(
+            Some(zensloom_recording::SendableShareableContent::from(
                 cidre::sc::ShareableContent::current().await?,
             )),
         )
@@ -305,12 +305,12 @@ async fn run_camera_only_test(duration_secs: u64) -> Result<(), Box<dyn std::err
     let mut memory_tracker = MemoryTracker::new();
     memory_tracker.sample();
 
-    if let Some(camera_info) = cap_camera::list_cameras().next() {
+    if let Some(camera_info) = zensloom_camera::list_cameras().next() {
         println!("Testing camera: {}", camera_info.display_name());
 
         let feed = CameraFeed::spawn(CameraFeed::default());
 
-        let (frame_tx, frame_rx) = flume::bounded::<cap_recording::NativeCameraFrame>(128);
+        let (frame_tx, frame_rx) = flume::bounded::<zensloom_recording::NativeCameraFrame>(128);
 
         feed.ask(camera::AddNativeSender(frame_tx)).await?;
 
@@ -366,7 +366,7 @@ async fn run_camera_only_test(duration_secs: u64) -> Result<(), Box<dyn std::err
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    unsafe { std::env::set_var("RUST_LOG", "info,cap_recording=debug") };
+    unsafe { std::env::set_var("RUST_LOG", "info,zensloom_recording=debug") };
     tracing_subscriber::fmt::init();
 
     let args: Vec<String> = std::env::args().collect();

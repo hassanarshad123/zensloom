@@ -1,19 +1,19 @@
-[package]
-name = "cap"
+﻿[package]
+name = "zensloom-cli"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
 clap = { version = "4.5.23", features = ["derive"] }
-cap-utils = { path = "../../crates/utils" }
-cap-project = { path = "../../crates/project" }
-cap-rendering = { path = "../../crates/rendering" }
-cap-editor = { path = "../../crates/editor" }
-cap-media = { path = "../../crates/media" }
-cap-flags = { path = "../../crates/flags" }
-cap-recording = { path = "../../crates/recording" }
-cap-export = { path = "../../crates/export" }
-cap-camera = { path = "../../crates/camera" }
+zensloom-utils = { path = "../../crates/utils" }
+zensloom-project = { path = "../../crates/project" }
+zensloom-rendering = { path = "../../crates/rendering" }
+zensloom-editor = { path = "../../crates/editor" }
+zensloom-media = { path = "../../crates/media" }
+zensloom-flags = { path = "../../crates/flags" }
+zensloom-recording = { path = "../../crates/recording" }
+zensloom-export = { path = "../../crates/export" }
+zensloom-camera = { path = "../../crates/camera" }
 scap-targets = { path = "../../crates/scap-targets" }
 serde = { workspace = true }
 serde_json = "1.0.133"

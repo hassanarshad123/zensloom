@@ -1,4 +1,4 @@
-//! A modular multimedia processing framework, based on FFmpeg.
+﻿//! A modular multimedia processing framework, based on FFmpeg.
 //!
 //! It provides a `pipeline` abstraction for creating and controlling an entire operation,
 //! as well as implementations of pipeline stages for individual tasks (encoding/decoding,
@@ -6,7 +6,7 @@
 
 use std::borrow::Cow;
 
-use cap_media_info::AudioInfoError;
+use zensloom_media_info::AudioInfoError;
 use thiserror::Error;
 
 pub fn init() -> Result<(), MediaError> {

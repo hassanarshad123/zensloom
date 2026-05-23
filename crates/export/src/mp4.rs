@@ -1,9 +1,9 @@
-use crate::ExporterBase;
-use cap_editor::{AudioRenderer, get_audio_segments};
-use cap_enc_ffmpeg::{AudioEncoder, aac::AACEncoder, h264::H264Encoder, mp4::*};
-use cap_media_info::{RawVideoFormat, VideoInfo};
-use cap_project::XY;
-use cap_rendering::{
+﻿use crate::ExporterBase;
+use zensloom_editor::{AudioRenderer, get_audio_segments};
+use zensloom_enc_ffmpeg::{AudioEncoder, aac::AACEncoder, h264::H264Encoder, mp4::*};
+use zensloom_media_info::{RawVideoFormat, VideoInfo};
+use zensloom_project::XY;
+use zensloom_rendering::{
     GpuOutputFormat, Nv12RenderedFrame, ProjectUniforms, RenderSegment, SharedNv12Buffer,
 };
 use futures::FutureExt;
@@ -53,13 +53,13 @@ struct ExportNv12Mode {
     stop_after_frames_sent: Option<u32>,
     record_first_queued_ms_since_pipeline: Option<Arc<AtomicU64>>,
     nv12_render_startup_breakdown_ms:
-        Option<Arc<Mutex<Option<cap_rendering::Nv12RenderStartupBreakdownMs>>>>,
+        Option<Arc<Mutex<Option<zensloom_rendering::Nv12RenderStartupBreakdownMs>>>>,
 }
 
 #[derive(Debug, serde::Serialize)]
 pub struct FirstFrameQueuedBenchmark {
     pub ms_to_first_frame_queued_since_export_pipeline_start: u64,
-    pub nv12_render_startup_breakdown_ms: Option<cap_rendering::Nv12RenderStartupBreakdownMs>,
+    pub nv12_render_startup_breakdown_ms: Option<zensloom_rendering::Nv12RenderStartupBreakdownMs>,
 }
 
 #[derive(Serialize, Deserialize, Type, Clone, Copy, Debug)]
@@ -554,7 +554,7 @@ fn save_screenshot_from_nv12(
     };
 
     let mut rgba = vec![0u8; (width * height * 4) as usize];
-    cap_rendering::cpu_yuv::nv12_to_rgba_simd(
+    zensloom_rendering::cpu_yuv::nv12_to_rgba_simd(
         y_data, uv_data, width, height, y_stride, width, &mut rgba,
     );
 
@@ -579,8 +579,8 @@ fn save_screenshot_from_nv12(
     let _ = rgb_img.save(&screenshot_path);
 }
 
-use cap_project::{ProjectConfiguration, RecordingMeta, StudioRecordingMeta};
-use cap_rendering::{ProjectRecordingsMeta, RenderVideoConstants};
+use zensloom_project::{ProjectConfiguration, RecordingMeta, StudioRecordingMeta};
+use zensloom_rendering::{ProjectRecordingsMeta, RenderVideoConstants};
 
 const FRAME_RECEIVE_INITIAL_TIMEOUT_SECS: u64 = 120;
 const FRAME_RECEIVE_STEADY_TIMEOUT_SECS: u64 = 90;
@@ -598,16 +598,16 @@ async fn export_render_to_channel(
     resolution_base: XY<u32>,
     recordings: &ProjectRecordingsMeta,
     stop_after_frames_sent: Option<u32>,
-    startup_breakdown_ms: Option<Arc<Mutex<Option<cap_rendering::Nv12RenderStartupBreakdownMs>>>>,
+    startup_breakdown_ms: Option<Arc<Mutex<Option<zensloom_rendering::Nv12RenderStartupBreakdownMs>>>>,
     mut on_progress: impl FnMut(u32) -> bool + Send + 'static,
     project_path: PathBuf,
-) -> Result<(), cap_rendering::RenderingError> {
+) -> Result<(), zensloom_rendering::RenderingError> {
     let (tx_image_data, mut video_rx) = tokio::sync::mpsc::channel::<(Nv12RenderedFrame, u32)>(8);
 
     let screenshot_project_path = project_path;
 
     let render_result = {
-        let render_future = cap_rendering::render_video_to_channel_nv12(
+        let render_future = zensloom_rendering::render_video_to_channel_nv12(
             constants,
             project,
             tx_image_data,
@@ -647,7 +647,7 @@ async fn export_render_to_channel(
                         consecutive_timeouts += 1;
 
                         if consecutive_timeouts >= MAX_CONSECUTIVE_FRAME_TIMEOUTS {
-                            return Err(cap_rendering::RenderingError::ImageLoadError(format!(
+                            return Err(zensloom_rendering::RenderingError::ImageLoadError(format!(
                                 "Export timed out {MAX_CONSECUTIVE_FRAME_TIMEOUTS} times consecutively after {timeout_secs}s each waiting for frame {frame_count}"
                             )));
                         }
@@ -665,7 +665,7 @@ async fn export_render_to_channel(
                 };
 
                 if !(on_progress)(frame_count) {
-                    return Err(cap_rendering::RenderingError::ImageLoadError(
+                    return Err(zensloom_rendering::RenderingError::ImageLoadError(
                         "Export cancelled".to_string(),
                     ));
                 }
@@ -704,7 +704,7 @@ async fn export_render_to_channel(
                 });
             }
 
-            Ok::<_, cap_rendering::RenderingError>(())
+            Ok::<_, zensloom_rendering::RenderingError>(())
         };
 
         tokio::try_join!(render_future, forward_future)
@@ -789,7 +789,7 @@ mod tests {
 
     #[test]
     fn nv12_from_rendered_frame_passthrough_for_nv12_format() {
-        use cap_rendering::{GpuOutputFormat, Nv12RenderedFrame};
+        use zensloom_rendering::{GpuOutputFormat, Nv12RenderedFrame};
 
         let data = vec![1u8, 2, 3, 4, 5, 6];
         let frame = Nv12RenderedFrame {

@@ -1,13 +1,13 @@
-"use server";
+﻿"use server";
 
-import { db } from "@cap/database";
+import { db } from "@zensloom/database";
 import {
 	organizationMembers,
 	organizations,
 	spaceMembers,
 	spaces,
-} from "@cap/database/schema";
-import type { Organisation, Space, User } from "@cap/web-domain";
+} from "@zensloom/database/schema";
+import type { Organisation, Space, User } from "@zensloom/web-domain";
 import { and, eq, isNull } from "drizzle-orm";
 import {
 	canManageSpace,

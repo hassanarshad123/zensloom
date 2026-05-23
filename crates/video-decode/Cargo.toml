@@ -1,5 +1,5 @@
-[package]
-name = "cap-video-decode"
+﻿[package]
+name = "zensloom-video-decode"
 version = "0.1.0"
 edition = "2024"
 
@@ -19,7 +19,7 @@ workspace-hack = { version = "0.1", path = "../workspace-hack" }
 cidre = { workspace = true }
 
 [target.'cfg(target_os = "windows")'.dependencies]
-cap-d3d-adapter = { path = "../d3d-adapter" }
+zensloom-d3d-adapter = { path = "../d3d-adapter" }
 windows = { workspace = true, features = [
     "Win32_Foundation",
     "Win32_Graphics_Direct3D",

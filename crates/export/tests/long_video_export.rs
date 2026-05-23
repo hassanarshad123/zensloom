@@ -1,8 +1,8 @@
-use cap_export::{
+﻿use zensloom_export::{
     ExporterBase,
     mp4::{ExportCompression, Mp4ExportSettings},
 };
-use cap_project::XY;
+use zensloom_project::XY;
 use std::{
     fs,
     path::{Path, PathBuf},
@@ -63,7 +63,7 @@ fn generate_test_video(output_path: &Path, duration_secs: u32) -> Result<(), Str
     Ok(())
 }
 
-fn create_cap_project(project_dir: &Path, duration_secs: u32) -> Result<(), String> {
+fn create_zensloom_project(project_dir: &Path, duration_secs: u32) -> Result<(), String> {
     let content_dir = project_dir.join("content");
     fs::create_dir_all(&content_dir).map_err(|e| format!("Failed to create content dir: {e}"))?;
 
@@ -186,7 +186,7 @@ async fn test_export_35_minute_video() -> Result<(), Box<dyn std::error::Error>>
 
     let duration_secs = TEST_VIDEO_DURATION_SECS;
     println!("Creating Cap project structure in {project_dir:?}");
-    create_cap_project(&project_dir, duration_secs)?;
+    create_zensloom_project(&project_dir, duration_secs)?;
 
     let video_path = project_dir.join("content/display.mp4");
     println!(
@@ -246,7 +246,7 @@ async fn test_export_10_minute_video() -> Result<(), Box<dyn std::error::Error>>
     let project_dir = temp_dir.path().to_path_buf();
 
     println!("Creating Cap project structure in {project_dir:?}");
-    create_cap_project(&project_dir, duration_secs)?;
+    create_zensloom_project(&project_dir, duration_secs)?;
 
     let video_path = project_dir.join("content/display.mp4");
     println!("Generating 10 minute test video...");
@@ -297,7 +297,7 @@ async fn test_export_55_minute_video() -> Result<(), Box<dyn std::error::Error>>
     let project_dir = temp_dir.path().to_path_buf();
 
     println!("Creating Cap project structure in {project_dir:?}");
-    create_cap_project(&project_dir, duration_secs)?;
+    create_zensloom_project(&project_dir, duration_secs)?;
 
     let video_path = project_dir.join("content/display.mp4");
     println!("Generating 55 minute test video (this will take a while)...");

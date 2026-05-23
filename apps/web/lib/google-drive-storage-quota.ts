@@ -1,13 +1,13 @@
-import { db } from "@cap/database";
-import { decrypt } from "@cap/database/crypto";
-import { storageIntegrations } from "@cap/database/schema";
+﻿import { db } from "@zensloom/database";
+import { decrypt } from "@zensloom/database/crypto";
+import { storageIntegrations } from "@zensloom/database/schema";
 import {
 	type GoogleDriveIntegrationConfig,
 	type GoogleDriveStorageQuota,
 	type GoogleDriveStorageQuotaCache,
 	getGoogleDriveStorageQuota,
-} from "@cap/web-backend";
-import { Storage } from "@cap/web-domain";
+} from "@zensloom/web-backend";
+import { Storage } from "@zensloom/web-domain";
 import { and, eq } from "drizzle-orm";
 import { runPromise } from "@/lib/server";
 

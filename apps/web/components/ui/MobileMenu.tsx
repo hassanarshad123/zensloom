@@ -1,4 +1,4 @@
-import { Button } from "@cap/ui";
+﻿import { Button } from "@zensloom/ui";
 import Link from "next/link";
 import type { User } from "next-auth";
 

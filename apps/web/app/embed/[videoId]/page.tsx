@@ -1,5 +1,5 @@
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
+import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
 import {
 	comments,
 	organizations,
@@ -9,16 +9,16 @@ import {
 	users,
 	videos,
 	videoUploads,
-} from "@cap/database/schema";
-import type { VideoMetadata } from "@cap/database/types";
-import { buildEnv } from "@cap/env";
+} from "@zensloom/database/schema";
+import type { VideoMetadata } from "@zensloom/database/types";
+import { buildEnv } from "@zensloom/env";
 import {
 	provideOptionalAuth,
 	resolveEffectiveVideoRules,
 	Videos,
 	VideosPolicy,
-} from "@cap/web-backend";
-import { type Organisation, Policy, type Video } from "@cap/web-domain";
+} from "@zensloom/web-backend";
+import { type Organisation, Policy, type Video } from "@zensloom/web-domain";
 import { and, eq, isNull, sql } from "drizzle-orm";
 import { Effect, Option } from "effect";
 import type { Metadata } from "next";

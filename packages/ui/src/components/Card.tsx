@@ -1,4 +1,4 @@
-import { classNames } from "@cap/utils";
+﻿import { classNames } from "@zensloom/utils";
 import { forwardRef } from "react";
 
 const Card = forwardRef<

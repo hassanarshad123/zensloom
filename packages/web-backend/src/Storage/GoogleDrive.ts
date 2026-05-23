@@ -1,6 +1,6 @@
-import { createHash, randomUUID } from "node:crypto";
-import { serverEnv } from "@cap/env";
-import { Storage, type User, type Video } from "@cap/web-domain";
+﻿import { createHash, randomUUID } from "node:crypto";
+import { serverEnv } from "@zensloom/env";
+import { Storage, type User, type Video } from "@zensloom/web-domain";
 import { Effect, Option, Schedule } from "effect";
 import type {
 	GoogleDriveAccessTokenCache,

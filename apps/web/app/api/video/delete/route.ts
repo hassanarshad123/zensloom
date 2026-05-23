@@ -1,5 +1,5 @@
-import { Videos } from "@cap/web-backend";
-import { HttpAuthMiddleware, Video } from "@cap/web-domain";
+﻿import { Videos } from "@zensloom/web-backend";
+import { HttpAuthMiddleware, Video } from "@zensloom/web-domain";
 import {
 	HttpApi,
 	HttpApiBuilder,

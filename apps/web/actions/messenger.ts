@@ -1,12 +1,12 @@
-"use server";
+﻿"use server";
 
-import { db } from "@cap/database";
-import { nanoId } from "@cap/database/helpers";
+import { db } from "@zensloom/database";
+import { nanoId } from "@zensloom/database/helpers";
 import {
 	messengerConversations,
 	messengerMessages,
-} from "@cap/database/schema";
-import { buildEnv } from "@cap/env";
+} from "@zensloom/database/schema";
+import { buildEnv } from "@zensloom/env";
 import { asc, desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { generateMessengerAgentReply } from "@/lib/messenger/agent";

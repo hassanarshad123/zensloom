@@ -1,4 +1,4 @@
-import { Button } from "@cap/ui-solid";
+﻿import { Button } from "@zensloom/ui-solid";
 import { Dialog as KDialog } from "@kobalte/core/dialog";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { LogicalPosition } from "@tauri-apps/api/dpi";

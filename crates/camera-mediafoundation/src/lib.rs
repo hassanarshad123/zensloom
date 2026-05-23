@@ -1,7 +1,7 @@
-#![cfg(windows)]
+﻿#![cfg(windows)]
 #![allow(non_snake_case)]
 
-use cap_mediafoundation_utils::*;
+use zensloom_mediafoundation_utils::*;
 use parking_lot::Mutex;
 use std::{
     ffi::OsString,

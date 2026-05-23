@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { Button } from "@cap/ui";
+import { Button } from "@zensloom/ui";
 
 export function CommercialGetStarted() {
 	const handleSmoothScroll = (

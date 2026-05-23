@@ -1,4 +1,4 @@
-use crate::window_exclusion::WindowExclusion;
+﻿use crate::window_exclusion::WindowExclusion;
 use scap_targets::DisplayId;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -87,15 +87,15 @@ impl MainWindowRecordingStartBehaviour {
 }
 
 const DEFAULT_EXCLUDED_WINDOW_TITLES: &[&str] = &[
-    "Cap",
-    "Cap Settings",
-    "Cap Recording Controls",
-    "Cap Camera",
-    "Cap Target Select",
-    "Cap Window Capture Occluder",
-    "Cap Capture Area",
-    "Cap Mode Selection",
-    "Cap Recordings Overlay",
+    "Zensloom",
+    "Zensloom Settings",
+    "Zensloom Recording Controls",
+    "Zensloom Camera",
+    "Zensloom Target Select",
+    "Zensloom Window Capture Occluder",
+    "Zensloom Capture Area",
+    "Zensloom Mode Selection",
+    "Zensloom Recordings Overlay",
 ];
 
 pub fn default_excluded_windows() -> Vec<WindowExclusion> {
@@ -221,7 +221,7 @@ fn default_max_fps() -> u32 {
 
 fn default_transcription_hints() -> Vec<String> {
     vec![
-        "Cap".to_string(),
+        "Zensloom".to_string(),
         "TypeScript".to_string(),
         "My Brand Name".to_string(),
         "mywebsite.com".to_string(),
@@ -386,7 +386,7 @@ pub fn init(app: &AppHandle) {
 }
 
 fn register_bundled_muxer_binary(_app: &AppHandle) {
-    if std::env::var_os(cap_recording::oop_muxer::ENV_BIN_PATH).is_some() {
+    if std::env::var_os(zensloom_recording::oop_muxer::ENV_BIN_PATH).is_some() {
         return;
     }
 
@@ -395,7 +395,7 @@ fn register_bundled_muxer_binary(_app: &AppHandle) {
     {
         let candidate = dir.join(bundled_muxer_bin_name());
         if candidate.is_file() {
-            match cap_recording::oop_muxer::set_muxer_binary_override(candidate.clone()) {
+            match zensloom_recording::oop_muxer::set_muxer_binary_override(candidate.clone()) {
                 Ok(()) => {
                     tracing::info!(
                         path = %candidate.display(),

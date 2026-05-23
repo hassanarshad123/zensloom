@@ -1,5 +1,5 @@
-use cap_project::XY;
-use cap_rendering::{ProjectUniforms, RenderSegment, RenderedFrame};
+﻿use zensloom_project::XY;
+use zensloom_rendering::{ProjectUniforms, RenderSegment, RenderedFrame};
 use futures::FutureExt;
 use serde::{Deserialize, Serialize};
 use specta::Type;
@@ -69,13 +69,13 @@ impl GifExportSettings {
         // Create GIF encoder with quality settings
         let quality = self
             .quality
-            .map(|q| cap_enc_gif::GifQuality {
+            .map(|q| zensloom_enc_gif::GifQuality {
                 quality: q.quality.unwrap_or(90),
                 fast: q.fast.unwrap_or(false),
             })
             .unwrap_or_default();
 
-        let mut gif_encoder = cap_enc_gif::GifEncoderWrapper::new_with_quality(
+        let mut gif_encoder = zensloom_enc_gif::GifEncoderWrapper::new_with_quality(
             &gif_output_path,
             output_size.0,
             output_size.1,
@@ -114,7 +114,7 @@ impl GifExportSettings {
                 .and_then(|v| v.map_err(|v| v.to_string()))
         });
 
-        let render_video_task = cap_rendering::render_video_to_channel(
+        let render_video_task = zensloom_rendering::render_video_to_channel(
             &base.render_constants,
             &base.project_config,
             tx_image_data,

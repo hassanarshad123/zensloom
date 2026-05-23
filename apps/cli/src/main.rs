@@ -1,4 +1,4 @@
-mod record;
+﻿mod record;
 
 use std::{
     io::{Write, stderr, stdout},
@@ -6,9 +6,9 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use cap_export::{ExporterBase, make_cursor_only_project};
-use cap_project::RecordingMeta;
-use cap_project::XY;
+use zensloom_export::{ExporterBase, make_cursor_only_project};
+use zensloom_project::RecordingMeta;
+use zensloom_project::XY;
 use clap::{Args, Parser, Subcommand};
 use record::RecordStart;
 use serde::{Deserialize, Serialize};
@@ -129,7 +129,7 @@ async fn run(cli: Cli) -> Result<(), String> {
         }
         Commands::Record(RecordArgs { command, args }) => match command {
             Some(RecordCommands::Screens) => {
-                let screens = cap_recording::screen_capture::list_displays();
+                let screens = zensloom_recording::screen_capture::list_displays();
 
                 for (i, (screen, target)) in screens.iter().enumerate() {
                     println!(
@@ -146,7 +146,7 @@ screen {}:
                 }
             }
             Some(RecordCommands::Windows) => {
-                let windows = cap_recording::screen_capture::list_windows();
+                let windows = zensloom_recording::screen_capture::list_windows();
 
                 for (i, (window, target)) in windows.iter().enumerate() {
                     println!(
@@ -163,7 +163,7 @@ window {}:
                 }
             }
             Some(RecordCommands::Cameras) => {
-                let cameras = cap_camera::list_cameras().collect::<Vec<_>>();
+                let cameras = zensloom_camera::list_cameras().collect::<Vec<_>>();
 
                 let mut info = vec![];
                 for camera_info in cameras {
@@ -229,17 +229,17 @@ struct ExportPreview {
 #[derive(Deserialize)]
 #[serde(tag = "format")]
 enum CliExportSettings {
-    Mp4(cap_export::mp4::Mp4ExportSettings),
-    Gif(cap_export::gif::GifExportSettings),
-    Mov(cap_export::mov::MovExportSettings),
+    Mp4(zensloom_export::mp4::Mp4ExportSettings),
+    Gif(zensloom_export::gif::GifExportSettings),
+    Mov(zensloom_export::mov::MovExportSettings),
 }
 
 impl CliExportSettings {
     fn default_mp4() -> Self {
-        Self::Mp4(cap_export::mp4::Mp4ExportSettings {
+        Self::Mp4(zensloom_export::mp4::Mp4ExportSettings {
             fps: 60,
             resolution_base: XY::new(1920, 1080),
-            compression: cap_export::mp4::ExportCompression::Maximum,
+            compression: zensloom_export::mp4::ExportCompression::Maximum,
             custom_bpp: None,
             force_ffmpeg_decoder: false,
             optimize_filesize: false,
@@ -364,9 +364,9 @@ impl Export {
 impl ExportPreview {
     async fn run(self) -> Result<(), String> {
         let settings =
-            serde_json::from_str::<cap_export::preview::ExportPreviewSettings>(&self.settings_json)
+            serde_json::from_str::<zensloom_export::preview::ExportPreviewSettings>(&self.settings_json)
                 .map_err(|e| format!("Invalid preview settings JSON: {e}"))?;
-        let result = cap_export::preview::render_preview(
+        let result = zensloom_export::preview::render_preview(
             self.project_path,
             self.frame_time,
             settings,

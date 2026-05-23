@@ -1,11 +1,11 @@
-pub mod gif;
+﻿pub mod gif;
 pub mod mov;
 pub mod mp4;
 pub mod preview;
 
-use cap_editor::SegmentMedia;
-use cap_project::{BackgroundSource, ProjectConfiguration, RecordingMeta, StudioRecordingMeta};
-use cap_rendering::{ProjectRecordingsMeta, RenderVideoConstants};
+use zensloom_editor::SegmentMedia;
+use zensloom_project::{BackgroundSource, ProjectConfiguration, RecordingMeta, StudioRecordingMeta};
+use zensloom_rendering::{ProjectRecordingsMeta, RenderVideoConstants};
 use std::{path::PathBuf, sync::Arc};
 
 #[derive(thiserror::Error, Debug)]
@@ -17,10 +17,10 @@ pub enum ExportError {
     IO(#[from] std::io::Error),
 
     #[error("Rendering: {0}")]
-    Rendering(#[from] cap_rendering::RenderingError),
+    Rendering(#[from] zensloom_rendering::RenderingError),
 
     #[error("Media/{0}")]
-    Media(#[from] cap_media::MediaError),
+    Media(#[from] zensloom_media::MediaError),
 
     #[error("Join: {0}")]
     Join(#[from] tokio::task::JoinError),
@@ -43,7 +43,7 @@ pub enum ExporterBuildError {
     #[error("Failed to load recordings meta: {0}")]
     RecordingsMeta(String),
     #[error("Failed to setup renderer: {0}")]
-    RendererSetup(#[source] cap_rendering::RenderingError),
+    RendererSetup(#[source] zensloom_rendering::RenderingError),
     #[error("Failed to load media: {0}")]
     MediaLoad(String),
     #[error("IO error at path '{0}': {1}")]
@@ -105,7 +105,7 @@ impl ExporterBuilder {
         );
 
         let segments =
-            cap_editor::create_segments(&recording_meta, studio_meta, self.force_ffmpeg_decoder)
+            zensloom_editor::create_segments(&recording_meta, studio_meta, self.force_ffmpeg_decoder)
                 .await
                 .map_err(Error::MediaLoad)?;
 
@@ -167,7 +167,7 @@ pub struct ExporterBase {
 
 impl ExporterBase {
     pub fn total_frames(&self, fps: u32) -> u32 {
-        let duration = cap_rendering::get_duration(
+        let duration = zensloom_rendering::get_duration(
             &self.recordings,
             &self.recording_meta,
             &self.studio_meta,

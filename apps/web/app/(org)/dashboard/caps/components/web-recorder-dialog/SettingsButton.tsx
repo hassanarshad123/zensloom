@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { Button } from "@cap/ui";
+import { Button } from "@zensloom/ui";
 import CogIcon from "@/app/(org)/dashboard/_components/AnimatedIcons/Cog";
 
 interface SettingsButtonProps {

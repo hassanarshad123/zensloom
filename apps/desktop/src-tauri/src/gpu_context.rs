@@ -1,4 +1,4 @@
-use std::{
+﻿use std::{
     collections::HashMap,
     sync::{Arc, RwLock},
     time::Instant,
@@ -49,7 +49,7 @@ pub struct SharedGpuContext {
 static GPU: OnceCell<Option<SharedGpuContext>> = OnceCell::const_new();
 
 async fn init_gpu_inner() -> Option<SharedGpuContext> {
-    let instance = cap_rendering::create_wgpu_instance().await;
+    let instance = zensloom_rendering::create_wgpu_instance().await;
 
     let hardware_adapter = instance
         .request_adapter(&wgpu::RequestAdapterOptions {
@@ -62,7 +62,7 @@ async fn init_gpu_inner() -> Option<SharedGpuContext> {
 
     let (adapter, is_software_adapter) = if let Some(adapter) = hardware_adapter {
         let adapter_info = adapter.get_info();
-        let is_software_adapter = cap_rendering::is_software_wgpu_adapter(&adapter_info);
+        let is_software_adapter = zensloom_rendering::is_software_wgpu_adapter(&adapter_info);
 
         if is_software_adapter {
             tracing::warn!(

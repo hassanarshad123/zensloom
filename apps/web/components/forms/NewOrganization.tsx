@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
 	CardDescription,
@@ -7,7 +7,7 @@ import {
 	FormField,
 	Input,
 	Label,
-} from "@cap/ui";
+} from "@zensloom/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

@@ -1,4 +1,4 @@
-use crate::{
+﻿use crate::{
     SharedPauseState, StudioQuality,
     output_pipeline::*,
     sources::screen_capture::{self, CropBounds, ScreenCaptureFormat, ScreenCaptureTarget},
@@ -9,11 +9,11 @@ use crate::output_pipeline::{MacOSFragmentedM4SMuxer, MacOSFragmentedM4SMuxerCon
 #[cfg(windows)]
 use crate::output_pipeline::{WindowsFragmentedM4SMuxer, WindowsFragmentedM4SMuxerConfig};
 use anyhow::anyhow;
-use cap_enc_ffmpeg::h264::H264EncoderBuilder;
+use zensloom_enc_ffmpeg::h264::H264EncoderBuilder;
 #[cfg(windows)]
-use cap_enc_ffmpeg::h264::H264Preset;
-use cap_enc_ffmpeg::segmented_stream::SegmentCompletedEvent;
-use cap_timestamp::Timestamps;
+use zensloom_enc_ffmpeg::h264::H264Preset;
+use zensloom_enc_ffmpeg::segmented_stream::SegmentCompletedEvent;
+use zensloom_timestamp::Timestamps;
 use std::path::PathBuf;
 
 #[cfg(windows)]
@@ -119,9 +119,9 @@ impl MakeCapturePipeline for screen_capture::CMSampleBufferCapture {
             };
 
             let preset = if ultra {
-                cap_enc_ffmpeg::h264::H264Preset::Medium
+                zensloom_enc_ffmpeg::h264::H264Preset::Medium
             } else {
-                cap_enc_ffmpeg::h264::H264Preset::Ultrafast
+                zensloom_enc_ffmpeg::h264::H264Preset::Ultrafast
             };
 
             tracing::debug!(bpp, ?preset, "Fragmented studio pipeline encoder config");
@@ -475,7 +475,7 @@ pub fn create_d3d_device()
         flags
     };
 
-    if let Ok(selected) = cap_d3d_adapter::select_capture_adapter(None) {
+    if let Ok(selected) = zensloom_d3d_adapter::select_capture_adapter(None) {
         if let Err(error) = create_d3d_device_on_adapter(&selected.adapter, flags, &mut device) {
             tracing::warn!(
                 adapter = %selected.description,

@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
-import { Button } from "@cap/ui";
-import type { Folder, Organisation } from "@cap/web-domain";
+import { Button } from "@zensloom/ui";
+import type { Folder, Organisation } from "@zensloom/web-domain";
 import { faArrowLeft, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useStore } from "@tanstack/react-store";

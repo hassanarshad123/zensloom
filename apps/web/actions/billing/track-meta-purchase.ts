@@ -1,9 +1,9 @@
-"use server";
+﻿"use server";
 
-import { db } from "@cap/database";
-import { getCurrentUser } from "@cap/database/auth/session";
-import { users } from "@cap/database/schema";
-import { stripe } from "@cap/utils";
+import { db } from "@zensloom/database";
+import { getCurrentUser } from "@zensloom/database/auth/session";
+import { users } from "@zensloom/database/schema";
+import { stripe } from "@zensloom/utils";
 import { eq } from "drizzle-orm";
 import type Stripe from "stripe";
 

@@ -1,4 +1,4 @@
-import { Effect, Option } from "effect";
+﻿import { Effect, Option } from "effect";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const whereMock = vi.fn();
@@ -21,19 +21,19 @@ const mockDb = {
 	transaction: vi.fn((callback) => callback(mockDb)),
 };
 
-vi.mock("@cap/database", () => ({
+vi.mock("@zensloom/database", () => ({
 	db: vi.fn(() => mockDb),
 }));
 
-vi.mock("@cap/database/auth/session", () => ({
+vi.mock("@zensloom/database/auth/session", () => ({
 	getCurrentUser: vi.fn(),
 }));
 
-vi.mock("@cap/database/helpers", () => ({
+vi.mock("@zensloom/database/helpers", () => ({
 	nanoId: vi.fn(() => "video-123"),
 }));
 
-vi.mock("@cap/database/schema", () => ({
+vi.mock("@zensloom/database/schema", () => ({
 	importedVideos: {
 		id: "id",
 		orgId: "orgId",
@@ -83,7 +83,7 @@ vi.mock("@cap/database/schema", () => ({
 	},
 }));
 
-vi.mock("@cap/env", () => ({
+vi.mock("@zensloom/env", () => ({
 	buildEnv: { NEXT_PUBLIC_IS_CAP: false },
 	NODE_ENV: "production",
 	serverEnv: vi.fn(() => ({
@@ -92,7 +92,7 @@ vi.mock("@cap/env", () => ({
 	})),
 }));
 
-vi.mock("@cap/utils", () => ({
+vi.mock("@zensloom/utils", () => ({
 	dub: vi.fn(() => ({
 		links: {
 			create: vi.fn(),
@@ -101,13 +101,13 @@ vi.mock("@cap/utils", () => ({
 	userIsPro: vi.fn(() => true),
 }));
 
-vi.mock("@cap/web-backend", () => ({
+vi.mock("@zensloom/web-backend", () => ({
 	Storage: {
 		getWritableAccessForUser: storageGetWritableAccessForUserMock,
 	},
 }));
 
-vi.mock("@cap/web-domain", () => ({
+vi.mock("@zensloom/web-domain", () => ({
 	Space: {
 		SpaceId: {
 			make: vi.fn((value: string) => value),
@@ -158,7 +158,7 @@ vi.mock("@/workflows/import-loom-video", () => ({
 	importLoomVideoWorkflow: Symbol("importLoomVideoWorkflow"),
 }));
 
-import { getCurrentUser } from "@cap/database/auth/session";
+import { getCurrentUser } from "@zensloom/database/auth/session";
 
 const mockGetCurrentUser = getCurrentUser as ReturnType<typeof vi.fn>;
 

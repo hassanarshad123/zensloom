@@ -1,6 +1,6 @@
-use anyhow::{Context, Result};
-use cap_project::{ProjectConfiguration, RecordingMeta, StudioRecordingMeta, XY};
-use cap_rendering::{
+﻿use anyhow::{Context, Result};
+use zensloom_project::{ProjectConfiguration, RecordingMeta, StudioRecordingMeta, XY};
+use zensloom_rendering::{
     ProjectRecordingsMeta, RecordingSegmentDecoders, RenderSegment, RenderVideoConstants,
     RenderedFrame, SegmentVideoPaths,
 };
@@ -178,7 +178,7 @@ async fn main() -> Result<()> {
 
     // Start rendering in a separate task
     let render_task = tokio::task::spawn(async move {
-        cap_rendering::render_video_to_channel(
+        zensloom_rendering::render_video_to_channel(
             &render_constants,
             &project_config,
             tx,

@@ -1,5 +1,5 @@
-import type { videos } from "@cap/database/schema";
-import { Video } from "@cap/web-domain";
+﻿import type { videos } from "@zensloom/database/schema";
+import { Video } from "@zensloom/web-domain";
 import { Option } from "effect";
 
 type DbVideo = typeof videos.$inferSelect;

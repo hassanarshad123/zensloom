@@ -1,7 +1,7 @@
-import "server-only";
+﻿import "server-only";
 
-import { decrypt } from "@cap/database/crypto";
-import { serverEnv } from "@cap/env";
+import { decrypt } from "@zensloom/database/crypto";
+import { serverEnv } from "@zensloom/env";
 import {
 	AwsCredentials,
 	Database,
@@ -20,8 +20,8 @@ import {
 	VideosPolicy,
 	VideosRepo,
 	Workflows,
-} from "@cap/web-backend";
-import { type HttpAuthMiddleware, Video } from "@cap/web-domain";
+} from "@zensloom/web-backend";
+import { type HttpAuthMiddleware, Video } from "@zensloom/web-domain";
 import {
 	FetchHttpClient,
 	Headers,

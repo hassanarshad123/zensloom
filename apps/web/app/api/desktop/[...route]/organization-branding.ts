@@ -6,7 +6,7 @@ import {
 	type OrganizationBrandingPatchBody,
 	OrganizationHexColor,
 	type OrganizationLogoUpdate,
-} from "@cap/web-api-contract";
+} from "@zensloom/web-api-contract";
 import {
 	getEffectiveOrganizationRole,
 	normalizeOrganizationRole,

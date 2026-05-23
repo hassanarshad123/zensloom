@@ -1,4 +1,4 @@
-#[tokio::main]
+﻿#[tokio::main]
 pub async fn main() {
     #[cfg(target_os = "macos")]
     mac::run().await;
@@ -10,7 +10,7 @@ pub async fn main() {
 mod mac {
     use std::path::PathBuf;
 
-    use cap_video_decode::AVAssetReaderDecoder;
+    use zensloom_video_decode::AVAssetReaderDecoder;
 
     pub(super) async fn run() {
         let handle = tokio::runtime::Handle::current();

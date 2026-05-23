@@ -1,4 +1,4 @@
-fn main() {
+﻿fn main() {
     #[cfg(windows)]
     windows::main();
     #[cfg(not(windows))]
@@ -9,7 +9,7 @@ fn main() {
 mod windows {
     use std::{ops::Deref, time::Duration};
 
-    use cap_camera_windows::*;
+    use zensloom_camera_windows::*;
 
     pub fn main() {
         let devices = get_devices()

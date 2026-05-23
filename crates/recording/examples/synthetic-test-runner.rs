@@ -1,4 +1,4 @@
-use cap_recording::{
+﻿use zensloom_recording::{
     Mp4Muxer, OggMuxer, OutputPipeline, SegmentedVideoMuxer, SegmentedVideoMuxerConfig,
     test_sources::{
         AudioGenerator, AudioTestConfig, OutputFormat, RecordingValidator, SyntheticAudioSource,
@@ -7,7 +7,7 @@ use cap_recording::{
         comprehensive_test_configs,
     },
 };
-use cap_timestamp::Timestamps;
+use zensloom_timestamp::Timestamps;
 use clap::{Parser, Subcommand};
 use std::{
     path::{Path, PathBuf},
@@ -216,7 +216,7 @@ async fn main() {
 #[allow(dead_code)]
 enum TestResult {
     Passed {
-        validation: cap_recording::test_sources::ValidationResult,
+        validation: zensloom_recording::test_sources::ValidationResult,
         elapsed: Duration,
     },
     Failed {

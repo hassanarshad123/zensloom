@@ -1,4 +1,4 @@
-import { isEmailAllowedByRestriction } from "@cap/utils";
+﻿import { isEmailAllowedByRestriction } from "@zensloom/utils";
 import { describe, expect, it } from "vitest";
 
 describe("isEmailAllowedByRestriction", () => {

@@ -1,4 +1,4 @@
-use anyhow::Result;
+﻿use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -33,7 +33,7 @@ impl CameraFormat {
 }
 
 pub fn discover_cameras() -> Result<Vec<DiscoveredCamera>> {
-    use cap_camera::list_cameras;
+    use zensloom_camera::list_cameras;
 
     let mut result = Vec::new();
 

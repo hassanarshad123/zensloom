@@ -1,7 +1,7 @@
-#[cfg(target_os = "macos")]
+﻿#[cfg(target_os = "macos")]
 use crate::SendableShareableContent;
-use cap_cursor_capture::CursorCropBounds;
-use cap_media_info::{AudioInfo, VideoInfo, ensure_even};
+use zensloom_cursor_capture::CursorCropBounds;
+use zensloom_media_info::{AudioInfo, VideoInfo, ensure_even};
 use scap_targets::{Display, DisplayId, Window, WindowId, bounds::*};
 use serde::{Deserialize, Serialize};
 use specta::Type;
@@ -339,7 +339,7 @@ impl<TCaptureFormat: ScreenCaptureFormat> ScreenCaptureConfig<TCaptureFormat> {
         #[cfg(target_os = "macos")] shareable_content: SendableShareableContent,
         #[cfg(target_os = "macos")] excluded_windows: Vec<WindowId>,
     ) -> Result<Self, ScreenCaptureInitError> {
-        cap_fail::fail!("ScreenCaptureSource::init");
+        zensloom_fail::fail!("ScreenCaptureSource::init");
 
         let target_refresh = validated_refresh_rate(display.refresh_rate());
         let fps = std::cmp::max(1, std::cmp::min(max_fps, target_refresh));

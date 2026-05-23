@@ -1,8 +1,8 @@
-import { db } from "@cap/database";
-import { sendEmail } from "@cap/database/emails/config";
-import { NewComment } from "@cap/database/emails/new-comment";
-import { comments, users, videos } from "@cap/database/schema";
-import { buildEnv, serverEnv } from "@cap/env";
+﻿import { db } from "@zensloom/database";
+import { sendEmail } from "@zensloom/database/emails/config";
+import { NewComment } from "@zensloom/database/emails/new-comment";
+import { comments, users, videos } from "@zensloom/database/schema";
+import { buildEnv, serverEnv } from "@zensloom/env";
 import { and, eq, gt, ne } from "drizzle-orm";
 import type { NextRequest } from "next/server";
 
