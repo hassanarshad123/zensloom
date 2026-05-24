@@ -1,9 +1,9 @@
-﻿import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { Button } from "@zensloom/ui-solid";
 import { ErrorBoundary, type ParentProps } from "solid-js";
 
-export function CapErrorBoundary(props: ParentProps) {
+export function ZensloomErrorBoundary(props: ParentProps) {
 	return (
 		<ErrorBoundary
 			fallback={(e: Error) => {

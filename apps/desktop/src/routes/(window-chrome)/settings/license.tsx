@@ -2,7 +2,7 @@
 
 export default function Page() {
 	return (
-		<div class="cap-settings-page flex relative flex-col gap-3 items-center p-4 mx-auto h-full custom-scroll">
+		<div class="zensloom-settings-page flex relative flex-col gap-3 items-center p-4 mx-auto h-full custom-scroll">
 			<div class="flex justify-center items-center w-full h-screen">
 				<div class="flex flex-col items-center p-6 mx-auto space-y-3 w-full max-w-md text-white rounded-3xl border bg-gray-2 border-gray-3">
 					<div class="flex flex-col gap-2 items-center">

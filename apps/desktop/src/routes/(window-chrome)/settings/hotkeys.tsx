@@ -98,11 +98,11 @@ function Inner(props: { initialStore: HotkeysStore | null }) {
 		] satisfies Array<keyof typeof ACTION_TEXT>;
 
 	return (
-		<div class="cap-settings-page flex flex-col h-full custom-scroll">
+		<div class="zensloom-settings-page flex flex-col h-full custom-scroll">
 			<SettingsPageContent>
 				<Section
 					title="Shortcuts"
-					description="Configure system-wide keyboard shortcuts to control Cap."
+					description="Configure system-wide keyboard shortcuts to control Zensloom."
 				>
 					<SectionCard class="flex flex-col gap-3 p-4">
 						<Index each={actions()}>

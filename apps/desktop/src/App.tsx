@@ -13,7 +13,7 @@ import "unfonts.css";
 import "./styles/tokens.css";
 import "./styles/theme.css";
 
-import { CapErrorBoundary } from "./components/CapErrorBoundary";
+import { ZensloomErrorBoundary } from "./components/ErrorBoundary";
 import { generalSettingsStore } from "./store";
 import { initAnonymousUser } from "./utils/analytics";
 import { type AppTheme, commands } from "./utils/tauri";
@@ -136,7 +136,7 @@ function Inner() {
 					},
 				}}
 			/>
-			<CapErrorBoundary>
+			<ZensloomErrorBoundary>
 				<Router
 					root={(props) => {
 						const matches = useCurrentMatches();
@@ -210,7 +210,7 @@ function Inner() {
 						component={WindowCaptureOccluderPage}
 					/>
 				</Router>
-			</CapErrorBoundary>
+			</ZensloomErrorBoundary>
 		</>
 	);
 }
@@ -241,9 +241,9 @@ function createThemeListener(currentWindow: WebviewWindow) {
 
 		try {
 			if (appTheme === "system") {
-				localStorage.removeItem("cap-theme");
+				localStorage.removeItem("zensloom-theme");
 			} else {
-				localStorage.setItem("cap-theme", appTheme);
+				localStorage.setItem("zensloom-theme", appTheme);
 			}
 		} catch {}
 

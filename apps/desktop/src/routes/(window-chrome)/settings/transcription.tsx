@@ -97,7 +97,7 @@ function Inner(props: { initialStore: GeneralSettingsStore | null }) {
 	});
 
 	return (
-		<div class="cap-settings-page flex flex-col h-full custom-scroll">
+		<div class="zensloom-settings-page flex flex-col h-full custom-scroll">
 			<SettingsPageContent>
 				<Section
 					title="Transcription"

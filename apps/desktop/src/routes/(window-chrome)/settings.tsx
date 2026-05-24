@@ -3,7 +3,7 @@ import { getVersion } from "@tauri-apps/api/app";
 import * as dialog from "@tauri-apps/plugin-dialog";
 import { check } from "@tauri-apps/plugin-updater";
 import { createResource, createSignal, For, Show, Suspense } from "solid-js";
-import { CapErrorBoundary } from "~/components/CapErrorBoundary";
+import { ZensloomErrorBoundary } from "~/components/ErrorBoundary";
 import IconLucideUserRound from "~icons/lucide/user-round";
 
 export default function Settings(props: RouteSectionProps) {
@@ -94,32 +94,32 @@ export default function Settings(props: RouteSectionProps) {
 	};
 
 	return (
-		<div class="cap-settings-shell flex-1 flex flex-row divide-x divide-gray-3 text-[0.875rem] leading-5 overflow-y-hidden">
+		<div class="zensloom-settings-shell flex-1 flex flex-row divide-x divide-gray-3 text-[0.875rem] leading-5 overflow-y-hidden">
 			<div
-				class="cap-settings-sidebar flex flex-col h-full bg-gray-2"
+				class="zensloom-settings-sidebar flex flex-col h-full bg-gray-2"
 				data-tauri-drag-region
 			>
-				<div class="cap-settings-window-spacer" data-tauri-drag-region />
+				<div class="zensloom-settings-window-spacer" data-tauri-drag-region />
 				<div
-					class="cap-settings-profile flex gap-2 items-center mx-2 mt-2 mb-3 px-2 py-1.5 rounded-lg text-left"
+					class="zensloom-settings-profile flex gap-2 items-center mx-2 mt-2 mb-3 px-2 py-1.5 rounded-lg text-left"
 					data-tauri-drag-region="false"
 				>
-					<div class="cap-settings-profile-icon flex justify-center items-center size-8 shrink-0 rounded-full bg-gray-3 text-gray-11">
+					<div class="zensloom-settings-profile-icon flex justify-center items-center size-8 shrink-0 rounded-full bg-gray-3 text-gray-11">
 						<IconLucideUserRound class="size-4" aria-hidden="true" />
 					</div>
-					<div class="cap-settings-profile-copy flex flex-col flex-1 gap-0.5 min-w-0">
+					<div class="zensloom-settings-profile-copy flex flex-col flex-1 gap-0.5 min-w-0">
 						<p class="truncate text-[13px] text-gray-12">Zensloom</p>
 						<p class="truncate text-[11px] text-gray-10">Local User</p>
 					</div>
 				</div>
-				<ul class="cap-settings-nav min-w-48 h-full p-2.5 space-y-1 text-gray-12">
+				<ul class="zensloom-settings-nav min-w-48 h-full p-2.5 space-y-1 text-gray-12">
 					<For each={settingsItems}>
 						{(item) => (
 							<li>
 								<A
 									href={item.href}
 									activeClass="bg-gray-5 pointer-events-none"
-									class="cap-settings-nav-item rounded-lg h-8 hover:bg-gray-3 text-[13px] px-2 flex flex-row items-center gap-1.5 transition-colors"
+									class="zensloom-settings-nav-item rounded-lg h-8 hover:bg-gray-3 text-[13px] px-2 flex flex-row items-center gap-1.5 transition-colors"
 								>
 									<item.icon class="opacity-60 size-4" aria-hidden="true" />
 									<span>{item.name}</span>
@@ -128,7 +128,7 @@ export default function Settings(props: RouteSectionProps) {
 						)}
 					</For>
 				</ul>
-				<div class="cap-settings-account p-2.5 text-left flex flex-col">
+				<div class="zensloom-settings-account p-2.5 text-left flex flex-col">
 					<Show when={version()}>
 						{(v) => (
 							<div class="mb-2 text-xs text-gray-11 flex flex-col items-start gap-1.5">
@@ -150,10 +150,10 @@ export default function Settings(props: RouteSectionProps) {
 					</Show>
 				</div>
 			</div>
-			<div class="cap-settings-content overflow-y-hidden flex-1 animate-in min-w-0">
-				<CapErrorBoundary>
+			<div class="zensloom-settings-content overflow-y-hidden flex-1 animate-in min-w-0">
+				<ZensloomErrorBoundary>
 					<Suspense>{props.children}</Suspense>
-				</CapErrorBoundary>
+				</ZensloomErrorBoundary>
 			</div>
 		</div>
 	);

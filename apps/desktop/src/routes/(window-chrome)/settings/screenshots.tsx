@@ -125,7 +125,7 @@ export default function Screenshots() {
 	};
 
 	return (
-		<div class="cap-settings-page flex relative flex-col w-full h-full custom-scroll">
+		<div class="zensloom-settings-page flex relative flex-col w-full h-full custom-scroll">
 			<SettingsPageContent class="max-w-none space-y-4">
 				<Section
 					title="Screenshots"

@@ -5,7 +5,7 @@ import { IntegrationConfigHeader } from "./config-header";
 
 export default function GoogleDriveConfigPage() {
 	return (
-		<div class="cap-settings-page flex flex-col h-full custom-scroll">
+		<div class="zensloom-settings-page flex flex-col h-full custom-scroll">
 			<SettingsPageContent>
 				<IntegrationConfigHeader title="Google Drive" />
 				<Section

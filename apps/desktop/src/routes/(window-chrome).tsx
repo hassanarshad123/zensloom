@@ -67,7 +67,7 @@ export default function (props: RouteSectionProps) {
 		<WindowChromeContext>
 			<div
 				class={cx(
-					"cap-window-shell flex overflow-hidden flex-col w-screen h-screen max-h-screen divide-y divide-gray-5 bg-gray-1",
+					"zensloom-window-shell flex overflow-hidden flex-col w-screen h-screen max-h-screen divide-y divide-gray-5 bg-gray-1",
 					isMacOS && "rounded-[16px]",
 				)}
 			>
@@ -109,7 +109,7 @@ function Header() {
 	return (
 		<header
 			class={cx(
-				"cap-window-header flex items-center min-w-0 w-full h-9 select-none shrink-0 bg-gray-2",
+				"zensloom-window-header flex items-center min-w-0 w-full h-9 select-none shrink-0 bg-gray-2",
 				isWindows ? "flex-row" : "flex-row-reverse",
 			)}
 			data-tauri-drag-region
@@ -142,7 +142,7 @@ function Inner(props: ParentProps) {
 	return (
 		<div
 			data-tauri-drag-region="false"
-			class="cap-window-body flex overflow-hidden flex-col flex-1 animate-in fade-in"
+			class="zensloom-window-body flex overflow-hidden flex-col flex-1 animate-in fade-in"
 		>
 			{props.children}
 		</div>

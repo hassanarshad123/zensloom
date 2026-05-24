@@ -3,7 +3,7 @@ import { cva } from "cva";
 import { type ComponentProps, splitProps } from "solid-js";
 
 const toggleControlStyles = cva(
-	"cap-toggle rounded-full bg-gray-6 data-disabled:bg-gray-3 data-checked:bg-blue-500 transition-[background-color,box-shadow]",
+	"zensloom-toggle rounded-full bg-gray-6 data-disabled:bg-gray-3 data-checked:bg-blue-500 transition-[background-color,box-shadow]",
 	{
 		variants: {
 			size: {
@@ -19,7 +19,7 @@ const toggleControlStyles = cva(
 );
 
 const toggleThumbStyles = cva(
-	"cap-toggle-thumb bg-white rounded-full shadow-[0_1px_3px_rgba(0,0,0,0.22)] transition-transform data-checked:translate-x-[calc(100%)]",
+	"zensloom-toggle-thumb bg-white rounded-full shadow-[0_1px_3px_rgba(0,0,0,0.22)] transition-transform data-checked:translate-x-[calc(100%)]",
 	{
 		variants: {
 			size: {

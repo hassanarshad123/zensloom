@@ -56,7 +56,7 @@ function Inner(props: {
 	};
 
 	return (
-		<div class="cap-settings-page flex flex-col h-full custom-scroll">
+		<div class="zensloom-settings-page flex flex-col h-full custom-scroll">
 			<SettingsPageContent>
 				<Show
 					when={props.osType !== "windows"}

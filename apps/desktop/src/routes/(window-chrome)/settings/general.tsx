@@ -118,7 +118,7 @@ function AppearanceSection(props: {
 	return (
 		<Section
 			title="Appearance"
-			description="Match Cap to your system theme or pick a fixed look."
+			description="Match Zensloom to your system theme or pick a fixed look."
 		>
 			<SectionCard padded>
 				<div
@@ -409,7 +409,7 @@ function Inner(props: { initialStore: GeneralSettingsStore | null }) {
 	return (
 		<div
 			ref={scrollContainerRef}
-			class="cap-settings-page flex flex-col h-full custom-scroll"
+			class="zensloom-settings-page flex flex-col h-full custom-scroll"
 		>
 			<SettingsPageContent>
 				<AppearanceSection
@@ -423,18 +423,18 @@ function Inner(props: { initialStore: GeneralSettingsStore | null }) {
 				{ostype === "macos" && (
 					<Section
 						title="App"
-						description="Choose how Cap shows up on your system."
+						description="Choose how Zensloom shows up on your system."
 					>
 						<SectionRows>
 							<ToggleSettingItem
 								label="Always show dock icon"
-								description="Keep Cap in the dock even when no windows are open."
+								description="Keep Zensloom in the dock even when no windows are open."
 								value={!settings.hideDockIcon}
 								onChange={(v) => handleChange("hideDockIcon", !v)}
 							/>
 							<ToggleSettingItem
 								label="System notifications"
-								description="Show notifications for clipboard copies, saved files, and more. You may need to allow Cap in your system's notification settings."
+								description="Show notifications for clipboard copies, saved files, and more. You may need to allow Zensloom in your system's notification settings."
 								value={!!settings.enableNotifications}
 								onChange={async (value) => {
 									if (value) {
@@ -518,7 +518,7 @@ function Inner(props: { initialStore: GeneralSettingsStore | null }) {
 						/>
 						<ToggleSettingItem
 							label="Delete Instant recordings after upload"
-							description="Cap removes the local file once it has uploaded successfully."
+							description="Zensloom removes the local file once it has uploaded successfully."
 							value={settings.deleteInstantRecordingsAfterUpload ?? false}
 							onChange={(v) =>
 								handleChange("deleteInstantRecordingsAfterUpload", v)
@@ -570,8 +570,8 @@ function Inner(props: { initialStore: GeneralSettingsStore | null }) {
 				</Section>
 
 				<Section
-					title="Cap Pro"
-					description="Settings available with a Cap Pro license."
+					title="Zensloom Pro"
+					description="Settings available with a Zensloom Pro license."
 					pro
 				>
 					<SectionRows>
@@ -639,7 +639,7 @@ function TelemetryCard(props: {
 			<SectionRows>
 				<ToggleSettingItem
 					label="Share anonymous telemetry"
-					description="Cap uses anonymous telemetry to improve reliability and fix bugs. We never collect recording contents, window titles, file paths, or personal information."
+					description="Zensloom uses anonymous telemetry to improve reliability and fix bugs. We never collect recording contents, window titles, file paths, or personal information."
 					value={props.value}
 					onChange={props.onChange}
 				/>
@@ -836,12 +836,12 @@ function ServerURLSetting(props: {
 	return (
 		<Section
 			title="Self-host"
-			description="Only change this if you are running your own instance of Cap Web."
+			description="Only change this if you are running your own instance of Zensloom Web."
 		>
 			<SectionCard padded>
 				<div class="flex flex-col gap-3">
 					<label class="flex flex-col gap-1.5">
-						<span class="text-[13px] text-gray-12">Cap Server URL</span>
+						<span class="text-[13px] text-gray-12">Zensloom Server URL</span>
 						<Input
 							class="bg-gray-3"
 							value={value()}
@@ -1125,7 +1125,7 @@ function ExcludedWindowsCard(props: {
 			title="Excluded windows"
 			description={
 				props.isWindows
-					? "Hide windows from recordings. On Windows, only Cap-related windows can be excluded."
+					? "Hide windows from recordings. On Windows, only Zensloom-related windows can be excluded."
 					: "Hide windows from recordings."
 			}
 			right={

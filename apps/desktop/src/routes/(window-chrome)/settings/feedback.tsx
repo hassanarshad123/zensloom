@@ -33,7 +33,7 @@ export default function FeedbackTab() {
 	};
 
 	return (
-		<div class="cap-settings-page flex flex-col w-full h-full custom-scroll">
+		<div class="zensloom-settings-page flex flex-col w-full h-full custom-scroll">
 			<SettingsPageContent>
 				<Section
 					title="Feedback"
@@ -42,7 +42,7 @@ export default function FeedbackTab() {
 					<div class="flex gap-2">
 						<Button
 							onClick={() =>
-								shell.open("https://github.com/CapSoftware/Cap/issues")
+								shell.open("https://github.com/ZensbotLLC/Zensloom/issues")
 							}
 							size="md"
 							variant="primary"

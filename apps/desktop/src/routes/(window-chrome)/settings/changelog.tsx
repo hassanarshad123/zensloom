@@ -6,7 +6,7 @@ import { SettingsPageContent } from "./Setting";
 
 export default function Page() {
 	return (
-		<div class="cap-settings-page flex flex-col h-full custom-scroll">
+		<div class="zensloom-settings-page flex flex-col h-full custom-scroll">
 			<SettingsPageContent class="max-w-none">
 				<div class="flex flex-col gap-6 text-sm font-normal animate-in fade-in">
 					<div class="space-y-4">
@@ -29,7 +29,7 @@ export default function Page() {
 								variant="gray"
 								size="md"
 								onClick={() =>
-									shell.open("https://github.com/CapSoftware/Cap/releases")
+									shell.open("https://github.com/ZensbotLLC/Zensloom/releases")
 								}
 							>
 								View all releases on GitHub
