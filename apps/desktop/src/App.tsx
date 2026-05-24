@@ -10,6 +10,7 @@ import { Toaster } from "solid-toast";
 
 import "@zensloom/ui-solid/main.css";
 import "unfonts.css";
+import "./styles/tokens.css";
 import "./styles/theme.css";
 
 import { CapErrorBoundary } from "./components/CapErrorBoundary";
