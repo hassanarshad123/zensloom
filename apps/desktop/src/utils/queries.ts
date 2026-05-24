@@ -24,7 +24,7 @@ import {
 	type RecordingTargetMode,
 	type ScreenCaptureTarget,
 } from "./tauri";
-import { orgCustomDomainClient, protectedHeaders } from "./web-api";
+// Zensloom v1.0: Cloud API imports removed. Custom domain query stubbed below.
 
 export const listWindows = queryOptions({
 	queryKey: ["capture", "windows"] as const,
@@ -328,38 +328,18 @@ export function createCameraMutation() {
 }
 
 export function createCustomDomainQuery() {
+	// Zensloom v1.0: No cloud custom domains. Return static empty values.
 	return useQuery(() => ({
 		queryKey: ["customDomain"] as const,
 		queryFn: async () => {
-			try {
-				const auth = await authStore.get();
-				if (!auth) return { custom_domain: null, domain_verified: null };
-				const response = await orgCustomDomainClient.getOrgCustomDomain({
-					headers: await protectedHeaders(),
-				});
-				if (response.status === 200) return response.body;
-			} catch (error) {
-				console.error("Error fetching custom domain:", error);
-				return { custom_domain: null, domain_verified: null };
-			}
+			return { custom_domain: null, domain_verified: null };
 		},
-		refetchOnMount: true,
-		refetchOnWindowFocus: true,
+		refetchOnMount: false,
+		refetchOnWindowFocus: false,
 	}));
 }
 
 export function createOrganizationsQuery() {
-	const auth = authStore.createQuery();
-
-	// Refresh organizations if they're missing
-	createEffect(() => {
-		if (
-			auth.data?.user_id &&
-			(!auth.data?.organizations || auth.data.organizations.length === 0)
-		) {
-			commands.updateAuthPlan().catch(console.error);
-		}
-	});
-
-	return () => auth.data?.organizations ?? [];
+	// Zensloom v1.0: No cloud organizations. Return empty list.
+	return () => [] as Array<{ id: string; name: string }>;
 }

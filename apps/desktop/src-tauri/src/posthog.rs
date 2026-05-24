@@ -1,3 +1,6 @@
+// Zensloom v1.0: No telemetry. All PostHog functions are no-ops.
+// This stub preserves the type signatures needed by recording.rs and recovery.rs.
+
 use std::time::Duration;
 use tauri::AppHandle;
 

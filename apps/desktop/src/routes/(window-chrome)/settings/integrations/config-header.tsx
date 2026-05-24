@@ -1,5 +1,5 @@
-﻿import { Button } from "@zensloom/ui-solid";
-import { useNavigate } from "@solidjs/router";
+﻿import { useNavigate } from "@solidjs/router";
+import { Button } from "@zensloom/ui-solid";
 import IconLucideArrowLeft from "~icons/lucide/arrow-left";
 
 export function IntegrationConfigHeader(props: { title: string }) {

@@ -1,5 +1,4 @@
-﻿import { Button } from "@zensloom/ui-solid";
-import Tooltip from "@corvu/tooltip";
+﻿import Tooltip from "@corvu/tooltip";
 import {
 	createQuery,
 	queryOptions,
@@ -8,6 +7,7 @@ import {
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { ask } from "@tauri-apps/plugin-dialog";
 import { remove } from "@tauri-apps/plugin-fs";
+import { Button } from "@zensloom/ui-solid";
 import {
 	createEffect,
 	createMemo,

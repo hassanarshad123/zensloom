@@ -319,7 +319,7 @@ impl GeneralSettingsStore {
         store.set("general_settings", json!(settings));
         store.save().map_err(|e| e.to_string())?;
 
-        crate::posthog::set_telemetry_enabled(settings.enable_telemetry);
+        // posthog telemetry removed - Zensloom v1.0 is local-only
 
         #[cfg(target_os = "macos")]
         crate::permissions::sync_macos_dock_visibility(app);
@@ -369,7 +369,7 @@ pub fn init(app: &AppHandle) {
         }
     };
 
-    crate::posthog::set_telemetry_enabled(store.enable_telemetry);
+    // posthog telemetry removed - Zensloom v1.0 is local-only
     register_bundled_muxer_binary(app);
 
     if let Err(e) = store.save(app) {

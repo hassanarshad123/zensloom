@@ -1,10 +1,10 @@
-﻿import { Button } from "@zensloom/ui-solid";
-import { makePersisted } from "@solid-primitives/storage";
+﻿import { makePersisted } from "@solid-primitives/storage";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { ask } from "@tauri-apps/plugin-dialog";
 import { type as ostype } from "@tauri-apps/plugin-os";
 import { relaunch } from "@tauri-apps/plugin-process";
 import * as shell from "@tauri-apps/plugin-shell";
+import { Button } from "@zensloom/ui-solid";
 import { cx } from "cva";
 import {
 	createEffect,
@@ -857,7 +857,8 @@ function ToggleStep(props: { active: boolean }) {
 					Switch modes anytime
 				</h2>
 				<p class="text-[14px] text-gray-10 leading-relaxed">
-					Toggle between modes with a single click from the main Zensloom window.
+					Toggle between modes with a single click from the main Zensloom
+					window.
 				</p>
 			</div>
 
@@ -991,8 +992,8 @@ function ShortcutsStep(props: { active: boolean }) {
 					Make Zensloom yours
 				</h2>
 				<p class="text-[14px] text-gray-10 leading-relaxed">
-					Customize everything from keyboard shortcuts to storage. Zensloom adapts to
-					your workflow.
+					Customize everything from keyboard shortcuts to storage. Zensloom
+					adapts to your workflow.
 				</p>
 			</div>
 
@@ -1072,8 +1073,8 @@ function FaqStep(props: { active: boolean }) {
 			>
 				<FaqItem question="Is Zensloom free to use?">
 					<p class="text-[13px] text-gray-10 leading-relaxed">
-						Zensloom is free for personal use. For teams and commercial use, check
-						out our{" "}
+						Zensloom is free for personal use. For teams and commercial use,
+						check out our{" "}
 						<button
 							type="button"
 							onClick={() => shell.open("https://cap.so/pricing")}
@@ -2075,7 +2076,8 @@ function PermissionsStep(props: {
 					Permissions Required
 				</h2>
 				<p class="text-[14px] text-gray-10 leading-relaxed">
-					Zensloom needs a few permissions to record your screen and capture audio.
+					Zensloom needs a few permissions to record your screen and capture
+					audio.
 				</p>
 			</div>
 

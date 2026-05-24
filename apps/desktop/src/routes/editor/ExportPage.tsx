@@ -1,5 +1,4 @@
-﻿import { Button } from "@zensloom/ui-solid";
-import { debounce } from "@solid-primitives/scheduled";
+﻿import { debounce } from "@solid-primitives/scheduled";
 import { makePersisted } from "@solid-primitives/storage";
 import { createMutation } from "@tanstack/solid-query";
 import { Channel } from "@tauri-apps/api/core";
@@ -7,6 +6,7 @@ import { CheckMenuItem, Menu } from "@tauri-apps/api/menu";
 import { ask } from "@tauri-apps/plugin-dialog";
 import { remove } from "@tauri-apps/plugin-fs";
 import { type as ostype } from "@tauri-apps/plugin-os";
+import { Button } from "@zensloom/ui-solid";
 import { cx } from "cva";
 import {
 	createEffect,

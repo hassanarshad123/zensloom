@@ -1,11 +1,11 @@
-﻿import { Button } from "@zensloom/ui-solid";
-import { Dialog as KDialog } from "@kobalte/core/dialog";
+﻿import { Dialog as KDialog } from "@kobalte/core/dialog";
 import { DropdownMenu } from "@kobalte/core/dropdown-menu";
 import { Polymorphic, type PolymorphicProps } from "@kobalte/core/polymorphic";
 import { Slider as KSlider } from "@kobalte/core/slider";
 import { Tooltip as KTooltip } from "@kobalte/core/tooltip";
 import { createElementBounds } from "@solid-primitives/bounds";
 import { createEventListener } from "@solid-primitives/event-listener";
+import { Button } from "@zensloom/ui-solid";
 import { cva, cx, type VariantProps } from "cva";
 
 import {

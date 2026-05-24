@@ -1,9 +1,9 @@
-﻿import { Button } from "@zensloom/ui-solid";
-import Tooltip from "@corvu/tooltip";
+﻿import Tooltip from "@corvu/tooltip";
 import { createElementBounds } from "@solid-primitives/bounds";
 import { makePersisted } from "@solid-primitives/storage";
 import { createMutation, createQuery } from "@tanstack/solid-query";
 import { Channel, convertFileSrc } from "@tauri-apps/api/core";
+import { Button } from "@zensloom/ui-solid";
 import { cx } from "cva";
 import {
 	type Accessor,

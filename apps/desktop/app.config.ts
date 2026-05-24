@@ -1,5 +1,5 @@
-﻿import capUIPlugin from "@zensloom/ui-solid/vite";
-import { defineConfig } from "@solidjs/start/config";
+﻿import { defineConfig } from "@solidjs/start/config";
+import capUIPlugin from "@zensloom/ui-solid/vite";
 import topLevelAwait from "vite-plugin-top-level-await";
 import wasm from "vite-plugin-wasm";
 import tsconfigPaths from "vite-tsconfig-paths";

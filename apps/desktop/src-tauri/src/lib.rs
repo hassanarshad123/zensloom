@@ -23,7 +23,6 @@ mod notifications;
 mod panel_manager;
 mod permissions;
 mod platform;
-mod posthog;
 mod power_observer;
 mod presets;
 mod recording;
@@ -35,19 +34,20 @@ mod target_select_overlay;
 mod thumbnails;
 mod tray;
 mod update_project_names;
-mod upload;
-pub mod web_api;
+mod upload; // stub - cloud uploads disabled in v1.0
+pub mod web_api; // stub - cloud API disabled in v1.0
+mod posthog; // stub - telemetry disabled in v1.0
 mod window_exclusion;
 mod window_position_persistence;
 mod windows;
 
 use audio::AppSounds;
-use auth::{AuthStore, Plan};
+use auth::AuthStore;
 use camera::{CameraPreviewManager, CameraPreviewState};
 use zensloom_editor::{EditorInstance, EditorState};
 use zensloom_project::{
-    InstantRecordingMeta, ProjectConfiguration, RecordingMeta, RecordingMetaInner, SharingMeta,
-    StudioRecordingMeta, StudioRecordingStatus, UploadMeta, VideoUploadInfo, XY, ZoomSegment,
+    InstantRecordingMeta, ProjectConfiguration, RecordingMeta, RecordingMetaInner,
+    StudioRecordingMeta, StudioRecordingStatus, XY, ZoomSegment,
 };
 use zensloom_recording::{
     RecordingMode,
@@ -104,19 +104,13 @@ use tauri_plugin_shell::ShellExt;
 use tauri_specta::Event;
 use tokio::sync::{Mutex, RwLock, oneshot, watch};
 use tracing::*;
-use upload::{create_or_get_video, upload_image, upload_video};
-use web_api::AuthedApiError;
-use web_api::ManagerExt as WebManagerExt;
 use windows::{
     CapWindowId, EditorWindowIds, ScreenshotEditorWindowIds, ShowCapWindow, hide_overlay,
     set_window_transparent, show_overlay,
 };
 
-use crate::{recording::start_recording, upload::build_video_meta};
-use crate::{
-    recording_settings::{RecordingSettingsStore, RecordingTargetMode},
-    upload::InstantMultipartUpload,
-};
+use crate::recording::start_recording;
+use crate::recording_settings::{RecordingSettingsStore, RecordingTargetMode};
 use exit_shutdown::{AppExitAction, app_exit_action, collect_device_inventory, run_while_active};
 use futures::FutureExt;
 use std::panic::AssertUnwindSafe;
@@ -404,14 +398,6 @@ pub enum VideoType {
     Screen,
     Output,
     Camera,
-}
-
-#[derive(Serialize, Deserialize, specta::Type, Debug)]
-pub enum UploadResult {
-    Success(String),
-    NotAuthenticated,
-    PlanCheckFailed,
-    UpgradeRequired,
 }
 
 #[derive(Serialize, Deserialize, specta::Type, Debug)]
@@ -2933,195 +2919,9 @@ async fn list_audio_devices() -> Result<Vec<String>, ()> {
     Ok(MicrophoneFeed::list().keys().cloned().collect())
 }
 
-#[derive(Serialize, Type, Debug, Clone)]
-pub struct UploadProgress {
-    progress: f64,
-}
-
-#[derive(Debug, Deserialize, Type)]
-pub enum UploadMode {
-    Initial {
-        pre_created_video: Option<VideoUploadInfo>,
-    },
-    Reupload,
-}
-
-#[tauri::command]
-#[specta::specta]
-#[instrument(skip(app, channel))]
-async fn upload_exported_video(
-    app: AppHandle,
-    path: PathBuf,
-    mode: UploadMode,
-    channel: Channel<UploadProgress>,
-    organization_id: Option<String>,
-) -> Result<UploadResult, String> {
-    let Ok(Some(auth)) = AuthStore::get(&app) else {
-        AuthStore::set(&app, None).map_err(|e| e.to_string())?;
-        return Ok(UploadResult::NotAuthenticated);
-    };
-
-    let mut meta = RecordingMeta::load_for_project(&path).map_err(|v| v.to_string())?;
-
-    let file_path = meta.output_path();
-    if !file_path.exists() {
-        notifications::send_notification(&app, notifications::NotificationType::UploadFailed);
-        return Err("Failed to upload video: Rendered video not found".to_string());
-    }
-
-    let metadata = build_video_meta(&file_path)
-        .map_err(|err| format!("Error getting output video meta: {err}"))?;
-
-    if !auth.is_upgraded() && metadata.duration_in_secs > 300.0 {
-        return Ok(UploadResult::UpgradeRequired);
-    }
-
-    channel.send(UploadProgress { progress: 0.0 }).ok();
-
-    let s3_config = match async {
-        let video_id = match mode {
-            UploadMode::Initial { pre_created_video } => {
-                if let Some(pre_created) = pre_created_video {
-                    return Ok(pre_created.config);
-                }
-                None
-            }
-            UploadMode::Reupload => {
-                let Some(sharing) = meta.sharing.clone() else {
-                    return Err("No sharing metadata found".into());
-                };
-
-                Some(sharing.id)
-            }
-        };
-
-        create_or_get_video(
-            &app,
-            false,
-            video_id,
-            Some(meta.pretty_name.clone()),
-            Some(metadata.clone()),
-            organization_id,
-        )
-        .await
-    }
-    .await
-    {
-        Ok(data) => data,
-        Err(AuthedApiError::InvalidAuthentication) => return Ok(UploadResult::NotAuthenticated),
-        Err(AuthedApiError::UpgradeRequired) => return Ok(UploadResult::UpgradeRequired),
-        Err(err) => return Err(err.to_string()),
-    };
-
-    let screenshot_path = meta.project_path.join("screenshots/display.jpg");
-    meta.upload = Some(UploadMeta::SinglePartUpload {
-        video_id: s3_config.id.clone(),
-        file_path: file_path.clone(),
-        screenshot_path: screenshot_path.clone(),
-        recording_dir: path.clone(),
-    });
-    meta.save_for_project()
-        .map_err(|e| error!("Failed to save recording meta: {e}"))
-        .ok();
-
-    match upload_video(
-        &app,
-        s3_config.id.clone(),
-        file_path,
-        screenshot_path,
-        metadata,
-        Some(channel.clone()),
-    )
-    .await
-    {
-        Ok(uploaded_video) => {
-            channel.send(UploadProgress { progress: 1.0 }).ok();
-
-            meta.upload = Some(UploadMeta::Complete);
-            meta.sharing = Some(SharingMeta {
-                link: uploaded_video.link.clone(),
-                id: uploaded_video.id.clone(),
-            });
-            meta.save_for_project()
-                .map_err(|e| error!("Failed to save recording meta: {e}"))
-                .ok();
-
-            let _ = app
-                .state::<ArcLock<ClipboardContext>>()
-                .write()
-                .await
-                .set_text(uploaded_video.link.clone());
-
-            NotificationType::ShareableLinkCopied.send(&app);
-            Ok(UploadResult::Success(uploaded_video.link))
-        }
-        Err(AuthedApiError::UpgradeRequired) => Ok(UploadResult::UpgradeRequired),
-        Err(e) => {
-            error!("Failed to upload video: {e}");
-
-            NotificationType::UploadFailed.send(&app);
-
-            meta.upload = Some(UploadMeta::Failed {
-                error: e.to_string(),
-            });
-            meta.save_for_project()
-                .map_err(|e| error!("Failed to save recording meta: {e}"))
-                .ok();
-
-            Err(e.to_string())
-        }
-    }
-}
-
-#[tauri::command]
-#[specta::specta]
-#[instrument(skip(app, clipboard))]
-async fn upload_screenshot(
-    app: AppHandle,
-    clipboard: MutableState<'_, ClipboardContext>,
-    screenshot_path: PathBuf,
-) -> Result<UploadResult, String> {
-    let Ok(Some(auth)) = AuthStore::get(&app) else {
-        AuthStore::set(&app, None).map_err(|e| e.to_string())?;
-        return Ok(UploadResult::NotAuthenticated);
-    };
-
-    if !auth.is_upgraded() {
-        ShowCapWindow::Upgrade.show(&app).await.ok();
-        return Ok(UploadResult::UpgradeRequired);
-    }
-
-    println!("Uploading screenshot: {screenshot_path:?}");
-
-    let screenshot_dir = screenshot_path.parent().unwrap().to_path_buf();
-    let mut meta = RecordingMeta::load_for_project(&screenshot_dir).unwrap();
-
-    let share_link = if let Some(sharing) = meta.sharing.as_ref() {
-        println!("Screenshot already uploaded, using existing link");
-        sharing.link.clone()
-    } else {
-        let uploaded = upload_image(&app, screenshot_path.clone())
-            .await
-            .map_err(|e| e.to_string())?;
-
-        meta.sharing = Some(SharingMeta {
-            link: uploaded.link.clone(),
-            id: uploaded.id.clone(),
-        });
-        meta.save_for_project()
-            .map_err(|err| format!("Error saving project: {err}"))?;
-
-        uploaded.link
-    };
-
-    println!("Copying to clipboard: {share_link:?}");
-
-    let _ = clipboard.write().await.set_text(share_link.clone());
-
-    notifications::send_notification(&app, notifications::NotificationType::ShareableLinkCopied);
-
-    Ok(UploadResult::Success(share_link))
-}
+// Cloud upload commands removed - Zensloom v1.0 is local-only.
+// upload_exported_video, upload_screenshot, UploadProgress, UploadMode, UploadResult
+// were all cloud-dependent and have been removed.
 
 #[tauri::command]
 #[specta::specta]
@@ -3353,68 +3153,12 @@ fn list_screenshots(app: AppHandle) -> Result<Vec<(PathBuf, RecordingMeta)>, Str
     Ok(result)
 }
 
+// Zensloom v1.0: local-only, all features unlocked. Always returns true.
 #[tauri::command]
 #[specta::specta]
-#[instrument(skip(app))]
-async fn check_upgraded_and_update(app: AppHandle) -> Result<bool, String> {
-    println!("Checking upgraded status and updating...");
-
-    if let Ok(Some(settings)) = GeneralSettingsStore::get(&app)
-        && settings.commercial_license.is_some()
-    {
-        return Ok(true);
-    }
-
-    let Ok(Some(auth)) = AuthStore::get(&app) else {
-        println!("No auth found, clearing auth store");
-        AuthStore::set(&app, None).map_err(|e| e.to_string())?;
-        return Ok(false);
-    };
-
-    if let Some(ref plan) = auth.plan
-        && plan.manual
-    {
-        return Ok(true);
-    }
-
-    println!(
-        "Fetching plan for user {}",
-        auth.user_id.as_deref().unwrap_or("unknown")
-    );
-    let response = app
-        .authed_api_request("/api/desktop/plan", |client, url| client.get(url))
-        .await
-        .map_err(|e| {
-            println!("Failed to fetch plan: {e}");
-            e.to_string()
-        })?;
-
-    println!("Plan fetch response status: {}", response.status());
-    let plan_data = response.json::<serde_json::Value>().await.map_err(|e| {
-        println!("Failed to parse plan response: {e}");
-        format!("Failed to parse plan response: {e}")
-    })?;
-
-    let is_pro = plan_data
-        .get("upgraded")
-        .and_then(|v| v.as_bool())
-        .unwrap_or(false);
-    println!("Pro status: {is_pro}");
-    let updated_auth = AuthStore {
-        secret: auth.secret,
-        user_id: auth.user_id,
-        plan: Some(Plan {
-            upgraded: is_pro,
-            manual: auth.plan.map(|p| p.manual).unwrap_or(false),
-            last_checked: chrono::Utc::now().timestamp() as i32,
-        }),
-        organizations: auth.organizations,
-        organizations_updated_at: auth.organizations_updated_at,
-    };
-    println!("Updating auth store with new pro status");
-    AuthStore::set(&app, Some(updated_auth)).map_err(|e| e.to_string())?;
-
-    Ok(is_pro)
+#[instrument(skip(_app))]
+async fn check_upgraded_and_update(_app: AppHandle) -> Result<bool, String> {
+    Ok(true)
 }
 
 #[tauri::command]
@@ -3769,7 +3513,7 @@ async fn check_notification_permissions(app: AppHandle) {
 #[instrument(skip(app))]
 async fn set_server_url(app: MutableState<'_, App>, server_url: String) -> Result<(), ()> {
     let mut app = app.write().await;
-    posthog::set_server_url(&server_url);
+    // posthog telemetry removed - Zensloom v1.0 is local-only
     app.server_url = server_url;
 
     Ok(())
@@ -3961,7 +3705,7 @@ pub async fn run(recording_logging_handle: LoggingHandle, logs_dir: PathBuf) {
         })
         .ok();
 
-    posthog::init();
+    // posthog::init() removed - Zensloom v1.0 is local-only, zero telemetry
 
     let tauri_context = tauri::generate_context!();
 
@@ -4030,8 +3774,6 @@ pub async fn run(recording_logging_handle: LoggingHandle, logs_dir: PathBuf) {
             permissions::do_permissions_check,
             permissions::request_permission,
             get_devices_snapshot,
-            upload_exported_video,
-            upload_screenshot,
             create_screenshot_editor_instance,
             update_screenshot_config,
             recognize_screenshot_text,
@@ -4319,10 +4061,7 @@ pub async fn run(recording_logging_handle: LoggingHandle, logs_dir: PathBuf) {
                 }
             });
 
-            if let Ok(Some(auth)) = AuthStore::load(&app) {
-                // sentry::configure_scope removed - zero telemetry
-                // scope.set_user({ id: Some(id), ..Default::default() });
-            }
+            // Auth/sentry removed - Zensloom v1.0 is local-only, zero telemetry
 
             {
                 let (server_url, should_update) = if cfg!(debug_assertions)
@@ -4353,7 +4092,7 @@ pub async fn run(recording_logging_handle: LoggingHandle, logs_dir: PathBuf) {
                     .ok();
                 }
 
-                posthog::set_server_url(&server_url);
+                // posthog::set_server_url removed - Zensloom v1.0 is local-only
 
                 let camera_preview = CameraPreviewManager::new(&app);
                 let camera_session_id_handle = camera_preview.session_id_handle();
@@ -4414,15 +4153,7 @@ pub async fn run(recording_logging_handle: LoggingHandle, logs_dir: PathBuf) {
                 }
             });
 
-            tokio::spawn({
-                let app = app.clone();
-                async move {
-                    resume_uploads(app)
-                        .await
-                        .map_err(|err| warn!("Error resuming uploads: {err}"))
-                        .ok();
-                }
-            });
+            // resume_uploads removed - Zensloom v1.0 is local-only
 
             spawn_mic_error_handler(app.clone(), mic_error_rx);
             spawn_device_watchers(app.clone());
@@ -5177,244 +4908,7 @@ fn reopen_main_window(app: &AppHandle) {
     }
 }
 
-async fn resume_uploads(app: AppHandle) -> Result<(), String> {
-    let recordings_dir = recordings_path(&app);
-    if !recordings_dir.exists() {
-        return Err("Recording directory missing".to_string());
-    }
-
-    let entries = std::fs::read_dir(&recordings_dir)
-        .map_err(|e| format!("Failed to read recordings directory: {e}"))?;
-    for entry in entries.flatten() {
-        let path = entry.path();
-        if path.is_dir() && path.extension().and_then(|s| s.to_str()) == Some("cap") {
-            // Load recording meta to check for in-progress recordings
-            if let Ok(mut meta) = RecordingMeta::load_for_project(&path) {
-                let mut needs_save = false;
-
-                // Check if recording is still marked as in-progress and if so mark as failed
-                // This should only happen if the application crashes while recording
-                match &mut meta.inner {
-                    RecordingMetaInner::Studio(meta_box) => {
-                        if let StudioRecordingMeta::MultipleSegments { inner } = &mut **meta_box
-                            && let Some(StudioRecordingStatus::InProgress) = &inner.status
-                        {
-                            inner.status = Some(StudioRecordingStatus::Failed {
-                                error: "Recording crashed".to_string(),
-                            });
-                            needs_save = true;
-                        }
-                    }
-                    RecordingMetaInner::Instant(InstantRecordingMeta::InProgress { .. }) => {
-                        meta.inner = RecordingMetaInner::Instant(InstantRecordingMeta::Failed {
-                            error: "Recording crashed".to_string(),
-                        });
-                        needs_save = true;
-                    }
-                    _ => {}
-                }
-
-                // Save the updated meta if we made changes
-                if needs_save && let Err(err) = meta.save_for_project() {
-                    error!("Failed to save recording meta for {path:?}: {err}");
-                }
-
-                // Handle upload resumption
-                if let Some(upload_meta) = meta.upload {
-                    match upload_meta {
-                        UploadMeta::MultipartUpload {
-                            video_id: _,
-                            file_path,
-                            pre_created_video,
-                            recording_dir,
-                        } => {
-                            InstantMultipartUpload::spawn(
-                                app.clone(),
-                                file_path,
-                                pre_created_video,
-                                recording_dir,
-                                None,
-                            );
-                        }
-                        UploadMeta::SinglePartUpload {
-                            video_id,
-                            file_path,
-                            screenshot_path,
-                            recording_dir,
-                        } => {
-                            let app = app.clone();
-                            tokio::spawn(async move {
-                                if let Ok(meta) = build_video_meta(&file_path)
-                                    .map_err(|error| {
-                                        error!("Failed to resume video upload. error getting video metadata: {error}");
-
-                                        if let Ok(mut meta) = RecordingMeta::load_for_project(&recording_dir).map_err(|err| error!("Error loading project metadata: {err}")) {
-                                            meta.upload = Some(UploadMeta::Failed { error });
-                                            meta.save_for_project().map_err(|err| error!("Error saving project metadata: {err}")).ok();
-                                        }
-                                    })
-                                    && let Ok(uploaded_video) = upload_video(
-                                        &app,
-                                        video_id,
-                                        file_path,
-                                        screenshot_path,
-                                        meta,
-                                        None,
-                                    )
-                                    .await
-                                    .map_err(|error| {
-                                        error!("Error completing resumed upload for video: {error}");
-
-                                        if let Ok(mut meta) = RecordingMeta::load_for_project(&recording_dir).map_err(|err| error!("Error loading project metadata: {err}")) {
-                                            meta.upload = Some(UploadMeta::Failed { error: error.to_string() });
-                                            meta.save_for_project().map_err(|err| error!("Error saving project metadata: {err}")).ok();
-                                        }
-                                    })
-                                    {
-                                        if let Ok(mut meta) = RecordingMeta::load_for_project(&recording_dir).map_err(|err| error!("Error loading project metadata: {err}")) {
-                                            meta.upload = Some(UploadMeta::Complete);
-                                            meta.sharing = Some(SharingMeta {
-                                                link: uploaded_video.link.clone(),
-                                                id: uploaded_video.id.clone(),
-                                            });
-                                            meta.save_for_project()
-                                                .map_err(|e| error!("Failed to save recording meta: {e}"))
-                                                .ok();
-                                        }
-
-                                        let _ = app
-                                            .state::<ArcLock<ClipboardContext>>()
-                                            .write()
-                                            .await
-                                            .set_text(uploaded_video.link.clone());
-                                        NotificationType::ShareableLinkCopied.send(&app);
-                                    }
-                            });
-                        }
-                        UploadMeta::SegmentUpload {
-                            video_id,
-                            pre_created_video,
-                            recording_dir,
-                        } => {
-                            info!(video_id = video_id, "Resuming segment upload on restart");
-                            let content_dir = recording_dir.join("content");
-                            let display_dir = content_dir.join("display");
-                            let audio_dir = content_dir.join("audio");
-
-                            let (segment_tx, segment_rx) = std::sync::mpsc::channel::<
-                                zensloom_enc_ffmpeg::segmented_stream::SegmentCompletedEvent,
-                            >();
-
-                            use zensloom_enc_ffmpeg::segmented_stream::{
-                                SegmentCompletedEvent, SegmentMediaType,
-                            };
-
-                            fn read_durations_from_manifest(
-                                dir: &std::path::Path,
-                            ) -> std::collections::HashMap<u32, f64> {
-                                let manifest_path = dir.join("manifest.json");
-                                let mut map = std::collections::HashMap::new();
-                                if let Ok(text) = std::fs::read_to_string(&manifest_path)
-                                    && let Ok(v) = serde_json::from_str::<serde_json::Value>(&text)
-                                    && let Some(segments) =
-                                        v.get("segments").and_then(|s| s.as_array())
-                                {
-                                    for seg in segments {
-                                        if let Some(index) =
-                                            seg.get("index").and_then(|i| i.as_u64())
-                                            && let Some(duration) =
-                                                seg.get("duration").and_then(|d| d.as_f64())
-                                            && seg
-                                                .get("is_complete")
-                                                .and_then(|c| c.as_bool())
-                                                .unwrap_or(false)
-                                        {
-                                            map.insert(index as u32, duration);
-                                        }
-                                    }
-                                }
-                                map
-                            }
-
-                            let scan_and_send = |dir: &std::path::Path,
-                                                 media_type: SegmentMediaType,
-                                                 tx: &std::sync::mpsc::Sender<
-                                SegmentCompletedEvent,
-                            >| {
-                                if !dir.exists() {
-                                    return;
-                                }
-                                let durations = read_durations_from_manifest(dir);
-                                let init_path = dir.join("init.mp4");
-                                if init_path.exists()
-                                    && let Ok(meta) = std::fs::metadata(&init_path)
-                                {
-                                    let _ = tx.send(SegmentCompletedEvent {
-                                        path: init_path,
-                                        index: 0,
-                                        duration: 0.0,
-                                        file_size: meta.len(),
-                                        is_init: true,
-                                        media_type,
-                                    });
-                                }
-                                if let Ok(entries) = std::fs::read_dir(dir) {
-                                    let mut segments: Vec<_> = entries
-                                        .filter_map(|e| e.ok())
-                                        .filter(|e| {
-                                            e.path().extension().is_some_and(|ext| ext == "m4s")
-                                        })
-                                        .collect();
-                                    segments.sort_by_key(|e| e.file_name());
-                                    for entry in segments {
-                                        let path = entry.path();
-                                        if let Some(name) =
-                                            path.file_name().and_then(|n| n.to_str())
-                                            && let Some(idx_str) = name
-                                                .strip_prefix("segment_")
-                                                .and_then(|s| s.strip_suffix(".m4s"))
-                                            && let Ok(index) = idx_str.parse::<u32>()
-                                        {
-                                            let file_size = std::fs::metadata(&path)
-                                                .map(|m| m.len())
-                                                .unwrap_or(0);
-                                            let duration =
-                                                durations.get(&index).copied().unwrap_or(3.0);
-                                            let _ = tx.send(SegmentCompletedEvent {
-                                                path,
-                                                index,
-                                                duration,
-                                                file_size,
-                                                is_init: false,
-                                                media_type,
-                                            });
-                                        }
-                                    }
-                                }
-                            };
-
-                            scan_and_send(&display_dir, SegmentMediaType::Video, &segment_tx);
-                            scan_and_send(&audio_dir, SegmentMediaType::Audio, &segment_tx);
-                            drop(segment_tx);
-
-                            crate::upload::SegmentUploader::spawn(
-                                app.clone(),
-                                video_id,
-                                segment_rx,
-                                None,
-                                recording_dir,
-                                pre_created_video,
-                            );
-                        }
-                        UploadMeta::Failed { .. } | UploadMeta::Complete => {}
-                    }
-                }
-            }
-        }
-    }
-
-    Ok(())
-}
+// resume_uploads function removed - Zensloom v1.0 is local-only, no cloud uploads
 
 async fn create_editor_instance_impl(
     app: &AppHandle,

@@ -1,5 +1,4 @@
-﻿import { Button } from "@zensloom/ui-solid";
-import { useNavigate } from "@solidjs/router";
+﻿import { useNavigate } from "@solidjs/router";
 import {
 	createMutation,
 	queryOptions,
@@ -16,6 +15,7 @@ import { getCurrentWindow, LogicalSize } from "@tauri-apps/api/window";
 import * as dialog from "@tauri-apps/plugin-dialog";
 import * as shell from "@tauri-apps/plugin-shell";
 import * as updater from "@tauri-apps/plugin-updater";
+import { Button } from "@zensloom/ui-solid";
 import { cx } from "cva";
 import {
 	createEffect,

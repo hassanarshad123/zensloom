@@ -1,5 +1,4 @@
-﻿import { Button } from "@zensloom/ui-solid";
-import { createEventListener } from "@solid-primitives/event-listener";
+﻿import { createEventListener } from "@solid-primitives/event-listener";
 import { createElementSize } from "@solid-primitives/resize-observer";
 import { makePersisted } from "@solid-primitives/storage";
 import { useSearchParams } from "@solidjs/router";
@@ -19,6 +18,7 @@ import {
 } from "@tauri-apps/api/menu";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { type as ostype } from "@tauri-apps/plugin-os";
+import { Button } from "@zensloom/ui-solid";
 import {
 	createEffect,
 	createMemo,

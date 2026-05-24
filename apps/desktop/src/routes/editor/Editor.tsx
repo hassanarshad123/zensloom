@@ -1,5 +1,4 @@
-﻿import { Button } from "@zensloom/ui-solid";
-import { NumberField } from "@kobalte/core/number-field";
+﻿import { NumberField } from "@kobalte/core/number-field";
 import { createElementBounds } from "@solid-primitives/bounds";
 import { trackDeep } from "@solid-primitives/deep";
 import { debounce, throttle } from "@solid-primitives/scheduled";
@@ -8,6 +7,7 @@ import { createMutation, createQuery, skipToken } from "@tanstack/solid-query";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { LogicalPosition } from "@tauri-apps/api/dpi";
 import { Menu } from "@tauri-apps/api/menu";
+import { Button } from "@zensloom/ui-solid";
 import {
 	createEffect,
 	createMemo,

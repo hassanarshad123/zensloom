@@ -1,5 +1,5 @@
-﻿import { Button } from "@zensloom/ui-solid";
-import { Select as KSelect } from "@kobalte/core/select";
+﻿import { Select as KSelect } from "@kobalte/core/select";
+import { Button } from "@zensloom/ui-solid";
 import { cx } from "cva";
 import { batch, createMemo, createSignal, Show } from "solid-js";
 import { Toggle } from "~/components/Toggle";

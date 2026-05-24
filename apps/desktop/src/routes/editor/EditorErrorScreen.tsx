@@ -1,7 +1,7 @@
-﻿import { Button } from "@zensloom/ui-solid";
-import { createMutation } from "@tanstack/solid-query";
+﻿import { createMutation } from "@tanstack/solid-query";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { type as ostype } from "@tauri-apps/plugin-os";
+import { Button } from "@zensloom/ui-solid";
 import { Show } from "solid-js";
 import CaptionControlsWindows11 from "~/components/titlebar/controls/CaptionControlsWindows11";
 import { commands } from "~/utils/tauri";

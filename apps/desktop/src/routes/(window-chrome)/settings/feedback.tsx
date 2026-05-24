@@ -1,30 +1,10 @@
-﻿import { Button } from "@zensloom/ui-solid";
-import { action, useAction, useSubmission } from "@solidjs/router";
-import { getVersion } from "@tauri-apps/api/app";
-import { type OsType, type as ostype } from "@tauri-apps/plugin-os";
 import * as shell from "@tauri-apps/plugin-shell";
+import { Button } from "@zensloom/ui-solid";
 import { createResource, createSignal, For, Show } from "solid-js";
 import toast from "solid-toast";
 
 import { commands, type SystemDiagnostics } from "~/utils/tauri";
-import { apiClient, protectedHeaders } from "~/utils/web-api";
 import { Section, SettingsPageContent } from "./Setting";
-
-const getFeedbackOs = (): Extract<OsType, "macos" | "windows"> => {
-	const os = ostype();
-	if (os === "macos" || os === "windows") return os;
-	throw new Error(`Unsupported OS for feedback submission: ${os}`);
-};
-
-const sendFeedbackAction = action(async (feedback: string) => {
-	const response = await apiClient.desktop.submitFeedback({
-		body: { feedback, os: getFeedbackOs(), version: await getVersion() },
-		headers: await protectedHeaders(),
-	});
-
-	if (response.status !== 200) throw new Error("Failed to submit feedback");
-	return response.body;
-});
 
 async function fetchDiagnostics(): Promise<SystemDiagnostics | null> {
 	try {
@@ -36,12 +16,8 @@ async function fetchDiagnostics(): Promise<SystemDiagnostics | null> {
 }
 
 export default function FeedbackTab() {
-	const [feedback, setFeedback] = createSignal("");
 	const [uploadingLogs, setUploadingLogs] = createSignal(false);
 	const [diagnostics] = createResource(fetchDiagnostics);
-
-	const submission = useSubmission(sendFeedbackAction);
-	const sendFeedback = useAction(sendFeedbackAction);
 
 	const handleUploadLogs = async () => {
 		setUploadingLogs(true);
@@ -61,53 +37,24 @@ export default function FeedbackTab() {
 			<SettingsPageContent>
 				<Section
 					title="Feedback"
-					description="Help us improve Zensloom by submitting feedback or reporting bugs. We'll get right on it."
+					description="Zensloom v1.0 is local-only. To share feedback, please open a GitHub issue or join our community."
 				>
-					<form
-						class="space-y-4"
-						onSubmit={(e) => {
-							e.preventDefault();
-							sendFeedback(feedback());
-						}}
-					>
-						<fieldset disabled={submission.pending}>
-							<div>
-								<textarea
-									value={feedback()}
-									onInput={(e) => setFeedback(e.currentTarget.value)}
-									placeholder="Tell us what you think about Cap..."
-									required
-									minLength={10}
-									class="p-2 w-full h-32 text-[13px] rounded-md border transition-colors duration-200 resize-none bg-gray-2 placeholder:text-gray-10 border-gray-3 text-primary focus:outline-hidden focus:ring-1 focus:ring-gray-8 hover:border-gray-6"
-								/>
-							</div>
-
-							{submission.error && (
-								<p class="mt-2 text-sm text-red-400">
-									{submission.error.toString()}
-								</p>
-							)}
-
-							{submission.result?.success && (
-								<p class="text-sm text-primary">Thank you for your feedback!</p>
-							)}
-
-							<Button
-								type="submit"
-								size="md"
-								variant="dark"
-								disabled={feedback().trim().length < 4}
-								class="mt-2"
-							>
-								{submission.pending ? "Submitting..." : "Submit Feedback"}
-							</Button>
-						</fieldset>
-					</form>
+					<div class="flex gap-2">
+						<Button
+							onClick={() =>
+								shell.open("https://github.com/CapSoftware/Cap/issues")
+							}
+							size="md"
+							variant="primary"
+						>
+							Open GitHub Issues
+						</Button>
+					</div>
 				</Section>
 
 				<Section
 					title="Join the Community"
-					description="Have questions, want to share ideas, or just hang out? Join the Zensloom community community."
+					description="Have questions, want to share ideas, or just hang out? Join the community."
 				>
 					<Button
 						onClick={() => shell.open("https://cap.link/discord")}
@@ -120,7 +67,7 @@ export default function FeedbackTab() {
 
 				<Section
 					title="Debug Information"
-					description="Upload your logs to help us diagnose issues with Cap. No personal information is included."
+					description="Upload your logs to help us diagnose issues. No personal information is included."
 				>
 					<Button
 						onClick={handleUploadLogs}

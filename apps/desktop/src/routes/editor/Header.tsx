@@ -1,5 +1,4 @@
-﻿import { Button } from "@zensloom/ui-solid";
-import { Dialog as KDialog } from "@kobalte/core/dialog";
+﻿import { Dialog as KDialog } from "@kobalte/core/dialog";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { LogicalPosition } from "@tauri-apps/api/dpi";
 import type { UnlistenFn } from "@tauri-apps/api/event";
@@ -7,6 +6,7 @@ import { Menu, MenuItem } from "@tauri-apps/api/menu";
 import { ask, open } from "@tauri-apps/plugin-dialog";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { type as ostype } from "@tauri-apps/plugin-os";
+import { Button } from "@zensloom/ui-solid";
 import { cx } from "cva";
 import {
 	type ComponentProps,

@@ -1,8 +1,8 @@
-﻿import { Button } from "@zensloom/ui-solid";
-import { createEventListenerMap } from "@solid-primitives/event-listener";
+﻿import { createEventListenerMap } from "@solid-primitives/event-listener";
 import { Menu } from "@tauri-apps/api/menu";
+import { Button } from "@zensloom/ui-solid";
 import { cx } from "cva";
-import { Array, Option } from "effect";
+// Zensloom v1.0: Replaced `effect` library with inline helpers.
 import {
 	batch,
 	createEffect,
@@ -113,57 +113,59 @@ export function ZoomTrack(props: {
 
 		const { previewTime } = editorState;
 
-		const nextSegment = Array.findFirstWithIndex(
-			project.timeline?.zoomSegments ?? [],
-			(s) => previewTime <= s.start,
-		);
+		const segments = project.timeline?.zoomSegments ?? [];
 
-		const prevSegment = Array.findLastIndex(
-			project.timeline?.zoomSegments ?? [],
-			(s) => previewTime >= s.start,
-		).pipe(
-			Option.flatMap((index) =>
-				Option.fromNullable(project.timeline?.zoomSegments?.[index]).pipe(
-					Option.map((segment) => [segment, index] as const),
-				),
-			),
-		);
+		// Find first segment at or after previewTime (with its index)
+		let nextSegmentValue: [(typeof segments)[number], number] | null = null;
+		for (let i = 0; i < segments.length; i++) {
+			if (previewTime <= segments[i].start) {
+				nextSegmentValue = [segments[i], i];
+				break;
+			}
+		}
+
+		// Find last segment at or before previewTime (with its index)
+		let prevSegmentValue: [(typeof segments)[number], number] | null = null;
+		for (let i = segments.length - 1; i >= 0; i--) {
+			if (previewTime >= segments[i].start) {
+				prevSegmentValue = [segments[i], i];
+				break;
+			}
+		}
 
 		// Is mouse hovering over a zoom segment
 		if (
-			Option.isSome(prevSegment) &&
-			previewTime > prevSegment.value[0].start &&
-			previewTime < prevSegment.value[0].end
+			prevSegmentValue !== null &&
+			previewTime > prevSegmentValue[0].start &&
+			previewTime < prevSegmentValue[0].end
 		)
 			return;
 
 		const minDuration = newSegmentMinDuration();
 
-		if (Option.isSome(nextSegment)) {
-			if (Option.isSome(prevSegment)) {
+		if (nextSegmentValue !== null) {
+			if (prevSegmentValue !== null) {
 				const availableTime =
-					nextSegment.value[0].start - prevSegment.value[0].end;
+					nextSegmentValue[0].start - prevSegmentValue[0].end;
 
 				if (availableTime < minDuration) return;
 			}
 
-			if (nextSegment.value[0].start - previewTime < 1)
+			if (nextSegmentValue[0].start - previewTime < 1)
 				return {
-					index: nextSegment.value[1],
-					start: nextSegment.value[0].start - minDuration,
-					end: nextSegment.value[0].start,
-					max: nextSegment.value[0].start,
+					index: nextSegmentValue[1],
+					start: nextSegmentValue[0].start - minDuration,
+					end: nextSegmentValue[0].start,
+					max: nextSegmentValue[0].start,
 				};
 		}
 
 		return {
-			index: nextSegment.pipe(Option.map(([_, i]) => i)),
+			index: nextSegmentValue !== null ? nextSegmentValue[1] : undefined,
 			start: previewTime,
 			end: previewTime + minDuration,
-			max: nextSegment.pipe(
-				Option.map(([s]) => s.start),
-				Option.getOrElse(() => totalDuration()),
-			),
+			max:
+				nextSegmentValue !== null ? nextSegmentValue[0].start : totalDuration(),
 		};
 	};
 

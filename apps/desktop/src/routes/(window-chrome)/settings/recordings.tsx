@@ -1,5 +1,4 @@
-﻿import { Button, ProgressCircle } from "@zensloom/ui-solid";
-import Tooltip from "@corvu/tooltip";
+﻿import Tooltip from "@corvu/tooltip";
 import {
 	createMutation,
 	createQuery,
@@ -10,6 +9,7 @@ import { Channel, convertFileSrc } from "@tauri-apps/api/core";
 import { ask, confirm } from "@tauri-apps/plugin-dialog";
 import { remove } from "@tauri-apps/plugin-fs";
 import * as shell from "@tauri-apps/plugin-shell";
+import { Button, ProgressCircle } from "@zensloom/ui-solid";
 import { cx } from "cva";
 import {
 	createEffect,

@@ -1,10 +1,10 @@
-﻿import { Button } from "@zensloom/ui-solid";
-import { createWritableMemo } from "@solid-primitives/memo";
+﻿import { createWritableMemo } from "@solid-primitives/memo";
 import {
 	isPermissionGranted,
 	requestPermission,
 } from "@tauri-apps/plugin-notification";
 import { type OsType, type } from "@tauri-apps/plugin-os";
+import { Button } from "@zensloom/ui-solid";
 import "@total-typescript/ts-reset/filter-boolean";
 import { Collapsible } from "@kobalte/core/collapsible";
 import { CheckMenuItem, Menu, MenuItem } from "@tauri-apps/api/menu";

@@ -55,22 +55,20 @@ use crate::camera::{CameraPreviewManager, CameraPreviewShape};
 #[cfg(target_os = "macos")]
 use crate::general_settings;
 use crate::permissions;
-use crate::web_api::AuthedApiError;
 use crate::{
     App, CameraWindowOperationLock, CurrentRecordingChanged, FinalizingRecordings, MutableState,
-    NewStudioRecordingAdded, RecordingStarted, RecordingState, RecordingStopped, VideoUploadInfo,
+    NewStudioRecordingAdded, RecordingStarted, RecordingState, RecordingStopped,
     api::PresignedS3PutRequestMethod,
     audio::AppSounds,
-    auth::AuthStore,
     create_screenshot, create_screenshot_source_from_segments,
     general_settings::{GeneralSettingsStore, PostDeletionBehaviour, PostStudioRecordingBehaviour},
     open_external_link,
     presets::PresetsStore,
     thumbnails::*,
     upload::{InstantMultipartUpload, SegmentUploader, compress_image},
-    web_api::ManagerExt,
     windows::{CapWindowId, ShowCapWindow, hide_overlay},
 };
+use zensloom_project::VideoUploadInfo;
 
 fn recording_stopped_share_url(link: &str) -> String {
     if link.contains('?') {
@@ -933,56 +931,23 @@ pub async fn start_recording(
         let _ = window.set_content_protected(matches!(inputs.mode, RecordingMode::Studio));
     }
 
+    // Zensloom v1.0: local-only mode. No cloud uploads for instant recordings.
+    // We create a dummy VideoUploadInfo so the recording pipeline still works
+    // (it writes files locally regardless of upload state).
     let video_upload_info = match inputs.mode {
         RecordingMode::Instant => {
-            match AuthStore::get(&app).ok().flatten() {
-                Some(_) => {
-                    let upload_mode =
-                        if matches!(inputs.capture_target, ScreenCaptureTarget::CameraOnly) {
-                            "desktopMP4"
-                        } else {
-                            "desktopSegments"
-                        };
-
-                    let s3_config = match crate::upload::create_or_get_video_with_mode(
-                        &app,
-                        false,
-                        None,
-                        Some(project_name.clone()),
-                        None,
-                        inputs.organization_id.clone(),
-                        upload_mode,
-                    )
-                    .await
-                    {
-                        Ok(meta) => meta,
-                        Err(AuthedApiError::InvalidAuthentication) => {
-                            return Ok(RecordingAction::InvalidAuthentication);
-                        }
-                        Err(AuthedApiError::UpgradeRequired) => {
-                            return Ok(RecordingAction::UpgradeRequired);
-                        }
-                        Err(err) => {
-                            error!("Error creating instant mode video: {err}");
-                            return Err(err.to_string());
-                        }
-                    };
-
-                    let link = app.make_app_url(format!("/s/{}", s3_config.id)).await;
-                    info!("Pre-created shareable link: {}", link);
-
-                    Some(VideoUploadInfo {
-                        id: s3_config.id.to_string(),
-                        link: link.clone(),
-                        config: s3_config,
-                    })
-                }
-                // Allow the recording to proceed without error for any signed-in user
-                _ => {
-                    // User is not signed in
-                    return Err("Please sign in to use instant recording".to_string());
-                }
-            }
+            let dummy_id = format!(
+                "local-{}",
+                std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .map(|d| d.as_millis())
+                    .unwrap_or(0)
+            );
+            Some(VideoUploadInfo {
+                id: dummy_id.clone(),
+                link: String::new(),
+                config: zensloom_project::S3UploadMeta { id: dummy_id },
+            })
         }
         RecordingMode::Studio => None,
         RecordingMode::Screenshot => return Err("Use take_screenshot for screenshots".to_string()),
@@ -1416,7 +1381,7 @@ pub async fn start_recording(
             };
             match disposition {
                 ActorDoneDisposition::UserInitiatedStop => {
-                    let _ = finish_upload_tx.send(());
+                    let _ = finish_upload_tx.send(true);
                     let _ = RecordingEvent::Stopped.emit(&app);
                 }
                 ActorDoneDisposition::UnexpectedStop { error }
@@ -1858,28 +1823,9 @@ async fn remove_recording_dir(recording_dir: &Path) -> Result<(), String> {
     }
 }
 
-async fn delete_remote_instant_video(app: &AppHandle, video_id: &str) -> Result<(), String> {
-    let response = app
-        .authed_api_request(
-            format!("/api/desktop/video/delete?videoId={video_id}"),
-            |client, url| client.delete(url),
-        )
-        .await
-        .map_err(|err| format!("Failed to delete instant recording: {err}"))?;
-
-    let status = response.status();
-    if status.is_success() || status == reqwest::StatusCode::NOT_FOUND {
-        return Ok(());
-    }
-
-    let body = response
-        .text()
-        .await
-        .unwrap_or_else(|err| format!("Failed to read response body: {err}"));
-
-    Err(format!(
-        "Failed to delete instant recording {video_id}: {status}: {body}"
-    ))
+async fn delete_remote_instant_video(_app: &AppHandle, _video_id: &str) -> Result<(), String> {
+    // Zensloom v1.0: local-only mode. No remote video to delete.
+    Ok(())
 }
 
 async fn discard_recording(app: &AppHandle, recording: InProgressRecording) -> Result<(), String> {

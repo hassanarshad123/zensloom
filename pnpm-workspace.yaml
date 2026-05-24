@@ -1,7 +1,6 @@
 packages:
   - "apps/desktop"
   - "packages/ui-solid"
-  - "packages/ui"
   - "packages/utils"
   - "packages/tsconfig"
   - "packages/config"

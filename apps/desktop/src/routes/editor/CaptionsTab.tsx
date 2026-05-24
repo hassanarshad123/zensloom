@@ -1,7 +1,7 @@
-﻿import { Button } from "@zensloom/ui-solid";
-import { Select as KSelect } from "@kobalte/core/select";
+﻿import { Select as KSelect } from "@kobalte/core/select";
 import { appLocalDataDir, join } from "@tauri-apps/api/path";
 import { exists } from "@tauri-apps/plugin-fs";
+import { Button } from "@zensloom/ui-solid";
 import { cx } from "cva";
 import {
 	createEffect,

@@ -1,9 +1,9 @@
-﻿import { Button } from "@zensloom/ui-solid";
-import { NumberField } from "@kobalte/core/number-field";
+﻿import { NumberField } from "@kobalte/core/number-field";
 import { makePersisted } from "@solid-primitives/storage";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { LogicalPosition } from "@tauri-apps/api/dpi";
 import { Menu } from "@tauri-apps/api/menu";
+import { Button } from "@zensloom/ui-solid";
 import {
 	createEffect,
 	createSignal,

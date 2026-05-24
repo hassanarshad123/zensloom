@@ -1,68 +1,58 @@
-﻿import {
-	contract,
-	licenseContract,
-	orgCustomDomainContract,
-} from "@zensloom/web-api-contract";
-import { fetch } from "@tauri-apps/plugin-http";
-import { type ApiFetcher, initClient } from "@ts-rest/core";
+// Zensloom v1.0: Local-only. Cloud API clients removed.
+// These stubs export the same names so callers compile without changes.
+// Every method returns a rejected promise or a safe default.
 
 import { authStore } from "~/store";
-import { clientEnv } from "./env";
 
-const api: ApiFetcher = async (args) => {
-	const bypassSecret = import.meta.env.VITE_VERCEL_AUTOMATION_BYPASS_SECRET;
-	if (bypassSecret) args.headers["x-vercel-protection-bypass"] = bypassSecret;
+const notImplemented = () =>
+	Promise.reject(
+		new Error("Cloud features are not available in Zensloom v1.0"),
+	);
 
-	const resp = await fetch(args.path, args);
-
-	let body: unknown;
-
-	const contentType = resp.headers.get("content-type");
-	if (contentType === "application/json") {
-		body = await resp.json();
-	} else {
-		body = await resp.text();
-	}
-
-	return {
-		body,
-		status: resp.status,
-		headers: resp.headers,
+/**
+ * A no-op proxy that returns a function throwing "not available" for any
+ * property access chain (e.g. apiClient.desktop.getChangelogPosts(...)).
+ */
+// biome-ignore lint/suspicious/noExplicitAny: Proxy stub requires flexible typing
+function createStubClient(): Record<string, any> {
+	const handler: ProxyHandler<object> = {
+		get(_target, _prop) {
+			return new Proxy(() => notImplemented(), handler);
+		},
 	};
-};
+	return new Proxy({}, handler);
+}
 
-export const apiClient = initClient(contract, {
-	baseUrl: `${clientEnv.VITE_SERVER_URL}/api`,
-	api,
-});
-export const licenseApiClient = initClient(licenseContract, {
-	baseUrl: `https://l.cap.so/api`,
-	api,
-});
+export const apiClient = createStubClient();
+export const licenseApiClient = createStubClient();
+export const orgCustomDomainClient = createStubClient();
 
-export const orgCustomDomainClient = initClient(orgCustomDomainContract, {
-	baseUrl: `${clientEnv.VITE_SERVER_URL}/api/desktop`,
-	api,
-});
-
-export async function maybeProtectedHeaders() {
+export async function maybeProtectedHeaders(): Promise<{
+	authorization: string | undefined;
+}> {
 	const store = await authStore.get();
 
 	let token: string | undefined;
-	if (store?.secret && "api_key" in store.secret) {
-		token = store.secret.api_key;
-	} else if (store?.secret && "token" in store.secret) {
-		token = store.secret.token;
+	if (store?.secret && typeof store.secret === "object") {
+		const secret = store.secret as Record<string, unknown>;
+		if ("api_key" in secret && typeof secret.api_key === "string") {
+			token = secret.api_key;
+		} else if ("token" in secret && typeof secret.token === "string") {
+			token = secret.token;
+		}
 	}
 
 	return { authorization: token ? `Bearer ${token}` : undefined };
 }
 
-export async function protectedHeaders() {
+export async function protectedHeaders(): Promise<{
+	authorization: string;
+}> {
 	const { authorization } = await maybeProtectedHeaders();
-	if (!authorization)
+	if (!authorization) {
 		throw new Error(
-			"Please sign in to continue. Alternatively, email hello@cap.so or join our Discord at cap.link/discord",
+			"Not signed in. Cloud features are not available in Zensloom v1.0.",
 		);
+	}
 	return { authorization };
 }

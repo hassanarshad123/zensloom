@@ -1,4 +1,8 @@
-﻿use zensloom_recording::PipelineHealthEvent;
+// Zensloom v1.0: No telemetry. This module retains the RecordingHealthAccumulator
+// for local health monitoring of recording pipelines, but all telemetry event
+// sending is removed.
+
+use zensloom_recording::PipelineHealthEvent;
 use std::{
     sync::{
         Arc,

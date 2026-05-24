@@ -1,5 +1,5 @@
-﻿import { Button } from "@zensloom/ui-solid";
-import { getCurrentWindow } from "@tauri-apps/api/window";
+﻿import { getCurrentWindow } from "@tauri-apps/api/window";
+import { Button } from "@zensloom/ui-solid";
 import { createSignal, Match, onCleanup, onMount, Switch } from "solid-js";
 import {
 	events,
