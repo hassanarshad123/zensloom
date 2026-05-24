@@ -2843,6 +2843,8 @@ fn project_config_from_recording(
 
         config.camera.background_blur = zensloom_project::BackgroundBlurConfig {
             mode: camera_preview_state.background_blur,
+            color: None,
+            image_path: None,
         };
     }
 

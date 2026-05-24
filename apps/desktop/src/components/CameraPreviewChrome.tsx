@@ -25,7 +25,14 @@ export const CAMERA_PRESET_LARGE = 400;
 export const CAMERA_TOOLBAR_HEIGHT = 56;
 export const CAMERA_WINDOW_STATE_STORAGE_KEY = "cameraWindowState";
 
-const BLUR_MODES: BackgroundBlurMode[] = ["off", "light", "heavy"];
+const BLUR_MODES: BackgroundBlurMode[] = [
+	"off",
+	"light",
+	"heavy",
+	"color",
+	"image",
+	"remove",
+];
 const RESIZE_CORNERS = ["nw", "ne", "sw", "se"] as const;
 
 type ResizeCorner = (typeof RESIZE_CORNERS)[number];
@@ -64,6 +71,12 @@ export const blurModeLabel = (mode: BackgroundBlurMode | boolean): string => {
 			return "Light";
 		case "heavy":
 			return "Heavy";
+		case "color":
+			return "Color";
+		case "image":
+			return "Image";
+		case "remove":
+			return "Remove";
 		default:
 			return "";
 	}

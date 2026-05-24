@@ -1383,6 +1383,9 @@ fn blur_mode_from_project(
         zensloom_project::BackgroundBlurMode::Off => None,
         zensloom_project::BackgroundBlurMode::Light => Some(zensloom_segment::BlurMode::Light),
         zensloom_project::BackgroundBlurMode::Heavy => Some(zensloom_segment::BlurMode::Heavy),
+        zensloom_project::BackgroundBlurMode::Color
+        | zensloom_project::BackgroundBlurMode::Image
+        | zensloom_project::BackgroundBlurMode::Remove => Some(zensloom_segment::BlurMode::Light),
     }
 }
 

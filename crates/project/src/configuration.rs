@@ -303,12 +303,19 @@ pub enum BackgroundBlurMode {
     Off,
     Light,
     Heavy,
+    Color,
+    Image,
+    Remove,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase", default)]
 pub struct BackgroundBlurConfig {
     pub mode: BackgroundBlurMode,
+    #[serde(default)]
+    pub color: Option<String>,
+    #[serde(default)]
+    pub image_path: Option<String>,
 }
 
 impl BackgroundBlurConfig {
@@ -321,6 +328,8 @@ impl Default for BackgroundBlurConfig {
     fn default() -> Self {
         Self {
             mode: BackgroundBlurMode::Off,
+            color: None,
+            image_path: None,
         }
     }
 }

@@ -77,10 +77,8 @@ pub async fn create_camera_preview_ws(
             let blur_mode = *blur_rx.borrow_and_update();
             let blur_enabled = blur_mode != zensloom_project::BackgroundBlurMode::Off;
             let effects_mode = match blur_mode {
-                zensloom_project::BackgroundBlurMode::Off | zensloom_project::BackgroundBlurMode::Light => {
-                    zensloom_segment::BlurMode::Light
-                }
                 zensloom_project::BackgroundBlurMode::Heavy => zensloom_segment::BlurMode::Heavy,
+                _ => zensloom_segment::BlurMode::Light,
             };
 
             let (target_width, target_height) =
