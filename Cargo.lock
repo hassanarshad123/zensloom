@@ -11732,6 +11732,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "zensloom-secrets"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "thiserror 1.0.69",
+ "windows 0.60.0",
+ "windows-core 0.60.1",
+]
+
+[[package]]
 name = "zensloom-segment"
 version = "0.1.0"
 dependencies = [
