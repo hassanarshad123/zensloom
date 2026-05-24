@@ -1,4 +1,5 @@
 mod blur_pipeline;
+mod color_pipeline;
 mod segmentation;
 
 use std::sync::Arc;
@@ -6,6 +7,7 @@ use std::sync::atomic::{AtomicU8, Ordering};
 use std::time::{Duration, Instant};
 
 use blur_pipeline::{BlurPassInputs, BlurPipeline, CompositePipeline};
+use color_pipeline::ColorCompositePipeline;
 use segmentation::SegmentationModel;
 
 const READBACK_PENDING: u8 = 0;
@@ -23,6 +25,15 @@ pub enum BlurMode {
     Heavy,
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub enum BgMode {
+    None,
+    Blur(BlurMode),
+    Color([f32; 3]),
+    Image,
+    Remove,
+}
+
 const SEGMENTATION_SIZE: u32 = 256;
 const DEFAULT_INFERENCE_INTERVAL: Duration = Duration::from_millis(66);
 const MASK_GROWTH_ALPHA: f32 = 0.25;
@@ -34,8 +45,10 @@ pub struct BlurProcessor {
     model: SegmentationModel,
     blur_pipeline: BlurPipeline,
     composite_pipeline: CompositePipeline,
+    color_composite_pipeline: ColorCompositePipeline,
     downsample_pipeline: DownsamplePipeline,
     textures: Option<ProcessorTextures>,
+    bg_image_texture: Option<(wgpu::Texture, wgpu::TextureView)>,
     mask_data: Vec<f32>,
     smoothed_mask: Vec<f32>,
     mask_scratch: Vec<f32>,
@@ -150,6 +163,7 @@ impl BlurProcessor {
         let model = SegmentationModel::new()?;
         let blur_pipeline = BlurPipeline::new(device);
         let composite_pipeline = CompositePipeline::new(device, output_format);
+        let color_composite_pipeline = ColorCompositePipeline::new(device, output_format);
         let downsample_pipeline = DownsamplePipeline::new(device);
         let pixel_count = (SEGMENTATION_SIZE * SEGMENTATION_SIZE) as usize;
 
@@ -183,8 +197,10 @@ impl BlurProcessor {
             model,
             blur_pipeline,
             composite_pipeline,
+            color_composite_pipeline,
             downsample_pipeline,
             textures: None,
+            bg_image_texture: None,
             mask_data: vec![0.0; pixel_count],
             smoothed_mask: vec![0.0; pixel_count],
             mask_scratch: vec![0.0; pixel_count],
@@ -300,6 +316,197 @@ impl BlurProcessor {
             &textures.mask_view,
             &textures.output_view,
         );
+    }
+
+    pub fn set_background_image(
+        &mut self,
+        device: &wgpu::Device,
+        queue: &wgpu::Queue,
+        rgba_data: &[u8],
+        width: u32,
+        height: u32,
+    ) {
+        let texture = device.create_texture(&wgpu::TextureDescriptor {
+            label: Some("BG Image"),
+            size: wgpu::Extent3d {
+                width,
+                height,
+                depth_or_array_layers: 1,
+            },
+            mip_level_count: 1,
+            sample_count: 1,
+            dimension: wgpu::TextureDimension::D2,
+            format: wgpu::TextureFormat::Rgba8Unorm,
+            usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_DST,
+            view_formats: &[],
+        });
+
+        queue.write_texture(
+            wgpu::TexelCopyTextureInfo {
+                texture: &texture,
+                mip_level: 0,
+                origin: wgpu::Origin3d::ZERO,
+                aspect: wgpu::TextureAspect::All,
+            },
+            rgba_data,
+            wgpu::TexelCopyBufferLayout {
+                offset: 0,
+                bytes_per_row: Some(width * 4),
+                rows_per_image: Some(height),
+            },
+            wgpu::Extent3d {
+                width,
+                height,
+                depth_or_array_layers: 1,
+            },
+        );
+
+        let view = texture.create_view(&Default::default());
+        self.bg_image_texture = Some((texture, view));
+    }
+
+    pub fn process_bg_mode(
+        &mut self,
+        device: &wgpu::Device,
+        queue: &wgpu::Queue,
+        input_texture: &wgpu::Texture,
+        mode: &BgMode,
+    ) -> &wgpu::Texture {
+        match mode {
+            BgMode::None => {
+                self.ensure_textures(device, input_texture.width(), input_texture.height());
+                let textures = self.textures.as_ref().unwrap();
+                let mut encoder = device.create_command_encoder(&Default::default());
+                encoder.copy_texture_to_texture(
+                    input_texture.as_image_copy(),
+                    textures.output_texture.as_image_copy(),
+                    input_texture.size(),
+                );
+                queue.submit(std::iter::once(encoder.finish()));
+                &self.textures.as_ref().unwrap().output_texture
+            }
+            BgMode::Blur(blur_mode) => self.process(device, queue, input_texture, *blur_mode),
+            BgMode::Color(color) => {
+                let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
+                    label: Some("Color BG Encoder"),
+                });
+
+                let width = input_texture.width();
+                let height = input_texture.height();
+                self.ensure_textures(device, width, height);
+                let input_view = input_texture.create_view(&Default::default());
+
+                if self.last_inference.elapsed() >= self.inference_interval {
+                    let mask_updated = self.run_segmentation(device, queue, input_texture);
+                    self.last_inference = Instant::now();
+                    if mask_updated {
+                        self.mask_dirty = true;
+                    }
+                }
+
+                if self.mask_dirty {
+                    self.upload_mask(queue);
+                    self.mask_dirty = false;
+                }
+
+                let textures = self.textures.as_ref().expect("textures initialized");
+
+                self.color_composite_pipeline.composite(
+                    device,
+                    &mut encoder,
+                    &input_view,
+                    &textures.mask_view,
+                    &textures.output_view,
+                    *color,
+                );
+
+                queue.submit(std::iter::once(encoder.finish()));
+                &self.textures.as_ref().unwrap().output_texture
+            }
+            BgMode::Image => {
+                let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
+                    label: Some("Image BG Encoder"),
+                });
+
+                let width = input_texture.width();
+                let height = input_texture.height();
+                self.ensure_textures(device, width, height);
+                let input_view = input_texture.create_view(&Default::default());
+
+                if self.last_inference.elapsed() >= self.inference_interval {
+                    let mask_updated = self.run_segmentation(device, queue, input_texture);
+                    self.last_inference = Instant::now();
+                    if mask_updated {
+                        self.mask_dirty = true;
+                    }
+                }
+
+                if self.mask_dirty {
+                    self.upload_mask(queue);
+                    self.mask_dirty = false;
+                }
+
+                let textures = self.textures.as_ref().expect("textures initialized");
+
+                let bg_view = self
+                    .bg_image_texture
+                    .as_ref()
+                    .map(|(_, v)| v)
+                    .unwrap_or(&textures.blurred_view);
+
+                self.composite_pipeline.composite(
+                    device,
+                    &mut encoder,
+                    &input_view,
+                    bg_view,
+                    &textures.mask_view,
+                    &textures.output_view,
+                );
+
+                queue.submit(std::iter::once(encoder.finish()));
+                &self.textures.as_ref().unwrap().output_texture
+            }
+            BgMode::Remove => {
+                // For "remove" mode, we use the blur composite but with a transparent
+                // background. The caller should handle the alpha channel.
+                // For now, we use the color composite with fully transparent black.
+                let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
+                    label: Some("Remove BG Encoder"),
+                });
+
+                let width = input_texture.width();
+                let height = input_texture.height();
+                self.ensure_textures(device, width, height);
+                let input_view = input_texture.create_view(&Default::default());
+
+                if self.last_inference.elapsed() >= self.inference_interval {
+                    let mask_updated = self.run_segmentation(device, queue, input_texture);
+                    self.last_inference = Instant::now();
+                    if mask_updated {
+                        self.mask_dirty = true;
+                    }
+                }
+
+                if self.mask_dirty {
+                    self.upload_mask(queue);
+                    self.mask_dirty = false;
+                }
+
+                let textures = self.textures.as_ref().expect("textures initialized");
+
+                self.color_composite_pipeline.composite(
+                    device,
+                    &mut encoder,
+                    &input_view,
+                    &textures.mask_view,
+                    &textures.output_view,
+                    [0.0, 0.0, 0.0],
+                );
+
+                queue.submit(std::iter::once(encoder.finish()));
+                &self.textures.as_ref().unwrap().output_texture
+            }
+        }
     }
 
     pub fn process_returning_output(&mut self) -> Option<&wgpu::Texture> {
