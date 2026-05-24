@@ -77,8 +77,18 @@ pub async fn create_camera_preview_ws(
             let blur_mode = *blur_rx.borrow_and_update();
             let blur_enabled = blur_mode != zensloom_project::BackgroundBlurMode::Off;
             let effects_mode = match blur_mode {
-                zensloom_project::BackgroundBlurMode::Heavy => zensloom_segment::BlurMode::Heavy,
-                _ => zensloom_segment::BlurMode::Light,
+                zensloom_project::BackgroundBlurMode::Off => zensloom_segment::BgMode::None,
+                zensloom_project::BackgroundBlurMode::Light => {
+                    zensloom_segment::BgMode::Blur(zensloom_segment::BlurMode::Light)
+                }
+                zensloom_project::BackgroundBlurMode::Heavy => {
+                    zensloom_segment::BgMode::Blur(zensloom_segment::BlurMode::Heavy)
+                }
+                zensloom_project::BackgroundBlurMode::Color => {
+                    zensloom_segment::BgMode::Color([0.2, 0.4, 0.8])
+                }
+                zensloom_project::BackgroundBlurMode::Image => zensloom_segment::BgMode::Image,
+                zensloom_project::BackgroundBlurMode::Remove => zensloom_segment::BgMode::Remove,
             };
 
             let (target_width, target_height) =
@@ -132,7 +142,7 @@ pub async fn create_camera_preview_ws(
                         out_frame.width(),
                         out_frame.height(),
                         out_frame.stride(0) as u32,
-                        effects_mode,
+                        &effects_mode,
                     ) {
                         Some(blurred) => blurred,
                         None => (
@@ -170,7 +180,7 @@ pub async fn create_camera_preview_ws(
                         frame.width(),
                         frame.height(),
                         frame.stride(0) as u32,
-                        effects_mode,
+                        &effects_mode,
                     ) {
                         Some(blurred) => blurred,
                         None => (
@@ -237,7 +247,7 @@ impl WsBlurState {
         width: u32,
         height: u32,
         stride: u32,
-        mode: zensloom_segment::BlurMode,
+        mode: &zensloom_segment::BgMode,
     ) -> Option<(Arc<Vec<u8>>, u32, u32, u32)> {
         if !self.init_attempted {
             self.init_attempted = true;
@@ -354,7 +364,7 @@ impl WsBlurState {
         };
 
         if let Some(idx) = issue_idx {
-            let output = res.processor.process(&res.device, &res.queue, src, mode);
+            let output = res.processor.process_bg_mode(&res.device, &res.queue, src, mode);
 
             let mut encoder = res
                 .device

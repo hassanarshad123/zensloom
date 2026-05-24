@@ -850,8 +850,8 @@ impl Renderer {
                             (resampler_frame.data(0), resampler_frame.stride(0) as u32)
                         };
 
-                        let blur_mode = blur_mode_from_project(state.background_blur);
-                        let blurred = if let Some(mode) = blur_mode {
+                        let bg_mode = bg_mode_from_project(state.background_blur);
+                        let blurred = if let Some(mode) = &bg_mode {
                             self.run_background_blur(
                                 frame_data,
                                 frame_stride,
@@ -992,7 +992,7 @@ impl Renderer {
         frame_stride: u32,
         width: u32,
         height: u32,
-        mode: zensloom_segment::BlurMode,
+        mode: &zensloom_segment::BgMode,
     ) -> bool {
         if !self.ensure_blur_processor() {
             return false;
@@ -1027,7 +1027,7 @@ impl Renderer {
             },
         );
 
-        processor.process(&self.device, &self.queue, src_tex, mode);
+        processor.process_bg_mode(&self.device, &self.queue, src_tex, mode);
         true
     }
 
@@ -1376,16 +1376,22 @@ mod tests {
     }
 }
 
-fn blur_mode_from_project(
+fn bg_mode_from_project(
     mode: zensloom_project::BackgroundBlurMode,
-) -> Option<zensloom_segment::BlurMode> {
+) -> Option<zensloom_segment::BgMode> {
     match mode {
         zensloom_project::BackgroundBlurMode::Off => None,
-        zensloom_project::BackgroundBlurMode::Light => Some(zensloom_segment::BlurMode::Light),
-        zensloom_project::BackgroundBlurMode::Heavy => Some(zensloom_segment::BlurMode::Heavy),
-        zensloom_project::BackgroundBlurMode::Color
-        | zensloom_project::BackgroundBlurMode::Image
-        | zensloom_project::BackgroundBlurMode::Remove => Some(zensloom_segment::BlurMode::Light),
+        zensloom_project::BackgroundBlurMode::Light => {
+            Some(zensloom_segment::BgMode::Blur(zensloom_segment::BlurMode::Light))
+        }
+        zensloom_project::BackgroundBlurMode::Heavy => {
+            Some(zensloom_segment::BgMode::Blur(zensloom_segment::BlurMode::Heavy))
+        }
+        zensloom_project::BackgroundBlurMode::Color => {
+            Some(zensloom_segment::BgMode::Color([0.2, 0.4, 0.8]))
+        }
+        zensloom_project::BackgroundBlurMode::Image => Some(zensloom_segment::BgMode::Image),
+        zensloom_project::BackgroundBlurMode::Remove => Some(zensloom_segment::BgMode::Remove),
     }
 }
 

@@ -3793,7 +3793,7 @@ impl RendererLayers {
         &mut self,
         device: &wgpu::Device,
         queue: &wgpu::Queue,
-        mode: zensloom_segment::BlurMode,
+        mode: zensloom_segment::BgMode,
     ) {
         if self.camera.source_texture_for_blur().is_none()
             && self.camera_only.source_texture_for_blur().is_none()
@@ -3814,11 +3814,15 @@ impl RendererLayers {
             return;
         };
 
-        let _ = processor.process(device, queue, source_texture, mode);
+        let _ = processor.process_bg_mode(device, queue, source_texture, &mode);
 
+        let blur_mode_for_cache = match &mode {
+            zensloom_segment::BgMode::Blur(m) => *m,
+            _ => zensloom_segment::BlurMode::Light,
+        };
         let processor: &zensloom_segment::BlurProcessor = processor;
-        self.camera.attach_shared_blur(device, processor, mode);
-        self.camera_only.attach_shared_blur(device, processor, mode);
+        self.camera.attach_shared_blur(device, processor, blur_mode_for_cache);
+        self.camera_only.attach_shared_blur(device, processor, blur_mode_for_cache);
     }
 
     fn run_shared_camera_blur_with_encoder(
@@ -3826,7 +3830,7 @@ impl RendererLayers {
         device: &wgpu::Device,
         queue: &wgpu::Queue,
         encoder: &mut wgpu::CommandEncoder,
-        mode: zensloom_segment::BlurMode,
+        mode: zensloom_segment::BgMode,
     ) {
         if self.camera.source_texture_for_blur().is_none()
             && self.camera_only.source_texture_for_blur().is_none()
@@ -3847,11 +3851,16 @@ impl RendererLayers {
             return;
         };
 
-        processor.process_into_encoder(device, queue, source_texture, encoder, mode);
+        let blur_mode_for_encoder = match &mode {
+            zensloom_segment::BgMode::Blur(m) => *m,
+            _ => zensloom_segment::BlurMode::Light,
+        };
+        processor.process_into_encoder(device, queue, source_texture, encoder, blur_mode_for_encoder);
 
+        let blur_mode_for_cache = blur_mode_for_encoder;
         let processor: &zensloom_segment::BlurProcessor = processor;
-        self.camera.attach_shared_blur(device, processor, mode);
-        self.camera_only.attach_shared_blur(device, processor, mode);
+        self.camera.attach_shared_blur(device, processor, blur_mode_for_cache);
+        self.camera_only.attach_shared_blur(device, processor, blur_mode_for_cache);
     }
 
     pub fn prepare_for_video_dimensions(
@@ -3950,7 +3959,7 @@ impl RendererLayers {
             }),
         );
 
-        if let Some(mode) = blur_mode_from_config(&uniforms.project.camera.background_blur) {
+        if let Some(mode) = bg_mode_from_config(&uniforms.project.camera.background_blur) {
             self.run_shared_camera_blur(&constants.device, &constants.queue, mode);
         }
 
@@ -4082,7 +4091,7 @@ impl RendererLayers {
         timings.camera_only_prepare_duration = start.elapsed();
 
         let start = Instant::now();
-        if let Some(mode) = blur_mode_from_config(&uniforms.project.camera.background_blur) {
+        if let Some(mode) = bg_mode_from_config(&uniforms.project.camera.background_blur) {
             self.run_shared_camera_blur_with_encoder(
                 &constants.device,
                 &constants.queue,
@@ -4283,18 +4292,39 @@ async fn produce_frame_with_timings(
     Ok((frame, timings))
 }
 
-fn blur_mode_from_config(
+fn bg_mode_from_config(
     config: &zensloom_project::BackgroundBlurConfig,
-) -> Option<zensloom_segment::BlurMode> {
+) -> Option<zensloom_segment::BgMode> {
     match config.mode {
         zensloom_project::BackgroundBlurMode::Off => None,
-        zensloom_project::BackgroundBlurMode::Light => Some(zensloom_segment::BlurMode::Light),
-        zensloom_project::BackgroundBlurMode::Heavy => Some(zensloom_segment::BlurMode::Heavy),
-        zensloom_project::BackgroundBlurMode::Color
-        | zensloom_project::BackgroundBlurMode::Image
-        | zensloom_project::BackgroundBlurMode::Remove => {
-            Some(zensloom_segment::BlurMode::Light)
+        zensloom_project::BackgroundBlurMode::Light => {
+            Some(zensloom_segment::BgMode::Blur(zensloom_segment::BlurMode::Light))
         }
+        zensloom_project::BackgroundBlurMode::Heavy => {
+            Some(zensloom_segment::BgMode::Blur(zensloom_segment::BlurMode::Heavy))
+        }
+        zensloom_project::BackgroundBlurMode::Color => {
+            let color = config
+                .color
+                .as_deref()
+                .map(|hex| parse_hex_color(hex))
+                .unwrap_or([0.2, 0.4, 0.8]);
+            Some(zensloom_segment::BgMode::Color(color))
+        }
+        zensloom_project::BackgroundBlurMode::Image => Some(zensloom_segment::BgMode::Image),
+        zensloom_project::BackgroundBlurMode::Remove => Some(zensloom_segment::BgMode::Remove),
+    }
+}
+
+fn parse_hex_color(hex: &str) -> [f32; 3] {
+    let hex = hex.trim_start_matches('#');
+    if hex.len() >= 6 {
+        let r = u8::from_str_radix(&hex[0..2], 16).unwrap_or(0) as f32 / 255.0;
+        let g = u8::from_str_radix(&hex[2..4], 16).unwrap_or(0) as f32 / 255.0;
+        let b = u8::from_str_radix(&hex[4..6], 16).unwrap_or(0) as f32 / 255.0;
+        [r, g, b]
+    } else {
+        [0.2, 0.4, 0.8]
     }
 }
 
