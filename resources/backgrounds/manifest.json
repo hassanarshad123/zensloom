@@ -1,0 +1,10 @@
+﻿[
+  { "id": "gradient-indigo-pink", "name": "Indigo Sunset", "file": "gradient-indigo-pink.jpg" },
+  { "id": "gradient-teal-blue", "name": "Ocean Breeze", "file": "gradient-teal-blue.jpg" },
+  { "id": "gradient-purple-orange", "name": "Dusk", "file": "gradient-purple-orange.jpg" },
+  { "id": "gradient-green-cyan", "name": "Forest Mist", "file": "gradient-green-cyan.jpg" },
+  { "id": "abstract-waves", "name": "Soft Waves", "file": "abstract-waves.jpg" },
+  { "id": "abstract-circles", "name": "Circles", "file": "abstract-circles.jpg" },
+  { "id": "abstract-marble", "name": "Marble", "file": "abstract-marble.jpg" },
+  { "id": "abstract-mesh", "name": "Mesh Gradient", "file": "abstract-mesh.jpg" }
+]
