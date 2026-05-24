@@ -34,6 +34,7 @@ const PARAKEET_UNSUPPORTED_MESSAGE: &str = "Parakeet transcription is not availa
 pub enum TranscriptionEngine {
     Whisper,
     Parakeet,
+    OpenAiWhisper,
 }
 
 #[derive(Debug, Serialize, Deserialize, Type, Clone)]
@@ -1067,19 +1068,22 @@ pub async fn transcribe_audio(
     log::info!("Model path: {}", model_path);
     log::info!("Language: {}", language);
 
-    let validated_model_path = validate_model_path(&app, &model_path)?;
-
     if !std::path::Path::new(&video_path).exists() {
         log::error!("Video file not found at path: {video_path}");
         return Err(format!("Video file not found at path: {video_path}"));
     }
 
-    if !validated_model_path.exists() {
-        log::error!("Model file not found at path: {model_path}");
-        return Err(format!("Model file not found at path: {model_path}"));
-    }
-
-    let model_path = validated_model_path.to_string_lossy().to_string();
+    // Model path validation is not needed for OpenAI Whisper (cloud-based)
+    let model_path = if matches!(engine, TranscriptionEngine::OpenAiWhisper) {
+        String::new()
+    } else {
+        let validated_model_path = validate_model_path(&app, &model_path)?;
+        if !validated_model_path.exists() {
+            log::error!("Model file not found at path: {model_path}");
+            return Err(format!("Model file not found at path: {model_path}"));
+        }
+        validated_model_path.to_string_lossy().to_string()
+    };
 
     let temp_dir = tempdir().map_err(|e| format!("Failed to create temporary directory: {e}"))?;
     let audio_path = temp_dir.path().join("audio.wav");
@@ -1139,6 +1143,10 @@ pub async fn transcribe_audio(
             })
             .await
             .map_err(|e| format!("Whisper task panicked: {e}"))?
+        }
+        TranscriptionEngine::OpenAiWhisper => {
+            log::info!("Using OpenAI Whisper API engine");
+            transcribe_with_openai(&app, &audio_path, &language).await
         }
     };
 
@@ -2090,6 +2098,168 @@ pub async fn export_captions_srt(
             Err(format!("Failed to write SRT file: {e}"))
         }
     }
+}
+
+async fn transcribe_with_openai(
+    app: &AppHandle,
+    audio_path: &PathBuf,
+    language: &str,
+) -> Result<CaptionData, String> {
+    log::info!("=== OPENAI WHISPER API TRANSCRIPTION START ===");
+
+    // 1. Get API key from secrets
+    let secrets_path = app
+        .path()
+        .app_data_dir()
+        .map_err(|_| "Failed to get app data directory".to_string())?
+        .join("secrets.dat");
+    let store = zensloom_secrets::SecretStore::new(secrets_path);
+    let key = store
+        .load("openai_api_key")
+        .map_err(|e| e.to_string())?
+        .ok_or("OpenAI API key not configured. Add it in Settings > Transcription.")?;
+
+    // 2. Read the already-extracted audio file
+    let audio_bytes = tokio::fs::read(audio_path)
+        .await
+        .map_err(|e| format!("Failed to read audio file: {e}"))?;
+
+    log::info!(
+        "Audio file size for OpenAI upload: {} bytes",
+        audio_bytes.len()
+    );
+
+    // 4. Upload to OpenAI Whisper API
+    let mut form = reqwest::multipart::Form::new()
+        .text("model", "whisper-1")
+        .text("response_format", "verbose_json")
+        .text("timestamp_granularities[]", "word")
+        .text("timestamp_granularities[]", "segment")
+        .part(
+            "file",
+            reqwest::multipart::Part::bytes(audio_bytes)
+                .file_name("audio.wav")
+                .mime_str("audio/wav")
+                .map_err(|e| format!("Failed to set MIME type: {e}"))?,
+        );
+
+    if language != "auto" {
+        form = form.text("language", language.to_string());
+    }
+
+    let client = reqwest::Client::new();
+    let resp = client
+        .post("https://api.openai.com/v1/audio/transcriptions")
+        .header("Authorization", format!("Bearer {key}"))
+        .multipart(form)
+        .send()
+        .await
+        .map_err(|e| format!("OpenAI API error: {e}"))?;
+
+    if !resp.status().is_success() {
+        let error_text = resp.text().await.unwrap_or_default();
+        return Err(format!("OpenAI API returned error: {error_text}"));
+    }
+
+    // 5. Parse response into CaptionData
+    let body: serde_json::Value = resp
+        .json()
+        .await
+        .map_err(|e| format!("Failed to parse response: {e}"))?;
+
+    log::info!("OpenAI Whisper API response received successfully");
+
+    let empty_vec = vec![];
+    let api_segments = body["segments"].as_array().unwrap_or(&empty_vec);
+
+    let mut segments = Vec::new();
+
+    for (i, seg) in api_segments.iter().enumerate() {
+        let seg_start = seg["start"].as_f64().unwrap_or(0.0) as f32;
+        let seg_end = seg["end"].as_f64().unwrap_or(0.0) as f32;
+        let seg_text = seg["text"].as_str().unwrap_or("").trim().to_string();
+
+        if seg_text.is_empty() {
+            continue;
+        }
+
+        // Try to get word-level timestamps from the top-level "words" array
+        // (OpenAI returns words at the top level when timestamp_granularities includes "word")
+        let top_level_words = body["words"].as_array();
+
+        let words: Vec<CaptionWord> = if let Some(all_words) = top_level_words {
+            // Filter words that fall within this segment's time range
+            all_words
+                .iter()
+                .filter(|w| {
+                    let w_start = w["start"].as_f64().unwrap_or(0.0) as f32;
+                    w_start >= seg_start && w_start < seg_end
+                })
+                .map(|w| CaptionWord {
+                    text: w["word"].as_str().unwrap_or("").trim().to_string(),
+                    start: w["start"].as_f64().unwrap_or(0.0) as f32,
+                    end: w["end"].as_f64().unwrap_or(0.0) as f32,
+                })
+                .filter(|w| !w.text.is_empty())
+                .collect()
+        } else {
+            // Fallback: create a single word from the segment text
+            vec![CaptionWord {
+                text: seg_text.clone(),
+                start: seg_start,
+                end: seg_end,
+            }]
+        };
+
+        // Split into chunks of MAX_WORDS_PER_SEGMENT (same as local Whisper)
+        const MAX_WORDS_PER_SEGMENT: usize = 6;
+
+        if words.is_empty() {
+            continue;
+        }
+
+        let word_chunks: Vec<Vec<CaptionWord>> = words
+            .chunks(MAX_WORDS_PER_SEGMENT)
+            .map(|chunk| chunk.to_vec())
+            .collect();
+
+        for (chunk_idx, chunk_words) in word_chunks.into_iter().enumerate() {
+            let segment_text = chunk_words
+                .iter()
+                .map(|word| word.text.clone())
+                .collect::<Vec<_>>()
+                .join(" ");
+
+            let segment_start = chunk_words
+                .first()
+                .map(|word| word.start)
+                .unwrap_or(seg_start);
+            let segment_end = chunk_words.last().map(|word| word.end).unwrap_or(seg_end);
+
+            segments.push(CaptionSegment {
+                id: format!("segment-{i}-{chunk_idx}"),
+                start: segment_start,
+                end: segment_end,
+                text: segment_text,
+                words: chunk_words,
+            });
+        }
+    }
+
+    log::info!(
+        "OpenAI Whisper produced {} segments",
+        segments.len()
+    );
+    log::info!("=== OPENAI WHISPER API TRANSCRIPTION COMPLETE ===");
+
+    if segments.is_empty() {
+        return Err("No speech detected in the audio".to_string());
+    }
+
+    Ok(CaptionData {
+        segments,
+        settings: Some(zensloom_project::CaptionSettings::default()),
+    })
 }
 
 fn convert_to_mono(samples: &[f32], channels: usize) -> Vec<f32> {

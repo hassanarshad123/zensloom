@@ -1,10 +1,11 @@
-﻿import { Button } from "@zensloom/ui-solid";
+import { Button } from "@zensloom/ui-solid";
 import {
 	createEffect,
 	createResource,
 	createSignal,
 	For,
 	onCleanup,
+	onMount,
 	Show,
 } from "solid-js";
 import { Input } from "~/routes/editor/ui";
@@ -14,6 +15,7 @@ import {
 	type GeneralSettingsStore,
 	normalizeTranscriptionHints,
 } from "~/utils/general-settings";
+import { commands } from "~/utils/tauri";
 import IconLucidePlus from "~icons/lucide/plus";
 import IconLucideX from "~icons/lucide/x";
 import { Section, SectionCard, SettingsPageContent } from "./Setting";
@@ -193,7 +195,165 @@ function Inner(props: { initialStore: GeneralSettingsStore | null }) {
 						</SectionCard>
 					</Section>
 				</Show>
+
+				<OpenAiApiKeySection />
 			</SettingsPageContent>
 		</div>
+	);
+}
+
+type ApiKeyState =
+	| "loading"
+	| "not_configured"
+	| "stored"
+	| "saving"
+	| "validating"
+	| "error";
+
+function OpenAiApiKeySection() {
+	const [keyInput, setKeyInput] = createSignal("");
+	const [state, setState] = createSignal<ApiKeyState>("loading");
+	const [errorMessage, setErrorMessage] = createSignal("");
+
+	onMount(() => {
+		void checkKeyStatus();
+	});
+
+	const checkKeyStatus = async () => {
+		try {
+			const hasKey = await commands.getApiKeyStatus("openai");
+			setState(hasKey ? "stored" : "not_configured");
+		} catch (error) {
+			console.error("Failed to check API key status", error);
+			setState("not_configured");
+		}
+	};
+
+	const saveKey = async () => {
+		const key = keyInput().trim();
+		if (!key) return;
+
+		setErrorMessage("");
+		setState("validating");
+
+		try {
+			await commands.validateOpenaiKey(key);
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			setErrorMessage(message);
+			setState("error");
+			return;
+		}
+
+		setState("saving");
+
+		try {
+			await commands.storeApiKey("openai", key);
+			setKeyInput("");
+			setState("stored");
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			setErrorMessage(`Failed to store key: ${message}`);
+			setState("error");
+		}
+	};
+
+	const deleteKey = async () => {
+		try {
+			await commands.deleteApiKey("openai");
+			setState("not_configured");
+			setKeyInput("");
+			setErrorMessage("");
+		} catch (error) {
+			console.error("Failed to delete API key", error);
+		}
+	};
+
+	return (
+		<Section
+			title="OpenAI API Key"
+			description="Provide your own OpenAI API key for cloud-based Whisper transcription."
+		>
+			<SectionCard padded class="space-y-3">
+				<div class="flex flex-col gap-2">
+					<div class="flex items-center justify-between">
+						<p class="text-[13px] text-gray-12">API Key</p>
+						<Show when={state() === "stored"}>
+							<span class="text-xs text-green-11 font-medium">
+								Stored securely
+							</span>
+						</Show>
+						<Show when={state() === "loading"}>
+							<span class="text-xs text-gray-10">Checking...</span>
+						</Show>
+					</div>
+
+					<Show when={state() !== "stored"}>
+						<div class="flex items-center gap-2">
+							<Input
+								type="password"
+								value={keyInput()}
+								onInput={(event) => setKeyInput(event.currentTarget.value)}
+								onKeyDown={(event) => {
+									if (event.key !== "Enter") return;
+									event.preventDefault();
+									void saveKey();
+								}}
+								placeholder="sk-..."
+								spellcheck={false}
+								autocapitalize="off"
+								autocomplete="off"
+								autocorrect="off"
+								disabled={state() === "validating" || state() === "saving"}
+								class="flex-1 px-3 py-2 bg-gray-1 border border-gray-3 rounded-md text-gray-12 placeholder:text-gray-10 focus:outline-hidden focus:ring-1 focus:ring-gray-8 hover:border-gray-6"
+							/>
+							<Button
+								onClick={() => void saveKey()}
+								disabled={
+									keyInput().trim().length === 0 ||
+									state() === "validating" ||
+									state() === "saving"
+								}
+								class="shrink-0"
+							>
+								{state() === "validating"
+									? "Validating..."
+									: state() === "saving"
+										? "Saving..."
+										: "Save"}
+							</Button>
+						</div>
+					</Show>
+
+					<Show when={state() === "stored"}>
+						<div class="flex items-center gap-2">
+							<p class="text-xs text-gray-10 flex-1">
+								Your key is encrypted with Windows DPAPI and stored locally.
+							</p>
+							<Button variant="gray" size="sm" onClick={() => void deleteKey()}>
+								<IconLucideX class="size-3" />
+								Remove
+							</Button>
+						</div>
+					</Show>
+
+					<Show when={state() === "error" && errorMessage()}>
+						<p class="text-xs text-red-11">{errorMessage()}</p>
+					</Show>
+
+					<p class="text-xs leading-relaxed text-gray-10">
+						~$0.006/min of audio. Get a key at{" "}
+						<a
+							href="https://platform.openai.com/api-keys"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="text-blue-11 hover:underline"
+						>
+							platform.openai.com
+						</a>
+					</p>
+				</div>
+			</SectionCard>
+		</Section>
 	);
 }

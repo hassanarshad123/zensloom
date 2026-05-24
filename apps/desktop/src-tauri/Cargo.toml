@@ -75,6 +75,7 @@ whisper-rs = "0.11.0"
 lazy_static = "1.4.0"
 log = "0.4.20"
 
+zensloom-secrets = { path = "../../../crates/secrets" }
 zensloom-audio = { path = "../../../crates/audio" }
 zensloom-camera = { path = "../../../crates/camera", features = ["serde", "specta"] }
 zensloom-segment = { path = "../../../crates/camera-effects" }

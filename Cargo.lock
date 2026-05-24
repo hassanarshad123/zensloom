@@ -11337,6 +11337,7 @@ dependencies = [
  "zensloom-project",
  "zensloom-recording",
  "zensloom-rendering",
+ "zensloom-secrets",
  "zensloom-segment",
  "zensloom-utils",
 ]

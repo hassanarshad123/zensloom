@@ -1,6 +1,7 @@
 ﻿#![recursion_limit = "256"]
 
 mod api;
+mod api_keys;
 mod audio;
 mod audio_meter;
 mod auth;
@@ -3824,6 +3825,10 @@ pub async fn run(recording_logging_handle: LoggingHandle, logs_dir: PathBuf) {
             captions::check_parakeet_model_exists,
             captions::delete_parakeet_model,
             captions::export_captions_srt,
+            api_keys::store_api_key,
+            api_keys::get_api_key_status,
+            api_keys::delete_api_key,
+            api_keys::validate_openai_key,
             target_select_overlay::open_target_select_overlays,
             target_select_overlay::close_target_select_overlays,
             target_select_overlay::update_camera_overlay_bounds,

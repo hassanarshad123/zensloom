@@ -355,6 +355,18 @@ async deleteParakeetModel(modelDir: string) : Promise<null> {
 async exportCaptionsSrt(videoId: string) : Promise<string | null> {
     return await TAURI_INVOKE("export_captions_srt", { videoId });
 },
+async storeApiKey(provider: string, key: string) : Promise<void> {
+    await TAURI_INVOKE("store_api_key", { provider, key });
+},
+async getApiKeyStatus(provider: string) : Promise<boolean> {
+    return await TAURI_INVOKE("get_api_key_status", { provider });
+},
+async deleteApiKey(provider: string) : Promise<void> {
+    await TAURI_INVOKE("delete_api_key", { provider });
+},
+async validateOpenaiKey(key: string) : Promise<void> {
+    await TAURI_INVOKE("validate_openai_key", { key });
+},
 async openTargetSelectOverlays(focusedTarget: ScreenCaptureTarget | null, specificDisplayId: string | null, targetMode: RecordingTargetMode | null) : Promise<null> {
     return await TAURI_INVOKE("open_target_select_overlays", { focusedTarget, specificDisplayId, targetMode });
 },
@@ -627,7 +639,7 @@ export type TargetUnderCursor = { display_id: DisplayId | null; window: WindowUn
 export type TextSegment = { start: number; end: number; track?: number; enabled?: boolean; content?: string; center?: XY<number>; size?: XY<number>; fontFamily?: string; fontSize?: number; fontWeight?: number; italic?: boolean; color?: string; fadeDuration?: number }
 export type TimelineConfiguration = { segments: TimelineSegment[]; zoomSegments: ZoomSegment[]; sceneSegments?: SceneSegment[]; maskSegments?: MaskSegment[]; textSegments?: TextSegment[]; captionSegments?: CaptionTrackSegment[]; keyboardSegments?: KeyboardTrackSegment[] }
 export type TimelineSegment = { recordingSegment?: number; timescale: number; start: number; end: number }
-export type TranscriptionEngine = "Whisper" | "Parakeet"
+export type TranscriptionEngine = "Whisper" | "Parakeet" | "OpenAiWhisper"
 export type UploadMeta = { state: "MultipartUpload"; video_id: string; file_path: string; pre_created_video: VideoUploadInfo; recording_dir: string } | { state: "SinglePartUpload"; video_id: string; recording_dir: string; file_path: string; screenshot_path: string } | { state: "SegmentUpload"; video_id: string; pre_created_video: VideoUploadInfo; recording_dir: string } | { state: "Failed"; error: string } | { state: "Complete" }
 export type UploadMode = { Initial: { pre_created_video: VideoUploadInfo | null } } | "Reupload"
 export type UploadProgress = { progress: number }
