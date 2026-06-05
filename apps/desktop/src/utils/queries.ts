@@ -242,9 +242,8 @@ export function createLicenseQuery() {
 		queryKey: ["licenseQuery"],
 		queryFn: async () => {
 			const settings = await generalSettingsStore.get();
-			const auth = await authStore.get();
 
-			if (auth?.plan?.upgraded) return { type: "pro" as const, ...auth.plan };
+			// Cloud "pro" plans removed — Zensloom v1.0 is local-only and free.
 			if (settings?.commercialLicense)
 				return {
 					type: "commercial" as const,

@@ -1,5 +1,6 @@
 ﻿import { makePersisted } from "@solid-primitives/storage";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { ZENSLOOM_REPO_URL } from "~/utils/env";
 import { ask } from "@tauri-apps/plugin-dialog";
 import { type as ostype } from "@tauri-apps/plugin-os";
 import { relaunch } from "@tauri-apps/plugin-process";
@@ -969,7 +970,7 @@ function ShortcutsStep(props: { active: boolean }) {
 		},
 		{
 			title: "Custom Domain",
-			desc: "Use your own domain for shareable links instead of cap.link",
+			desc: "Use your own domain for shareable links (planned for Zensloom v2.0)",
 		},
 		{
 			title: "Recording Preferences",
@@ -1077,7 +1078,7 @@ function FaqStep(props: { active: boolean }) {
 						check out our{" "}
 						<button
 							type="button"
-							onClick={() => shell.open("https://cap.so/pricing")}
+							onClick={() => shell.open(ZENSLOOM_REPO_URL)}
 							class="text-blue-10 hover:text-blue-11 underline underline-offset-2"
 						>
 							pricing plans
@@ -1117,7 +1118,7 @@ function FaqStep(props: { active: boolean }) {
 
 			<button
 				type="button"
-				onClick={() => shell.open("https://cap.so/pricing")}
+				onClick={() => shell.open(ZENSLOOM_REPO_URL)}
 				class={cx(
 					"flex items-center gap-1.5 text-[13px] text-blue-10 hover:text-blue-11 transition-all duration-500 delay-200",
 					visible() ? "opacity-100" : "opacity-0",
@@ -1444,7 +1445,7 @@ function InstantMockup(props: { active: boolean }) {
 							<div class="flex items-center gap-2 w-full">
 								<div class="flex-1 flex items-center px-3 py-2 rounded-lg bg-white dark:bg-gray-3 border border-gray-4">
 									<span class="text-[11px] text-gray-11 font-mono">
-										cap.link/m4k92x
+										zensloom · local recording
 									</span>
 								</div>
 								<div

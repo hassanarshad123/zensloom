@@ -34,7 +34,7 @@ import {
 	cameraBorderRadius,
 	cameraToolbarScale,
 	getDefaultCameraWindowState,
-	normalizeBackgroundBlurMode,
+	toBackgroundBlurConfig,
 } from "~/components/CameraPreviewChrome";
 import { generalSettingsStore } from "~/store";
 import { createTauriEventListener } from "~/utils/createEventListener";
@@ -286,7 +286,7 @@ function NativeCameraPreviewPage(props: {
 			size: state.size,
 			shape: state.shape,
 			mirrored: state.mirrored,
-			background_blur: normalizeBackgroundBlurMode(state.backgroundBlur),
+			background_blur: toBackgroundBlurConfig(state),
 		});
 	});
 
@@ -399,7 +399,7 @@ function LegacyCameraPreviewPage(props: {
 			size: state.size,
 			shape: state.shape,
 			mirrored: state.mirrored,
-			background_blur: normalizeBackgroundBlurMode(state.backgroundBlur),
+			background_blur: toBackgroundBlurConfig(state),
 		});
 	});
 

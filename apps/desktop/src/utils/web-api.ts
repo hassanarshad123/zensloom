@@ -30,19 +30,8 @@ export const orgCustomDomainClient = createStubClient();
 export async function maybeProtectedHeaders(): Promise<{
 	authorization: string | undefined;
 }> {
-	const store = await authStore.get();
-
-	let token: string | undefined;
-	if (store?.secret && typeof store.secret === "object") {
-		const secret = store.secret as Record<string, unknown>;
-		if ("api_key" in secret && typeof secret.api_key === "string") {
-			token = secret.api_key;
-		} else if ("token" in secret && typeof secret.token === "string") {
-			token = secret.token;
-		}
-	}
-
-	return { authorization: token ? `Bearer ${token}` : undefined };
+	// Cloud auth removed — Zensloom v1.0 is local-only, so there is no token.
+	return { authorization: undefined };
 }
 
 export async function protectedHeaders(): Promise<{

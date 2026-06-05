@@ -62,9 +62,11 @@
 		{
 			"identifier": "http:default",
 			"allow": [
-				{ "url": "http://*" },
-				{ "url": "https://*" },
-				{ "url": "http://localhost:*" }
+				{ "url": "https://api.openai.com/*" },
+				{ "url": "https://api.anthropic.com/*" },
+				{ "url": "https://api.github.com/*" },
+				{ "url": "http://localhost:*" },
+				{ "url": "http://ipc.localhost/*" }
 			]
 		},
 		"clipboard-manager:allow-write-text",

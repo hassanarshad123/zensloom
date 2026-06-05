@@ -30,8 +30,6 @@ import {
 	commands,
 	events,
 	type FramesRendered,
-	type UploadProgress,
-	type UploadResult,
 } from "~/utils/tauri";
 import IconCapEditor from "~icons/cap/editor";
 import IconCapUpload from "~icons/cap/upload";
@@ -711,107 +709,8 @@ function createRecordingMutations(
 
 	const upload = createMutation(() => ({
 		mutationFn: async () => {
-			if (recordingMeta.data?.sharing) {
-				setActionState({ type: "upload", state: { type: "link-copied" } });
-
-				await commands.writeClipboardString(recordingMeta.data.sharing.link);
-
-				return;
-			}
-
-			// Check authentication first
-			const existingAuth = await authStore.get();
-			if (!existingAuth) {
-				throw new Error("You need to sign in to share recordings");
-			}
-
-			const metadata = await commands.getVideoMetadata(media.path);
-			const plan = await commands.checkUpgradedAndUpdate();
-			const canShare = {
-				allowed: plan || metadata.duration < 300,
-				reason: !plan && metadata.duration >= 300 ? "upgrade_required" : null,
-			};
-
-			if (!canShare.allowed) {
-				if (canShare.reason === "upgrade_required") {
-					await commands.showWindow("Upgrade");
-					throw new Error(
-						"Upgrade required to share recordings longer than 5 minutes",
-					);
-				}
-			}
-
-			const uploadChannel = new Channel<UploadProgress>((progress) => {
-				console.log("Upload progress:", progress);
-				setActionState(
-					produce((actionState) => {
-						if (
-							actionState.type !== "upload" ||
-							actionState.state.type !== "uploading"
-						)
-							return;
-
-						actionState.state.progress = Math.round(progress.progress * 100);
-					}),
-				);
-			});
-
-			let res: UploadResult;
-			if (isRecording) {
-				setActionState({
-					type: "upload",
-					state: { type: "rendering", state: { type: "starting" } },
-				});
-
-				const progress = createRenderProgressCallback("upload", setActionState);
-
-				await exportWithDefaultSettings(progress);
-
-				// Show quick progress animation for existing video
-				setActionState(
-					produce((s) => {
-						if (
-							s.type === "copy" &&
-							s.state.type === "rendering" &&
-							s.state.state.type === "rendering"
-						)
-							s.state.state.renderedFrames = s.state.state.totalFrames;
-					}),
-				);
-
-				setActionState({
-					type: "upload",
-					state: { type: "uploading", progress: 0 },
-				});
-
-				res = await commands.uploadExportedVideo(
-					media.path,
-					{ Initial: { pre_created_video: null } },
-					uploadChannel,
-					null,
-				);
-			} else {
-				setActionState({
-					type: "upload",
-					state: { type: "uploading", progress: 0 },
-				});
-
-				res = await commands.uploadScreenshot(media.path);
-			}
-
-			switch (res) {
-				case "NotAuthenticated":
-					throw new Error("Not authenticated");
-				case "PlanCheckFailed":
-					throw new Error("Plan check failed");
-				case "UpgradeRequired":
-					onEvent("upgradeRequired");
-					return;
-				default:
-					break;
-			}
-
-			setActionState({ type: "upload", state: { type: "link-copied" } });
+			// Cloud upload/sharing removed — Zensloom v1.0 is local-only.
+			throw new Error("Cloud sharing is coming in Zensloom v2.0.");
 		},
 		onSettled() {
 			setTimeout(() => {

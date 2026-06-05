@@ -1,21 +1,52 @@
 import { ToggleButton as KToggleButton } from "@kobalte/core/toggle-button";
+import { open } from "@tauri-apps/plugin-dialog";
 import { cx } from "cva";
 import {
 	type ComponentProps,
 	createEffect,
 	createSignal,
+	For,
 	onCleanup,
 	Show,
 } from "solid-js";
 import type { SetStoreFunction } from "solid-js/store";
-import type { BackgroundBlurMode, CameraPreviewShape } from "~/utils/tauri";
+import type {
+	BackgroundBlurConfig,
+	BackgroundBlurMode,
+	CameraPreviewShape,
+} from "~/utils/tauri";
 
 export type CameraWindowState = {
 	size: number;
 	shape: CameraPreviewShape;
 	mirrored: boolean;
 	backgroundBlur: BackgroundBlurMode | boolean;
+	/** Solid background color (hex) used when backgroundBlur is "color". */
+	backgroundColor?: string;
+	/** Absolute path of the custom background image used when "image". */
+	backgroundImagePath?: string;
 };
+
+export const DEFAULT_BACKGROUND_COLOR = "#4f46e5";
+
+/** Curated built-in background colors (brand palette + neutrals). */
+export const BUILT_IN_BACKGROUND_COLORS = [
+	"#4f46e5",
+	"#ec4899",
+	"#0ea5e9",
+	"#10b981",
+	"#f59e0b",
+	"#111827",
+];
+
+/** Build the IPC background config the Rust pipeline consumes. */
+export const toBackgroundBlurConfig = (
+	state: CameraWindowState,
+): BackgroundBlurConfig => ({
+	mode: normalizeBackgroundBlurMode(state.backgroundBlur),
+	color: state.backgroundColor ?? DEFAULT_BACKGROUND_COLOR,
+	imagePath: state.backgroundImagePath ?? null,
+});
 
 export const CAMERA_MIN_SIZE = 150;
 export const CAMERA_MAX_SIZE = 600;
@@ -42,6 +73,8 @@ export const getDefaultCameraWindowState = (): CameraWindowState => ({
 	shape: "round",
 	mirrored: false,
 	backgroundBlur: "off",
+	backgroundColor: DEFAULT_BACKGROUND_COLOR,
+	backgroundImagePath: undefined,
 });
 
 export const clampCameraSize = (size: number) =>
@@ -183,8 +216,68 @@ export function CameraPreviewToolbar(props: {
 					</Show>
 				</div>
 			</ControlButton>
+			<Show
+				when={normalizeBackgroundBlurMode(props.state.backgroundBlur) === "color"}
+			>
+				<label
+					class="relative flex items-center justify-center p-2 rounded-lg cursor-pointer hover:bg-gray-3"
+					title="Custom background color"
+				>
+					<span
+						class="size-5 rounded-md border border-white-transparent-20"
+						style={{
+							"background-color":
+								props.state.backgroundColor ?? DEFAULT_BACKGROUND_COLOR,
+						}}
+					/>
+					<input
+						type="color"
+						class="absolute inset-0 opacity-0 cursor-pointer"
+						value={props.state.backgroundColor ?? DEFAULT_BACKGROUND_COLOR}
+						onInput={(e) =>
+							props.setState("backgroundColor", e.currentTarget.value)
+						}
+					/>
+				</label>
+				<div class="flex items-center gap-1 px-1">
+					<For each={BUILT_IN_BACKGROUND_COLORS}>
+						{(preset) => (
+							<button
+								type="button"
+								title={preset}
+								class="size-4 rounded-full border border-white-transparent-20 transition-transform hover:scale-110"
+								style={{ "background-color": preset }}
+								onClick={() => props.setState("backgroundColor", preset)}
+							/>
+						)}
+					</For>
+				</div>
+			</Show>
+			<Show
+				when={normalizeBackgroundBlurMode(props.state.backgroundBlur) === "image"}
+			>
+				<ControlButton
+					onClick={async () => {
+						const path = await pickBackgroundImage();
+						if (path) props.setState("backgroundImagePath", path);
+					}}
+				>
+					<IconLucideImage class="size-5.5" />
+				</ControlButton>
+			</Show>
 		</div>
 	);
+}
+
+async function pickBackgroundImage(): Promise<string | null> {
+	const selected = await open({
+		multiple: false,
+		directory: false,
+		filters: [
+			{ name: "Image", extensions: ["png", "jpg", "jpeg", "webp", "bmp"] },
+		],
+	});
+	return typeof selected === "string" ? selected : null;
 }
 
 function ControlButton(

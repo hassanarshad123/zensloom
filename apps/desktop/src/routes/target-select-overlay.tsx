@@ -44,7 +44,7 @@ import {
 	cameraToolbarScale,
 	clampCameraSize,
 	getDefaultCameraWindowState,
-	normalizeBackgroundBlurMode,
+	toBackgroundBlurConfig,
 } from "~/components/CameraPreviewChrome";
 import {
 	CROP_ZERO,
@@ -1232,7 +1232,7 @@ function CameraPreviewInline() {
 			size: state.size,
 			shape: state.shape,
 			mirrored: state.mirrored,
-			background_blur: normalizeBackgroundBlurMode(state.backgroundBlur),
+			background_blur: toBackgroundBlurConfig(state),
 		});
 	});
 
@@ -1955,22 +1955,7 @@ function RecordingControls(props: {
 	);
 }
 
-function ShowCapFreeWarning(props: { isInstantMode: boolean }) {
-	const auth = authStore.createQuery();
-
-	return (
-		<Suspense>
-			<Show when={props.isInstantMode && auth.data?.plan?.upgraded === false}>
-				<p class="text-sm text-center max-w-64 text-gray-3 mt-3">
-					Instant Mode recordings are limited to 5 mins,{" "}
-					<button
-						class="underline font-bold text-gray-3"
-						onClick={() => commands.showWindow("Upgrade")}
-					>
-						Upgrade to Pro
-					</button>
-				</p>
-			</Show>
-		</Suspense>
-	);
+function ShowCapFreeWarning(_props: { isInstantMode: boolean }) {
+	// Cloud plan limits removed — Zensloom v1.0 is local-only with no time limits.
+	return null;
 }

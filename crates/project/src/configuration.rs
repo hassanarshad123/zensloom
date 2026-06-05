@@ -308,7 +308,7 @@ pub enum BackgroundBlurMode {
     Remove,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase", default)]
 pub struct BackgroundBlurConfig {
     pub mode: BackgroundBlurMode,

@@ -290,15 +290,16 @@ export async function getModelPath(modelName: string): Promise<string> {
 
 export async function transcribeEditorCaptions(
 	videoPath: string,
-	modelName = DEFAULT_CAPTION_MODEL,
+	_modelName = DEFAULT_CAPTION_MODEL,
 	language = DEFAULT_CAPTION_LANGUAGE,
 ): Promise<CaptionData> {
-	const resolvedModelName = resolveCaptionModel(modelName);
-	const modelPath = await getModelPath(resolvedModelName);
-	const engine = PARAKEET_DIR_MODELS.has(resolvedModelName)
-		? "Parakeet"
-		: "Whisper";
-	return await commands.transcribeAudio(videoPath, modelPath, language, engine);
+	// Zensloom v1.0: transcription is BYOK OpenAI Whisper only — no local model.
+	return await commands.transcribeAudio(
+		videoPath,
+		"",
+		language,
+		"OpenAiWhisper",
+	);
 }
 
 export function getCaptionTextFromWords(words: CaptionWord[]) {

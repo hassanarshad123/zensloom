@@ -229,8 +229,10 @@ fn default_transcription_hints() -> Vec<String> {
 }
 
 fn default_server_url() -> String {
+    // Zensloom v1.0 is local-only; this is only used for the optional manual
+    // "check for updates" / project homepage link.
     std::option_env!("VITE_SERVER_URL")
-        .unwrap_or("https://cap.so")
+        .unwrap_or("https://github.com/zensbot/zensloom")
         .to_string()
 }
 

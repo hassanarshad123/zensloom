@@ -31,7 +31,6 @@ import {
 	commands,
 	events,
 	type RecordingMetaWithMetadata,
-	type UploadProgress,
 } from "~/utils/tauri";
 import IconLucideImport from "~icons/lucide/import";
 import IconLucideSearch from "~icons/lucide/search";
@@ -461,13 +460,12 @@ function RecordingItem(props: {
 				<Show when={mode() === "instant"}>
 					{(_) => {
 						const reupload = createMutation(() => ({
-							mutationFn: () =>
-								commands.uploadExportedVideo(
-									props.recording.path,
-									"Reupload",
-									new Channel<UploadProgress>((_progress) => {}),
-									null,
-								),
+							// Cloud reupload removed — Zensloom v1.0 is local-only.
+							mutationFn: async () => {
+								throw new Error(
+									"Cloud sharing is coming in Zensloom v2.0.",
+								);
+							},
 						}));
 
 						return (

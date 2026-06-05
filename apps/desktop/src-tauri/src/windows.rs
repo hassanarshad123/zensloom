@@ -807,13 +807,15 @@ impl CapWindowId {
     pub fn title(&self) -> String {
         match self {
             Self::Settings => "Zensloom Settings".to_string(),
-            Self::WindowCaptureOccluder { .. } => "Cap Window Capture Occluder".to_string(),
-            Self::CaptureArea => "Cap Capture Area".to_string(),
+            Self::WindowCaptureOccluder { .. } => {
+                "Zensloom Window Capture Occluder".to_string()
+            }
+            Self::CaptureArea => "Zensloom Capture Area".to_string(),
             Self::RecordingControls => "Zensloom Recording Controls".to_string(),
             Self::Editor { .. } => "Zensloom Editor".to_string(),
             Self::ScreenshotEditor { .. } => "Zensloom Screenshot Editor".to_string(),
             Self::ModeSelect => "Zensloom Mode Selection".to_string(),
-            Self::Onboarding => "Welcome to Cap".to_string(),
+            Self::Onboarding => "Welcome to Zensloom".to_string(),
             Self::Camera => "Zensloom Camera".to_string(),
             Self::RecordingsOverlay => "Zensloom Recordings Overlay".to_string(),
             Self::TargetSelectOverlay { .. } => "Zensloom Target Select".to_string(),

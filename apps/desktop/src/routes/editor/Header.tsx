@@ -35,7 +35,6 @@ import {
 import { serializeProjectConfiguration, useEditorContext } from "./context";
 import OrganizationDropdown from "./OrganizationDropdown";
 import PresetsDropdown from "./PresetsDropdown";
-import ShareButton from "./ShareButton";
 import { Dialog, EditorButton, Input } from "./ui";
 
 export type ResolutionOption = {
@@ -371,9 +370,6 @@ export function Header() {
 					leftIcon={<IconCapRedo class="w-5" />}
 				/>
 				<div data-tauri-drag-region class="flex-1 h-full" />
-				<Show when={customDomain.data}>
-					<ShareButton />
-				</Show>
 				<Show when={showCaptionsStale()}>
 					<div class="flex items-center h-[32px] rounded-lg bg-gray-3 overflow-hidden">
 						<button

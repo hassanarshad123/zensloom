@@ -398,7 +398,7 @@ fn build_tray_menu(app: &AppHandle, cache: &PreviousItemsCache) -> tauri::Result
                     false,
                     None::<&str>,
                 )?,
-                &MenuItem::with_id(app, TrayItem::Quit, "Quit Cap", true, None::<&str>)?,
+                &MenuItem::with_id(app, TrayItem::Quit, "Quit Zensloom", true, None::<&str>)?,
             ],
         );
     }
@@ -524,7 +524,7 @@ fn build_tray_menu(app: &AppHandle, cache: &PreviousItemsCache) -> tauri::Result
     menu.append(&MenuItem::with_id(
         app,
         TrayItem::Quit,
-        "Quit Cap",
+        "Quit Zensloom",
         true,
         None::<&str>,
     )?)?;

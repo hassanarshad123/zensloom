@@ -71,8 +71,11 @@ fn main() -> Result<(), String> {
         LevelFilter::WARN
     };
 
+    // Show our own crates' logs (renamed cap_* -> zensloom_*) plus warnings/errors
+    // from any other crate (e.g. ffmpeg/wgpu) so export failures are diagnosable.
     let registry = tracing_subscriber::registry().with(tracing_subscriber::filter::filter_fn(
-        (|v| v.target().starts_with("cap_")) as fn(&tracing::Metadata) -> bool,
+        (|v| v.target().starts_with("zensloom_") || *v.level() <= tracing::Level::WARN)
+            as fn(&tracing::Metadata) -> bool,
     ));
 
     registry

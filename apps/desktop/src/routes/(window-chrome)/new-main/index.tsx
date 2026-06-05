@@ -74,7 +74,6 @@ import {
 	type OSPermissionsCheck,
 	type RecordingTargetMode,
 	type ScreenCaptureTarget,
-	type UploadProgress,
 } from "~/utils/tauri";
 import IconCapLogoFull from "~icons/cap/logo-full";
 import IconCapLogoFullDark from "~icons/cap/logo-full-dark";
@@ -1567,7 +1566,7 @@ function createUpdateCheck() {
 		} catch (e) {
 			console.error("Failed to check for updates:", e);
 			await dialog.message(
-				"Unable to check for updates. Please download the latest version manually from cap.so/download. Your data will not be lost.\n\nIf this issue persists, please contact support.",
+				"Unable to check for updates. Please download the latest version manually from the Zensloom GitHub releases page. Your data will not be lost.",
 				{ title: "Update Error", kind: "error" },
 			);
 			return;
@@ -1861,23 +1860,8 @@ function Page() {
 	createTauriEventListener(events.recordingStarted, () => recordings.refetch());
 	createTauriEventListener(events.recordingStopped, () => recordings.refetch());
 
-	const handleReupload = async (path: string) => {
-		setReuploadingPaths((prev) => new Set([...prev, path]));
-		try {
-			await commands.uploadExportedVideo(
-				path,
-				"Reupload",
-				new Channel<UploadProgress>(() => {}),
-				null,
-			);
-		} finally {
-			setReuploadingPaths((prev) => {
-				const next = new Set(prev);
-				next.delete(path);
-				return next;
-			});
-			recordings.refetch();
-		}
+	const handleReupload = async (_path: string) => {
+		// Cloud reupload removed — Zensloom v1.0 is local-only.
 	};
 
 	const screenshots = useQuery(() =>
@@ -2658,30 +2642,6 @@ function Page() {
 							<IconCapLogoFullDark class="hidden dark:block" />
 							<IconCapLogoFull class="block dark:hidden" />
 						</a>
-						<ErrorBoundary fallback={null}>
-							<Suspense>
-								<Show
-									when={license.data?.type !== "pro"}
-									fallback={
-										<span class="text-[0.6rem] ml-2 rounded-lg border border-gray-5 px-1 py-0.5 bg-(--blue-400) text-gray-1 dark:text-gray-12">
-											{license.data?.type === "commercial"
-												? "Commercial"
-												: "Pro"}
-										</span>
-									}
-								>
-									<button
-										type="button"
-										onClick={() => {
-											void commands.showWindow("Upgrade");
-										}}
-										class="text-[0.6rem] ml-2 rounded-lg border border-gray-5 px-1 py-0.5 bg-gray-3 hover:bg-gray-5"
-									>
-										Personal
-									</button>
-								</Show>
-							</Suspense>
-						</ErrorBoundary>
 					</div>
 					<Mode
 						onInfoClick={() => {

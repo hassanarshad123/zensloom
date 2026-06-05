@@ -3,6 +3,7 @@ import { Button } from "@zensloom/ui-solid";
 import { createResource, createSignal, For, Show } from "solid-js";
 import toast from "solid-toast";
 
+import { ZENSLOOM_ISSUES_URL } from "~/utils/env";
 import { commands, type SystemDiagnostics } from "~/utils/tauri";
 import { Section, SettingsPageContent } from "./Setting";
 
@@ -53,15 +54,15 @@ export default function FeedbackTab() {
 				</Section>
 
 				<Section
-					title="Join the Community"
-					description="Have questions, want to share ideas, or just hang out? Join the community."
+					title="Community & Support"
+					description="Have questions, want to share ideas, or found a bug? Open an issue on GitHub."
 				>
 					<Button
-						onClick={() => shell.open("https://cap.link/discord")}
+						onClick={() => shell.open(ZENSLOOM_ISSUES_URL)}
 						size="md"
 						variant="gray"
 					>
-						Join Discord
+						Open GitHub Issues
 					</Button>
 				</Section>
 

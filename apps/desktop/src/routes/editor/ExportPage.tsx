@@ -39,7 +39,6 @@ import {
 	type ExportCompression,
 	type ExportSettings,
 	type FramesRendered,
-	type UploadProgress,
 } from "~/utils/tauri";
 import { type RenderState, useEditorContext } from "./context";
 import { RESOLUTION_OPTIONS } from "./Header";
@@ -499,6 +498,39 @@ export function ExportPage() {
 	};
 
 	const [outputPath, setOutputPath] = createSignal<string | null>(null);
+	const [shareResult, setShareResult] = createSignal<Awaited<
+		ReturnType<typeof commands.shareToS3>
+	> | null>(null);
+	const [sharing, setSharing] = createSignal(false);
+
+	const createShareLink = async () => {
+		const path = outputPath();
+		if (!path) return;
+		const cfg = await commands.getS3Config().catch(() => null);
+		if (!cfg?.configured) {
+			commands.globalMessageDialog(
+				"Set up sharing first in Settings → Sharing (S3), then try again.",
+			);
+			return;
+		}
+		setSharing(true);
+		try {
+			const result = await commands.shareToS3(path);
+			setShareResult(result);
+			await navigator.clipboard.writeText(result.video_url).catch(() => {});
+			toast.success("Share link created & copied!");
+		} catch (e) {
+			commands.globalMessageDialog(
+				e instanceof Error
+					? e.message
+					: typeof e === "string"
+						? e
+						: "Failed to create share link",
+			);
+		} finally {
+			setSharing(false);
+		}
+	};
 	const [isCancelled, setIsCancelled] = createSignal(false);
 	const exportFileExtension = () =>
 		isMovCursorOnlyExport() ? "mov" : settings.format === "Gif" ? "gif" : "mp4";
@@ -629,80 +661,10 @@ export function ExportPage() {
 
 	const upload = createMutation(() => ({
 		mutationFn: async () => {
-			setIsCancelled(false);
-			if (exportState.type !== "idle") return;
-			const releaseExportSession = await beginExportSessionGuard();
-			try {
-				setExportState(reconcile({ action: "upload", type: "starting" }));
-
-				const existingAuth = await authStore.get();
-				if (!existingAuth) createSignInMutation();
-				trackEvent("create_shareable_link_clicked", {
-					resolution: settings.resolution,
-					fps: settings.fps,
-					has_existing_auth: !!existingAuth,
-				});
-
-				const metadata = await commands.getVideoMetadata(projectPath);
-				const plan = await commands.checkUpgradedAndUpdate();
-				const canShare = {
-					allowed: plan || metadata.duration < 300,
-					reason: !plan && metadata.duration >= 300 ? "upgrade_required" : null,
-				};
-
-				if (!canShare.allowed) {
-					if (canShare.reason === "upgrade_required") {
-						await commands.showWindow("Upgrade");
-						await new Promise((resolve) => setTimeout(resolve, 1000));
-						throw new SilentError();
-					}
-				}
-
-				const uploadChannel = new Channel<UploadProgress>((progress) => {
-					console.log("Upload progress:", progress);
-					setExportState(
-						produce((state) => {
-							if (state.type !== "uploading") return;
-
-							state.progress = Math.round(progress.progress * 100);
-						}),
-					);
-				});
-
-				await exportWithSettings((progress) => {
-					if (isCancelled()) throw new SilentError("Cancelled");
-					setExportState({ type: "rendering", progress });
-				});
-
-				if (isCancelled()) throw new SilentError("Cancelled");
-
-				setExportState({ type: "uploading", progress: 0 });
-
-				console.log({ organizationId: settings.organizationId });
-
-				const result = meta().sharing
-					? await commands.uploadExportedVideo(
-							projectPath,
-							"Reupload",
-							uploadChannel,
-							settings.organizationId ?? null,
-						)
-					: await commands.uploadExportedVideo(
-							projectPath,
-							{ Initial: { pre_created_video: null } },
-							uploadChannel,
-							settings.organizationId ?? null,
-						);
-
-				if (result === "NotAuthenticated")
-					throw new Error("You need to sign in to share recordings");
-				else if (result === "PlanCheckFailed")
-					throw new Error("Failed to verify your subscription status");
-				else if (result === "UpgradeRequired")
-					throw new Error("This feature requires an upgraded plan");
-			} finally {
-				await releaseExportSession();
-			}
+			// Cloud sharing removed — Zensloom v1.0 is local-only.
+			throw new Error(
+				"Shareable links are coming in Zensloom v2.0. Use Export to File or Clipboard.",
+			);
 		},
 		onSuccess: async () => {
 			await refetchMeta();
@@ -894,7 +856,9 @@ export function ExportPage() {
 					<div class="flex-1 overflow-y-auto p-4 space-y-5">
 						<Field name="Destination" icon={<IconCapUpload class="size-4" />}>
 							<div class="flex gap-1.5">
-								<For each={EXPORT_TO_OPTIONS}>
+								{/* "link" sharing happens via the "Get share link" button on the
+								    export-done screen (S3), so it is not a destination option. */}
+								<For each={EXPORT_TO_OPTIONS.filter((o) => (o.value as string) !== "link")}>
 									{(option) => {
 										const Icon = option.icon;
 										const isSelected = () => settings.exportTo === option.value;
@@ -1774,7 +1738,61 @@ export function ExportPage() {
 												)}
 												Copy to Clipboard
 											</Button>
+											<Button
+												variant="blue"
+												disabled={sharing()}
+												class="flex gap-2 items-center"
+												onClick={createShareLink}
+											>
+												<IconCapLink class="size-4" />
+												{sharing() ? "Creating link…" : "Get share link"}
+											</Button>
 										</div>
+									</Show>
+
+									<Show when={shareResult()} keyed>
+										{(share) => {
+											const copy = (text: string, label: string) => {
+												navigator.clipboard.writeText(text);
+												toast.success(`${label} copied`);
+											};
+											return (
+												<div class="flex flex-col gap-3 mt-4 w-full text-left">
+													<div class="flex flex-col gap-1">
+														<span class="text-xs text-gray-10">Share link</span>
+														<div class="flex gap-2">
+															<input
+																readonly
+																value={share.video_url}
+																class="flex-1 px-3 py-2 text-xs rounded-lg border bg-gray-2 border-gray-3 text-gray-12 outline-none"
+															/>
+															<Button
+																variant="dark"
+																onClick={() => copy(share.video_url, "Link")}
+															>
+																Copy
+															</Button>
+														</div>
+													</div>
+													<div class="flex flex-col gap-1">
+														<span class="text-xs text-gray-10">Embed code</span>
+														<div class="flex gap-2">
+															<input
+																readonly
+																value={share.embed_code}
+																class="flex-1 px-3 py-2 text-xs rounded-lg border bg-gray-2 border-gray-3 text-gray-12 outline-none font-mono"
+															/>
+															<Button
+																variant="dark"
+																onClick={() => copy(share.embed_code, "Embed code")}
+															>
+																Copy
+															</Button>
+														</div>
+													</div>
+												</div>
+											);
+										}}
 									</Show>
 								</div>
 							</Show>

@@ -12,10 +12,7 @@
 @import "@radix-ui/colors/yellow.css";
 @import "@radix-ui/colors/yellow-dark.css";
 
-@plugin "@tailwindcss/typography";
 @plugin "tailwind-scrollbar";
-
-@tailwind utilities;
 
 :root {
 	/* Light theme variables */

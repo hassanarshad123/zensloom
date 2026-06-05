@@ -2841,11 +2841,10 @@ fn project_config_from_recording(
             }
         }
 
-        config.camera.background_blur = zensloom_project::BackgroundBlurConfig {
-            mode: camera_preview_state.background_blur,
-            color: None,
-            image_path: None,
-        };
+        // Carry the full background config (mode + color + image) into the
+        // recording so the captured video bakes the same background the user
+        // sees in the live preview.
+        config.camera.background_blur = camera_preview_state.background_blur.clone();
     }
 
     let timeline_segments = recordings

@@ -31,6 +31,7 @@ mod recording_settings;
 mod recording_telemetry;
 mod recovery;
 mod screenshot_editor;
+mod sharing;
 mod target_select_overlay;
 mod thumbnails;
 mod tray;
@@ -3528,7 +3529,8 @@ async fn set_camera_preview_state(
     state: CameraPreviewState,
 ) -> Result<(), String> {
     let app_guard = app.read().await;
-    let blur_mode = state.background_blur;
+    // The legacy websocket preview only needs the mode enum.
+    let blur_mode = state.background_blur.mode;
     app_guard
         .camera_preview
         .set_state(state)
@@ -3829,6 +3831,10 @@ pub async fn run(recording_logging_handle: LoggingHandle, logs_dir: PathBuf) {
             api_keys::get_api_key_status,
             api_keys::delete_api_key,
             api_keys::validate_openai_key,
+            sharing::set_s3_config,
+            sharing::get_s3_config,
+            sharing::delete_s3_config,
+            sharing::share_to_s3,
             target_select_overlay::open_target_select_overlays,
             target_select_overlay::close_target_select_overlays,
             target_select_overlay::update_camera_overlay_bounds,

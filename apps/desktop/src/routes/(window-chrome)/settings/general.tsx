@@ -603,7 +603,7 @@ function Inner(props: { initialStore: GeneralSettingsStore | null }) {
 				/>
 
 				<ServerURLSetting
-					value={settings.serverUrl ?? "https://cap.so"}
+					value={settings.serverUrl ?? "https://github.com/zensbot/zensloom"}
 					onChange={async (v) => {
 						const url = new URL(v);
 						const origin = url.origin;

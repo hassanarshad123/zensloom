@@ -56,7 +56,7 @@ pub struct CameraPreviewState {
     pub shape: CameraPreviewShape,
     pub mirrored: bool,
     #[serde(default)]
-    pub background_blur: zensloom_project::BackgroundBlurMode,
+    pub background_blur: zensloom_project::BackgroundBlurConfig,
 }
 
 impl Default for CameraPreviewState {
@@ -65,7 +65,7 @@ impl Default for CameraPreviewState {
             size: DEFAULT_CAMERA_SIZE,
             shape: CameraPreviewShape::default(),
             mirrored: false,
-            background_blur: zensloom_project::BackgroundBlurMode::Off,
+            background_blur: zensloom_project::BackgroundBlurConfig::default(),
         }
     }
 }
@@ -585,6 +585,7 @@ impl InitializedCameraPreview {
             blur_processor: None,
             blur_processor_init_attempted: false,
             blur_source_texture: None,
+            current_bg_image_path: None,
         };
 
         renderer.update_state_uniforms(default_state);
@@ -636,6 +637,9 @@ struct Renderer {
     blur_processor: Option<zensloom_segment::BlurProcessor>,
     blur_processor_init_attempted: bool,
     blur_source_texture: Option<wgpu::Texture>,
+    /// Path of the custom background image currently uploaded to the GPU, so we
+    /// only re-decode and re-upload when the user picks a different image.
+    current_bg_image_path: Option<String>,
 }
 
 impl Renderer {
@@ -850,7 +854,8 @@ impl Renderer {
                             (resampler_frame.data(0), resampler_frame.stride(0) as u32)
                         };
 
-                        let bg_mode = bg_mode_from_project(state.background_blur);
+                        let bg_mode = bg_mode_from_config(&state.background_blur);
+                        let bg_image_path = state.background_blur.image_path.clone();
                         let blurred = if let Some(mode) = &bg_mode {
                             self.run_background_blur(
                                 frame_data,
@@ -858,6 +863,7 @@ impl Renderer {
                                 output_width,
                                 output_height,
                                 mode,
+                                bg_image_path.as_deref(),
                             )
                         } else {
                             false
@@ -993,6 +999,7 @@ impl Renderer {
         width: u32,
         height: u32,
         mode: &zensloom_segment::BgMode,
+        image_path: Option<&str>,
     ) -> bool {
         if !self.ensure_blur_processor() {
             return false;
@@ -1006,6 +1013,32 @@ impl Renderer {
         ) else {
             return false;
         };
+
+        // For "image" mode, upload the user's chosen background to the GPU once,
+        // re-decoding only when the selected image path changes.
+        if matches!(mode, zensloom_segment::BgMode::Image)
+            && self.current_bg_image_path.as_deref() != image_path
+        {
+            if let Some(path) = image_path {
+                match image::open(path) {
+                    Ok(img) => {
+                        let rgba = img.to_rgba8();
+                        let (img_w, img_h) = rgba.dimensions();
+                        processor.set_background_image(
+                            &self.device,
+                            &self.queue,
+                            &rgba,
+                            img_w,
+                            img_h,
+                        );
+                    }
+                    Err(err) => {
+                        error!("Failed to load background image {path}: {err:?}");
+                    }
+                }
+            }
+            self.current_bg_image_path = image_path.map(|s| s.to_string());
+        }
 
         self.queue.write_texture(
             wgpu::TexelCopyTextureInfo {
@@ -1376,22 +1409,43 @@ mod tests {
     }
 }
 
-fn bg_mode_from_project(
-    mode: zensloom_project::BackgroundBlurMode,
+fn bg_mode_from_config(
+    config: &zensloom_project::BackgroundBlurConfig,
 ) -> Option<zensloom_segment::BgMode> {
-    match mode {
-        zensloom_project::BackgroundBlurMode::Off => None,
-        zensloom_project::BackgroundBlurMode::Light => {
-            Some(zensloom_segment::BgMode::Blur(zensloom_segment::BlurMode::Light))
+    use zensloom_project::BackgroundBlurMode as Mode;
+    match config.mode {
+        Mode::Off => None,
+        Mode::Light => Some(zensloom_segment::BgMode::Blur(
+            zensloom_segment::BlurMode::Light,
+        )),
+        Mode::Heavy => Some(zensloom_segment::BgMode::Blur(
+            zensloom_segment::BlurMode::Heavy,
+        )),
+        Mode::Color => Some(zensloom_segment::BgMode::Color(parse_hex_color(
+            config.color.as_deref(),
+        ))),
+        Mode::Image => Some(zensloom_segment::BgMode::Image),
+        Mode::Remove => Some(zensloom_segment::BgMode::Remove),
+    }
+}
+
+/// Parse a `#RRGGBB` hex string into normalized RGB. Falls back to a friendly
+/// blue when the value is missing or malformed.
+fn parse_hex_color(hex: Option<&str>) -> [f32; 3] {
+    const DEFAULT: [f32; 3] = [0.2, 0.4, 0.8];
+    let Some(hex) = hex else {
+        return DEFAULT;
+    };
+    let hex = hex.trim().trim_start_matches('#');
+    if hex.len() != 6 {
+        return DEFAULT;
+    }
+    let component = |start: usize| u8::from_str_radix(&hex[start..start + 2], 16).ok();
+    match (component(0), component(2), component(4)) {
+        (Some(r), Some(g), Some(b)) => {
+            [r as f32 / 255.0, g as f32 / 255.0, b as f32 / 255.0]
         }
-        zensloom_project::BackgroundBlurMode::Heavy => {
-            Some(zensloom_segment::BgMode::Blur(zensloom_segment::BlurMode::Heavy))
-        }
-        zensloom_project::BackgroundBlurMode::Color => {
-            Some(zensloom_segment::BgMode::Color([0.2, 0.4, 0.8]))
-        }
-        zensloom_project::BackgroundBlurMode::Image => Some(zensloom_segment::BgMode::Image),
-        zensloom_project::BackgroundBlurMode::Remove => Some(zensloom_segment::BgMode::Remove),
+        _ => DEFAULT,
     }
 }
 

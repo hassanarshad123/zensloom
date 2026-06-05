@@ -80,8 +80,8 @@ async function main() {
 			],
 		},
 		{
-			packageName: "cap",
-			sourceBinary: "cap",
+			packageName: "zensloom-cli",
+			sourceBinary: "zensloom-cli",
 			destBinary: "zensloom-exporter",
 			watchPaths: [
 				path.join(repoRoot, "apps", "cli"),

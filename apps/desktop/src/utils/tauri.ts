@@ -194,12 +194,6 @@ async requestPermission(permission: OSPermission) : Promise<void> {
 async getDevicesSnapshot() : Promise<DevicesUpdated> {
     return await TAURI_INVOKE("get_devices_snapshot");
 },
-async uploadExportedVideo(path: string, mode: UploadMode, channel: TAURI_CHANNEL<UploadProgress>, organizationId: string | null) : Promise<UploadResult> {
-    return await TAURI_INVOKE("upload_exported_video", { path, mode, channel, organizationId });
-},
-async uploadScreenshot(screenshotPath: string) : Promise<UploadResult> {
-    return await TAURI_INVOKE("upload_screenshot", { screenshotPath });
-},
 async createScreenshotEditorInstance() : Promise<SerializedScreenshotEditorInstance> {
     return await TAURI_INVOKE("create_screenshot_editor_instance");
 },
@@ -355,17 +349,32 @@ async deleteParakeetModel(modelDir: string) : Promise<null> {
 async exportCaptionsSrt(videoId: string) : Promise<string | null> {
     return await TAURI_INVOKE("export_captions_srt", { videoId });
 },
-async storeApiKey(provider: string, key: string) : Promise<void> {
-    await TAURI_INVOKE("store_api_key", { provider, key });
+async storeApiKey(provider: string, key: string) : Promise<null> {
+    return await TAURI_INVOKE("store_api_key", { provider, key });
 },
 async getApiKeyStatus(provider: string) : Promise<boolean> {
     return await TAURI_INVOKE("get_api_key_status", { provider });
 },
-async deleteApiKey(provider: string) : Promise<void> {
-    await TAURI_INVOKE("delete_api_key", { provider });
+async deleteApiKey(provider: string) : Promise<null> {
+    return await TAURI_INVOKE("delete_api_key", { provider });
 },
-async validateOpenaiKey(key: string) : Promise<void> {
-    await TAURI_INVOKE("validate_openai_key", { key });
+async validateOpenaiKey(key: string) : Promise<null> {
+    return await TAURI_INVOKE("validate_openai_key", { key });
+},
+async setS3Config(accessKey: string, secretKey: string, region: string, bucket: string) : Promise<null> {
+    return await TAURI_INVOKE("set_s3_config", { accessKey, secretKey, region, bucket });
+},
+async getS3Config() : Promise<S3Config> {
+    return await TAURI_INVOKE("get_s3_config");
+},
+async deleteS3Config() : Promise<null> {
+    return await TAURI_INVOKE("delete_s3_config");
+},
+/**
+ * Upload `file_path` to the configured bucket and return its shareable links.
+ */
+async shareToS3(filePath: string) : Promise<ShareResult> {
+    return await TAURI_INVOKE("share_to_s3", { filePath });
 },
 async openTargetSelectOverlays(focusedTarget: ScreenCaptureTarget | null, specificDisplayId: string | null, targetMode: RecordingTargetMode | null) : Promise<null> {
     return await TAURI_INVOKE("open_target_select_overlays", { focusedTarget, specificDisplayId, targetMode });
@@ -465,6 +474,7 @@ videoImportProgress: "video-import-progress"
 
 /** user-defined types **/
 
+export type AllGpusInfo = { gpus: GpuInfoDiag[]; primaryGpuIndex: number | null; isMultiGpuSystem: boolean; hasDiscreteGpu: boolean }
 export type Annotation = { id: string; type: AnnotationType; x: number; y: number; width: number; height: number; strokeColor: string; strokeWidth: number; fillColor: string; opacity: number; rotation: number; text: string | null; maskType?: MaskType | null; maskLevel?: number | null }
 export type AnnotationType = "arrow" | "circle" | "rectangle" | "text" | "mask"
 export type AppTheme = "system" | "light" | "dark"
@@ -473,8 +483,11 @@ export type Audio = { duration: number; sample_rate: number; channels: number; s
 export type AudioConfiguration = { mute: boolean; improve: boolean; micVolumeDb: number; micStereoMode: StereoMode; systemVolumeDb: number }
 export type AudioInputLevelChange = number
 export type AudioMeta = { path: string; start_time?: number | null; device_id?: string | null }
-export type AuthSecret = { api_key: string } | { token: string; expires: number }
-export type AuthStore = { secret: AuthSecret; user_id: string | null; plan: Plan | null; organizations?: Organization[]; organizations_updated_at?: number | null }
+/**
+ * Minimal auth store retained for store compatibility.
+ * In v1.0 local-only mode this is always `None`.
+ */
+export type AuthStore = { user_id: string | null }
 export type BackgroundBlurConfig = { mode: BackgroundBlurMode; color?: string | null; imagePath?: string | null }
 export type BackgroundBlurMode = "off" | "light" | "heavy" | "color" | "image" | "remove"
 export type BackgroundConfiguration = { source: BackgroundSource; blur: number; padding: number; rounding: number; roundingType: CornerStyle; inset: number; crop: Crop | null; shadow: number; advancedShadow: ShadowConfiguration | null; border: BorderConfiguration | null }
@@ -486,7 +499,7 @@ export type CameraFormatInfo = { width: number; height: number; frameRate: numbe
 export type CameraInfo = { device_id: string; model_id: ModelIDType | null; display_name: string }
 export type CameraPosition = { x: CameraXPosition; y: CameraYPosition }
 export type CameraPreviewShape = "round" | "square" | "full"
-export type CameraPreviewState = { size: number; shape: CameraPreviewShape; mirrored: boolean; background_blur?: BackgroundBlurMode }
+export type CameraPreviewState = { size: number; shape: CameraPreviewShape; mirrored: boolean; background_blur?: BackgroundBlurConfig }
 export type CameraShape = "square" | "source"
 export type CameraWithFormats = { deviceId: string; displayName: string; modelId: string | null; formats: CameraFormatInfo[]; bestFormat: CameraFormatInfo | null }
 export type CameraXPosition = "left" | "center" | "right"
@@ -542,6 +555,7 @@ quality: number | null;
  */
 fast: boolean | null }
 export type GlideDirection = "none" | "left" | "right" | "up" | "down"
+export type GpuInfoDiag = { vendor: string; description: string; dedicatedVideoMemoryMb: number; adapterIndex: number; isSoftwareAdapter: boolean; isBasicRenderDriver: boolean; supportsHardwareEncoding: boolean }
 export type HapticPattern = "alignment" | "levelChange" | "generic"
 export type HapticPerformanceTime = "default" | "now" | "drawCompleted"
 export type Hotkey = { code: string; meta: boolean; ctrl: boolean; alt: boolean; shift: boolean }
@@ -559,7 +573,6 @@ export type KeyboardTrackSegment = { id: string; start: number; end: number; dis
 export type LogicalBounds = { position: LogicalPosition; size: LogicalSize }
 export type LogicalPosition = { x: number; y: number }
 export type LogicalSize = { width: number; height: number }
-export type MacOSVersionInfo = { major: number; minor: number; patch: number; displayName: string; buildNumber: string; isAppleSilicon: boolean }
 export type MainWindowRecordingStartBehaviour = "close" | "minimise"
 export type MaskKeyframes = { position?: MaskVectorKeyframe[]; size?: MaskVectorKeyframe[]; intensity?: MaskScalarKeyframe[] }
 export type MaskKind = "sensitive" | "highlight"
@@ -582,10 +595,7 @@ export type OSPermission = "screenRecording" | "camera" | "microphone" | "access
 export type OSPermissionStatus = "notNeeded" | "empty" | "granted" | "denied"
 export type OSPermissionsCheck = { screenRecording: OSPermissionStatus; microphone: OSPermissionStatus; camera: OSPermissionStatus; accessibility: OSPermissionStatus }
 export type OnEscapePress = null
-export type Organization = { id: string; name: string; ownerId: string; role?: string; canEditBrand?: boolean; iconUrl?: string | null; brandColors?: OrganizationBrandColors }
-export type OrganizationBrandColors = { primary: string | null; secondary: string | null; accent: string | null; background: string | null }
 export type PhysicalSize = { width: number; height: number }
-export type Plan = { upgraded: boolean; manual: boolean; last_checked: number }
 export type Platform = "MacOS" | "Windows"
 export type PostDeletionBehaviour = "doNothing" | "reopenRecordingWindow"
 export type PostStudioRecordingBehaviour = "openEditor" | "showOverlay"
@@ -607,12 +617,14 @@ export type RecordingStatus = "pending" | "recording"
 export type RecordingStopped = null
 export type RecordingTargetMode = "display" | "window" | "area" | "camera"
 export type RenderFrameEvent = { frame_number: number; fps: number; resolution_base: XY<number> }
+export type RenderingStatus = { isUsingSoftwareRendering: boolean; isUsingBasicRenderDriver: boolean; hardwareEncodingAvailable: boolean; warningMessage: string | null }
 export type RequestOpenRecordingPicker = { target_mode: RecordingTargetMode | null }
 export type RequestOpenSettings = { page: string }
 export type RequestScreenCapturePrewarm = { force?: boolean }
 export type RequestScrollToSettingsSection = { section: string }
 export type RequestSetTargetMode = { target_mode: RecordingTargetMode | null; display_id: string | null }
 export type RequestStartRecording = { mode: RecordingMode }
+export type S3Config = { region: string; bucket: string; configured: boolean }
 export type S3UploadMeta = { id: string }
 export type SceneMode = "default" | "cameraOnly" | "hideCamera"
 export type SceneSegment = { start: number; end: number; mode?: SceneMode }
@@ -626,6 +638,7 @@ export type SerializedEditorInstance = { framesSocketUrl: string; recordingDurat
 export type SerializedScreenshotEditorInstance = { framesSocketUrl: string; path: string; config: ProjectConfiguration | null; prettyName: string; imageWidth: number; imageHeight: number }
 export type SetCaptureAreaPending = boolean
 export type ShadowConfiguration = { size: number; opacity: number; blur: number }
+export type ShareResult = { id: string; video_url: string; player_url: string; embed_code: string }
 export type SharingMeta = { id: string; link: string }
 export type ShowCapWindow = { Main: { init_target_mode: RecordingTargetMode | null } } | { Settings: { page: string | null } } | { Editor: { project_path: string } } | "RecordingsOverlay" | { WindowCaptureOccluder: { screen_id: DisplayId } } | { TargetSelectOverlay: { display_id: DisplayId; target_mode: RecordingTargetMode | null } } | { CaptureArea: { screen_id: DisplayId } } | { Camera: { centered: boolean } } | { InProgressRecording: { countdown: number | null; capture_target?: ScreenCaptureTarget | null } } | "Upgrade" | "ModeSelect" | { ScreenshotEditor: { path: string } } | "Onboarding"
 export type SingleSegment = { display: VideoMeta; camera?: VideoMeta | null; audio?: AudioMeta | null; cursor?: string | null }
@@ -634,17 +647,17 @@ export type StereoMode = "stereo" | "monoL" | "monoR"
 export type StudioRecordingMeta = { segment: SingleSegment } | { inner: MultipleSegments }
 export type StudioRecordingQuality = "compatibility" | "balanced" | "ultra"
 export type StudioRecordingStatus = { status: "InProgress" } | { status: "NeedsRemux" } | { status: "Failed"; error: string } | { status: "Complete" }
-export type SystemDiagnostics = { macosVersion: MacOSVersionInfo | null; availableEncoders: string[]; screenCaptureSupported: boolean; metalSupported: boolean; gpuName: string | null }
+export type SystemDiagnostics = { windowsVersion: WindowsVersionInfo | null; gpuInfo: GpuInfoDiag | null; allGpus: AllGpusInfo | null; renderingStatus: RenderingStatus; availableEncoders: string[]; graphicsCaptureSupported: boolean; d3D11VideoProcessorAvailable: boolean }
 export type TargetUnderCursor = { display_id: DisplayId | null; window: WindowUnderCursor | null }
 export type TextSegment = { start: number; end: number; track?: number; enabled?: boolean; content?: string; center?: XY<number>; size?: XY<number>; fontFamily?: string; fontSize?: number; fontWeight?: number; italic?: boolean; color?: string; fadeDuration?: number }
 export type TimelineConfiguration = { segments: TimelineSegment[]; zoomSegments: ZoomSegment[]; sceneSegments?: SceneSegment[]; maskSegments?: MaskSegment[]; textSegments?: TextSegment[]; captionSegments?: CaptionTrackSegment[]; keyboardSegments?: KeyboardTrackSegment[] }
 export type TimelineSegment = { recordingSegment?: number; timescale: number; start: number; end: number }
 export type TranscriptionEngine = "Whisper" | "Parakeet" | "OpenAiWhisper"
 export type UploadMeta = { state: "MultipartUpload"; video_id: string; file_path: string; pre_created_video: VideoUploadInfo; recording_dir: string } | { state: "SinglePartUpload"; video_id: string; recording_dir: string; file_path: string; screenshot_path: string } | { state: "SegmentUpload"; video_id: string; pre_created_video: VideoUploadInfo; recording_dir: string } | { state: "Failed"; error: string } | { state: "Complete" }
-export type UploadMode = { Initial: { pre_created_video: VideoUploadInfo | null } } | "Reupload"
-export type UploadProgress = { progress: number }
+/**
+ * Upload progress event stub (kept for specta type generation compatibility).
+ */
 export type UploadProgressEvent = { video_id: string; uploaded: string; total: string }
-export type UploadResult = { Success: string } | "NotAuthenticated" | "PlanCheckFailed" | "UpgradeRequired"
 export type Video = { duration: number; width: number; height: number; fps: number; start_time: number }
 export type VideoImportProgress = { project_path: string; stage: ImportStage; progress: number; message: string }
 export type VideoMeta = { path: string; fps?: number; start_time?: number | null; device_id?: string | null }
@@ -654,6 +667,7 @@ export type WindowExclusion = { bundleIdentifier?: string | null; ownerName?: st
 export type WindowId = string
 export type WindowPosition = { x: number; y: number; displayId?: DisplayId | null }
 export type WindowUnderCursor = { id: WindowId; app_name: string; bounds: LogicalBounds }
+export type WindowsVersionInfo = { major: number; minor: number; build: number; displayName: string; meetsRequirements: boolean; isWindows11: boolean }
 export type XY<T> = { x: T; y: T }
 export type ZoomMode = "auto" | { manual: { x: number; y: number } }
 export type ZoomSegment = { start: number; end: number; amount: number; mode: ZoomMode; glideDirection?: GlideDirection; glideSpeed?: number; instantAnimation?: boolean; edgeSnapRatio?: number }

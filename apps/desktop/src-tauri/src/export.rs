@@ -319,11 +319,23 @@ async fn run_out_of_process_export_attempt(
     let mut completed_path = None;
     let mut stdout_lines = tokio::io::BufReader::new(stdout).lines();
 
-    while let Some(line) = stdout_lines
-        .next_line()
-        .await
-        .map_err(|e| format!("Failed reading export worker stdout: {e}"))?
-    {
+    // No-progress watchdog: the worker emits a progress line per rendered frame,
+    // so a long silence means it has hung. Kill it and surface an error instead
+    // of letting the desktop wait forever.
+    const NO_PROGRESS_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(90);
+
+    loop {
+        let next = match tokio::time::timeout(NO_PROGRESS_TIMEOUT, stdout_lines.next_line()).await {
+            Ok(result) => result.map_err(|e| format!("Failed reading export worker stdout: {e}"))?,
+            Err(_) => {
+                let _ = child.kill().await;
+                let stderr_tail = stderr_task.await.unwrap_or_default().join("\n");
+                return Err(format!(
+                    "Export worker timed out (no progress for 90s) and was stopped.\nStderr tail:\n{stderr_tail}"
+                ));
+            }
+        };
+        let Some(line) = next else { break };
         match serde_json::from_str::<ExportSidecarMessage>(&line) {
             Ok(ExportSidecarMessage::Progress {
                 rendered_count,
@@ -534,7 +546,16 @@ impl Drop for ExportPreviewActiveGuard<'_> {
 }
 
 async fn wait_for_export_preview_idle(flag: &AtomicBool) {
+    // Bounded wait: the export has already set `export_active`, which signals the
+    // preview to stop. If the preview does not go idle within a few seconds (e.g.
+    // it is stuck mid-render), proceed anyway rather than hanging the export forever.
+    const MAX_WAIT: std::time::Duration = std::time::Duration::from_secs(5);
+    let start = std::time::Instant::now();
     while flag.load(Ordering::Acquire) {
+        if start.elapsed() >= MAX_WAIT {
+            tracing::warn!("Export preview did not go idle within 5s; proceeding with export");
+            break;
+        }
         tokio::time::sleep(std::time::Duration::from_millis(20)).await;
     }
 }
@@ -666,18 +687,61 @@ pub async fn export_video(
     settings: ExportSettings,
     editor: OptionalWindowEditorInstance,
 ) -> Result<PathBuf, String> {
-    match AssertUnwindSafe(export_video_inner(
-        project_path,
-        settings,
-        editor,
-        ExportProgress(progress),
-    ))
-    .catch_unwind()
-    .await
-    {
-        Ok(result) => result,
-        Err(panic) => Err(export_panic_error(panic)),
+    info!(project_path = %project_path.display(), "export_video command entered");
+    run_export_on_large_stack(project_path, settings, editor, ExportProgress(progress)).await
+}
+
+/// The export future embeds the entire (in-process and out-of-process) render
+/// pipeline, giving it a huge stack footprint. Polling it on a normal Tauri
+/// command thread overflows the stack (Windows `0xC00000FD`) before the first
+/// frame, silently terminating the whole app. Run it on a dedicated 64 MB-stack
+/// thread with its own runtime so it has the same headroom as the export sidecar.
+async fn run_export_on_large_stack(
+    project_path: PathBuf,
+    settings: ExportSettings,
+    editor: OptionalWindowEditorInstance,
+    progress: ExportProgress,
+) -> Result<PathBuf, String> {
+    let (tx, rx) = tokio::sync::oneshot::channel();
+    let spawn_result = std::thread::Builder::new()
+        .name("zensloom-export".to_string())
+        .stack_size(64 * 1024 * 1024)
+        .spawn(move || {
+            let runtime = match tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()
+            {
+                Ok(runtime) => runtime,
+                Err(e) => {
+                    let _ = tx.send(Err(format!("Failed to build export runtime: {e}")));
+                    return;
+                }
+            };
+
+            let result = runtime.block_on(async move {
+                match AssertUnwindSafe(export_video_inner(
+                    project_path,
+                    settings,
+                    editor,
+                    progress,
+                ))
+                .catch_unwind()
+                .await
+                {
+                    Ok(result) => result,
+                    Err(panic) => Err(export_panic_error(panic)),
+                }
+            });
+
+            let _ = tx.send(result);
+        });
+
+    if let Err(e) = spawn_result {
+        return Err(format!("Failed to spawn export thread: {e}"));
     }
+
+    rx.await
+        .map_err(|_| "Export worker thread terminated unexpectedly".to_string())?
 }
 
 #[tauri::command]
@@ -726,7 +790,7 @@ async fn export_video_to_file_inner(
     info!(path = %save_path.display(), "Export save path selected");
 
     let output_path =
-        export_video_inner(project_path, settings, editor, ExportProgress(progress)).await?;
+        run_export_on_large_stack(project_path, settings, editor, ExportProgress(progress)).await?;
     copy_export_to_path(&output_path, &save_path).await?;
     Ok(save_path)
 }

@@ -211,8 +211,8 @@ importers:
         specifier: ^7.0.3
         version: 7.0.3
       tailwind-scrollbar:
-        specifier: ^3.1.0
-        version: 3.1.0
+        specifier: ^4.0.2
+        version: 4.0.2(react@19.2.4)(tailwindcss@4.3.0)
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -6298,12 +6298,6 @@ packages:
 
   tailwind-merge@2.6.0:
     resolution: {integrity: sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA==}
-
-  tailwind-scrollbar@3.1.0:
-    resolution: {integrity: sha512-pmrtDIZeHyu2idTejfV59SbaJyvp1VRjYxAjZBH0jnyrPRo6HL1kD5Glz8VPagasqr6oAx6M05+Tuw429Z8jxg==}
-    engines: {node: '>=12.13.0'}
-    peerDependencies:
-      tailwindcss: 3.x
 
   tailwind-scrollbar@4.0.2:
     resolution: {integrity: sha512-wAQiIxAPqk0MNTPptVe/xoyWi27y+NRGnTwvn4PQnbvB9kp8QUBiGl/wsfoVBHnQxTmhXJSNt9NHTmcz9EivFA==}
@@ -13488,8 +13482,6 @@ snapshots:
   system-architecture@0.1.0: {}
 
   tailwind-merge@2.6.0: {}
-
-  tailwind-scrollbar@3.1.0: {}
 
   tailwind-scrollbar@4.0.2(react@19.2.4)(tailwindcss@4.3.0):
     dependencies:

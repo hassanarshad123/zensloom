@@ -1073,17 +1073,9 @@ pub async fn transcribe_audio(
         return Err(format!("Video file not found at path: {video_path}"));
     }
 
-    // Model path validation is not needed for OpenAI Whisper (cloud-based)
-    let model_path = if matches!(engine, TranscriptionEngine::OpenAiWhisper) {
-        String::new()
-    } else {
-        let validated_model_path = validate_model_path(&app, &model_path)?;
-        if !validated_model_path.exists() {
-            log::error!("Model file not found at path: {model_path}");
-            return Err(format!("Model file not found at path: {model_path}"));
-        }
-        validated_model_path.to_string_lossy().to_string()
-    };
+    // Zensloom v1.0 transcribes via BYOK OpenAI Whisper only, so no local
+    // model file is required.
+    let _ = (&model_path, &engine);
 
     let temp_dir = tempdir().map_err(|e| format!("Failed to create temporary directory: {e}"))?;
     let audio_path = temp_dir.path().join("audio.wav");
@@ -1111,44 +1103,11 @@ pub async fn transcribe_audio(
         );
     }
 
-    let transcription_result = match engine {
-        TranscriptionEngine::Parakeet => {
-            log::info!("Using Parakeet TDT engine");
-            let model_dir = model_path.clone();
-            tokio::task::spawn_blocking(move || process_with_parakeet(&audio_path, &model_dir))
-                .await
-                .map_err(|e| format!("Parakeet task panicked: {e}"))?
-        }
-        TranscriptionEngine::Whisper => {
-            let context = match get_whisper_context(&model_path).await {
-                Ok(ctx) => {
-                    log::info!("Whisper context ready");
-                    ctx
-                }
-                Err(e) => {
-                    log::error!("Failed to initialize Whisper context: {e}");
-                    return Err(format!("Failed to initialize transcription model: {e}"));
-                }
-            };
-
-            let transcription_hints = GeneralSettingsStore::get(&app)
-                .ok()
-                .flatten()
-                .map(|settings| settings.transcription_hints)
-                .unwrap_or_default();
-
-            log::info!("Starting Whisper transcription in blocking task...");
-            tokio::task::spawn_blocking(move || {
-                process_with_whisper(&audio_path, context, &language, &transcription_hints)
-            })
-            .await
-            .map_err(|e| format!("Whisper task panicked: {e}"))?
-        }
-        TranscriptionEngine::OpenAiWhisper => {
-            log::info!("Using OpenAI Whisper API engine");
-            transcribe_with_openai(&app, &audio_path, &language).await
-        }
-    };
+    // Zensloom v1.0: BYOK OpenAI Whisper is the only transcription engine.
+    // Local Whisper/Parakeet engines were removed so transcription only ever
+    // talks to api.openai.com (no model downloads from third-party hosts).
+    log::info!("Using OpenAI Whisper API engine");
+    let transcription_result = transcribe_with_openai(&app, &audio_path, &language).await;
 
     match transcription_result {
         Ok(captions) => {
@@ -1638,6 +1597,15 @@ pub async fn download_whisper_model(
     model_name: String,
     output_path: String,
 ) -> Result<(), String> {
+    // Zensloom v1.0 transcribes via BYOK OpenAI Whisper only. Local model
+    // downloads (which fetched from third-party hosts) are disabled so the app
+    // never makes network calls outside the user's chosen AI provider.
+    return Err(
+        "Local transcription models are not available in Zensloom v1.0. \
+         Add your OpenAI API key in Settings to enable transcripts."
+            .to_string(),
+    );
+    #[allow(unreachable_code)]
     let validated_path = validate_model_path(&app, &output_path)?;
 
     let model_parts: &[&str] = match model_name.as_str() {
@@ -1844,6 +1812,13 @@ fn parakeet_model_files_for_dir(
 #[specta::specta]
 #[instrument(skip(app))]
 pub async fn download_parakeet_model(app: AppHandle, output_dir: String) -> Result<(), String> {
+    // Disabled in Zensloom v1.0 (BYOK OpenAI only). See download_whisper_model.
+    return Err(
+        "Local transcription models are not available in Zensloom v1.0. \
+         Add your OpenAI API key in Settings to enable transcripts."
+            .to_string(),
+    );
+    #[allow(unreachable_code)]
     let validated_dir = validate_model_path(&app, &output_dir)?;
 
     std::fs::create_dir_all(&validated_dir)

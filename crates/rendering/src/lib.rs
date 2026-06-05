@@ -3730,6 +3730,9 @@ pub struct RendererLayers {
     keyboard: KeyboardLayer,
     camera_blur_processor: Option<zensloom_segment::BlurProcessor>,
     camera_blur_init_failed: bool,
+    /// Path of the custom webcam background image currently uploaded to the GPU,
+    /// so it is only re-decoded when the user selects a different image.
+    current_bg_image_path: Option<String>,
 }
 
 impl RendererLayers {
@@ -3772,6 +3775,7 @@ impl RendererLayers {
             keyboard: KeyboardLayer::new(device, queue),
             camera_blur_processor: None,
             camera_blur_init_failed: false,
+            current_bg_image_path: None,
         }
     }
 
@@ -3794,6 +3798,7 @@ impl RendererLayers {
         device: &wgpu::Device,
         queue: &wgpu::Queue,
         mode: zensloom_segment::BgMode,
+        image_path: Option<&str>,
     ) {
         if self.camera.source_texture_for_blur().is_none()
             && self.camera_only.source_texture_for_blur().is_none()
@@ -3802,6 +3807,8 @@ impl RendererLayers {
         }
 
         self.ensure_camera_blur_processor(device);
+        let image_changed =
+            matches!(mode, zensloom_segment::BgMode::Image) && self.current_bg_image_path.as_deref() != image_path;
         let Some(processor) = self.camera_blur_processor.as_mut() else {
             return;
         };
@@ -3813,6 +3820,24 @@ impl RendererLayers {
         let Some(source_texture) = source_texture else {
             return;
         };
+
+        // Load the user's custom background image into the GPU so it bakes into
+        // the exported video, re-decoding only when the chosen image changes.
+        if image_changed {
+            if let Some(path) = image_path {
+                match image::open(path) {
+                    Ok(img) => {
+                        let rgba = img.to_rgba8();
+                        let (w, h) = rgba.dimensions();
+                        processor.set_background_image(device, queue, &rgba, w, h);
+                    }
+                    Err(err) => {
+                        tracing::error!("Failed to load background image {path}: {err:?}");
+                    }
+                }
+            }
+            self.current_bg_image_path = image_path.map(|s| s.to_string());
+        }
 
         let _ = processor.process_bg_mode(device, queue, source_texture, &mode);
 
@@ -3960,7 +3985,12 @@ impl RendererLayers {
         );
 
         if let Some(mode) = bg_mode_from_config(&uniforms.project.camera.background_blur) {
-            self.run_shared_camera_blur(&constants.device, &constants.queue, mode);
+            self.run_shared_camera_blur(
+                &constants.device,
+                &constants.queue,
+                mode,
+                uniforms.project.camera.background_blur.image_path.as_deref(),
+            );
         }
 
         self.text.prepare(
